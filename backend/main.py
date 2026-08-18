@@ -12,7 +12,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, BackgroundTasks, Path
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -184,10 +184,39 @@ app.add_middleware(
 )
 
 
-# --- Health & System Endpoints ---
+# --- Frontend & Health Endpoints ---
 
-@app.get("/", tags=["System Information"])
-async def root():
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+
+@app.get("/", response_class=HTMLResponse, tags=["Frontend Command Center"])
+async def serve_index():
+    """Serve the SAHAY Gujarat Command Center Web Application."""
+    index_file = os.path.join(FRONTEND_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file, media_type="text/html")
+    return HTMLResponse("<h1>SAHAY Command Center Loading...</h1>")
+
+
+@app.get("/style.css", tags=["Frontend Static Assets"])
+async def serve_style():
+    """Serve the Command Center stylesheet."""
+    style_file = os.path.join(FRONTEND_DIR, "style.css")
+    if os.path.exists(style_file):
+        return FileResponse(style_file, media_type="text/css")
+    raise HTTPException(status_code=404, detail="style.css not found")
+
+
+@app.get("/app.js", tags=["Frontend Static Assets"])
+async def serve_app_js():
+    """Serve the Command Center JavaScript application."""
+    js_file = os.path.join(FRONTEND_DIR, "app.js")
+    if os.path.exists(js_file):
+        return FileResponse(js_file, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
+
+@app.get("/api", tags=["System Information"])
+async def api_info():
     """Root platform information, OpenAPI Swagger docs, and API routes."""
     return {
         "service": APP_NAME,
