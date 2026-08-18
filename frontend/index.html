@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResQ-IQ | Gujarat Multi-Source Disaster Intelligence & Response Command</title>
+    <title>SAHAY | Gujarat Multi-Source Disaster Intelligence & Emergency Command</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <!-- Leaflet Heatmap Plugin -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- Chart.js for High Performance Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -24,10 +25,19 @@
                 <span class="logo-icon">🛡️</span>
             </div>
             <div>
-                <div class="brand-title">ResQ-IQ <span class="badge-version">GUJARAT COMMAND v2.5</span></div>
-                <div class="brand-sub">Autonomous Multi-Source Disaster Intelligence & Emergency Response Support System</div>
+                <div class="brand-title">SAHAY <span class="badge-version">GUJARAT SEOC v2.6</span></div>
+                <div class="brand-sub">Autonomous Multi-Source Disaster Intelligence & Emergency Command System</div>
             </div>
         </div>
+
+        <!-- Navigation View Mode Switcher -->
+        <nav class="view-mode-nav">
+            <button class="view-btn active" data-view="gisView">🗺️ Tactical GIS Map</button>
+            <button class="view-btn" data-view="analyticsView">📊 Analytics & SitRep</button>
+            <button class="view-btn" data-view="fleetView">🚒 Fleet & Dispatch</button>
+            <button class="view-btn" data-view="triageView">📋 Triage Board</button>
+            <button class="view-btn" data-view="nlpLabView">🧠 AI/NLP Lab</button>
+        </nav>
 
         <!-- Live KPI Stats Ticker -->
         <div class="kpi-ticker">
@@ -54,19 +64,19 @@
 
         <!-- Global Action Controls -->
         <div class="header-actions">
-            <button class="btn btn-audio" id="btnToggleAudio" title="Toggle Emergency Siren Ping">
+            <button class="btn btn-audio" id="btnToggleAudio" title="Toggle Emergency Siren Audio">
                 <span id="audioIcon">🔊</span> Audio
             </button>
-            <button class="btn btn-secondary" id="btnSyncUsgs" title="Sync Live USGS Earthquake Feed">
-                🔄 Sync USGS
+            <button class="btn btn-secondary" id="btnSyncUsgs" title="Sync Live USGS Global Seismic Feed">
+                🔄 USGS Sensor
             </button>
-            <button class="btn btn-secondary" id="btnOpenBroadcastModal" title="Trigger SMS / WhatsApp Mass Alert">
-                📢 Broadcast Alert
+            <button class="btn btn-secondary" id="btnOpenBroadcastModal" title="Transmit Mass SMS & WhatsApp Alerts">
+                📢 Broadcast
             </button>
             <button class="btn btn-secondary" id="btnSitRepReport" title="View Executive Situation Report">
                 📄 SitRep
             </button>
-            <button class="btn btn-primary" id="btnTriggerBurst" title="Trigger a live synthetic disaster event">
+            <button class="btn btn-primary" id="btnTriggerBurst" title="Inject a live synthetic disaster event">
                 ⚡ Inject Event
             </button>
             <button class="btn btn-danger btn-pulse" id="btnOpenSosModal">
@@ -75,187 +85,385 @@
         </div>
     </header>
 
-    <!-- Main Operational Workspace Layout -->
-    <main class="app-layout">
-        <!-- LEFT PANEL: Multi-Source Feed & Filters -->
-        <aside class="panel feed-panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span>📡 Live Intelligence Stream (Gujarat)</span>
-                    <span class="pulse-indicator" id="streamStatusBadge">STREAMING</span>
+    <!-- MAIN VIEW CONTAINER -->
+    <div class="views-wrapper">
+
+        <!-- ===================================================================
+             VIEW 1: TACTICAL GIS MAP (DEFAULT COMMAND CENTER)
+             =================================================================== -->
+        <div class="view-pane active" id="gisView">
+            <main class="app-layout">
+                <!-- LEFT PANEL: Multi-Source Feed & Filters -->
+                <aside class="panel feed-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span>📡 Gujarat Crisis Stream</span>
+                            <span class="pulse-indicator" id="streamStatusBadge">STREAMING</span>
+                        </div>
+                        <div class="feed-count-badge" id="feedCountBadge">0 alerts</div>
+                    </div>
+
+                    <!-- Feed Search & Filters -->
+                    <div class="feed-controls">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="feedSearchInput" placeholder="Search cities, landmarks, victims (e.g. Karelibaug, Adajan)...">
+                        </div>
+                        
+                        <div class="filter-pills">
+                            <button class="pill active" data-filter="urgency" data-val="ALL">All Urgencies</button>
+                            <button class="pill pill-p1" data-filter="urgency" data-val="P1_CRITICAL">🚨 P1 Critical</button>
+                            <button class="pill pill-p2" data-filter="urgency" data-val="P2_HIGH">⚠️ P2 High</button>
+                            <button class="pill" data-filter="urgency" data-val="P3_MEDIUM">P3 Medium</button>
+                        </div>
+
+                        <div class="filter-row">
+                            <select id="disasterTypeSelect" class="styled-select">
+                                <option value="ALL">All Disasters</option>
+                                <option value="flood">🌊 Flood (Vishwamitri/Tapi)</option>
+                                <option value="cyclone">🌀 Cyclone (Biparjoy)</option>
+                                <option value="earthquake">🏚️ Earthquake (Kutch/Bhuj)</option>
+                                <option value="industrial_hazard">🏭 Chemical / GIDC Hazard</option>
+                                <option value="building_collapse">🏗️ Building Collapse</option>
+                                <option value="urban_fire">🔥 Urban Fire</option>
+                            </select>
+
+                            <select id="sourceFilterSelect" class="styled-select">
+                                <option value="ALL">All Sources</option>
+                                <option value="social_media_x">𝕏 Twitter/X</option>
+                                <option value="social_media_reddit">Reddit</option>
+                                <option value="citizen_sos">Citizen SOS</option>
+                                <option value="usgs_seismic">USGS Sensor</option>
+                                <option value="weather_radar">IMD Radar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Scrollable Incident Card Stream -->
+                    <div class="incident-stream" id="incidentStream">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Connecting to Gujarat Crisis Feed...</p>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- CENTER PANEL: Interactive GIS Situation Map -->
+                <section class="panel map-panel">
+                    <div class="map-overlay-header">
+                        <div class="map-status-pill">
+                            <span class="status-dot"></span>
+                            <span id="activeScenarioTitle">Scenario: Vadodara Vishwamitri Floods</span>
+                        </div>
+                        <div class="map-tools">
+                            <button class="map-btn" id="btnToggleHeatmap" title="Toggle Density Heatmap">🔥 Heatmap</button>
+                            <button class="map-btn" id="btnToggleUnits" title="Toggle Responder Units">🚒 Responders</button>
+                            <button class="map-btn" id="btnComputeSafeRoute" title="Compute Hazard-Aware Safe Route">🛣️ Safe Evac Route</button>
+                            <button class="map-btn" id="btnResetView" title="Center on Active Zone">🎯 Recenter</button>
+                        </div>
+                    </div>
+
+                    <!-- Leaflet Container -->
+                    <div id="gisMap"></div>
+
+                    <!-- Map Legend -->
+                    <div class="map-legend">
+                        <div class="legend-item"><span class="legend-dot red-pulse"></span> P1 Critical SOS</div>
+                        <div class="legend-item"><span class="legend-dot amber-dot"></span> P2 High Urgency</div>
+                        <div class="legend-item"><span class="legend-dot blue-dot"></span> P3/P4 Incident</div>
+                        <div class="legend-item"><span class="legend-dot green-dot"></span> NDRF/SDRF Unit</div>
+                    </div>
+                </section>
+
+                <!-- RIGHT PANEL: Operations & Dispatch Hub / SitRep Insights -->
+                <aside class="panel ops-panel">
+                    <!-- Tabs Header -->
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="dispatchTab">🚒 Fleet Summary</button>
+                        <button class="tab-btn" data-tab="analyticsTab">📊 SitRep Insights</button>
+                        <button class="tab-btn" data-tab="scenarioTab">⚙️ Simulation</button>
+                    </div>
+
+                    <!-- Tab 1: Dispatch & Fleet -->
+                    <div class="tab-content active" id="dispatchTab">
+                        <div class="ops-section-header">
+                            <h4>GUJARAT RESPONSE BATTALIONS</h4>
+                            <span class="unit-stat" id="unitAvailabilityStat">6 / 7 Available</span>
+                        </div>
+                        <div class="unit-list" id="unitListContainer">
+                            <!-- Dynamic Response Units Cards -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Analytics & Insights -->
+                    <div class="tab-content" id="analyticsTab">
+                        <div class="analytics-card">
+                            <h4>GUJARAT DISASTER DISTRIBUTION</h4>
+                            <div class="chart-bar-list" id="disasterTypeChart">
+                                <!-- Dynamic Distribution Bars -->
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h4>TOP CRITICAL ZONES</h4>
+                            <div class="zone-list" id="topZonesContainer">
+                                <!-- Dynamic Zone List -->
+                            </div>
+                        </div>
+
+                        <div class="analytics-card exec-preview-card">
+                            <h4>EXECUTIVE SITREP BRIEFING</h4>
+                            <p id="sitrepSummaryText" class="exec-summary-snippet">Loading latest Gujarat crisis analysis...</p>
+                            <button class="btn btn-secondary btn-full" id="btnOpenFullSitrep">Open Full SitRep Briefing</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Simulation Control -->
+                    <div class="tab-content" id="scenarioTab">
+                        <div class="scenario-box">
+                            <h4>SELECT GUJARAT CRISIS SCENARIO</h4>
+                            <p class="sub-text">Switch real-world Gujarat disaster zones, river basins, and coastal grids.</p>
+                            
+                            <div class="scenario-selector">
+                                <label class="scenario-option">
+                                    <input type="radio" name="simScenario" value="vadodara_vishwamitri_flood" checked>
+                                    <div class="scenario-card">
+                                        <strong>🌊 Vadodara Vishwamitri River Floods</strong>
+                                        <span>Central Gujarat | Ajwa Dam discharge & Karelibaug / Sayajigunj</span>
+                                    </div>
+                                </label>
+
+                                <label class="scenario-option">
+                                    <input type="radio" name="simScenario" value="kutch_biparjoy_cyclone">
+                                    <div class="scenario-card">
+                                        <strong>🌀 Cyclone Biparjoy Coastal Surge</strong>
+                                        <span>Kutch & Saurashtra | Mandvi Port, Kandla & Gandhidham</span>
+                                    </div>
+                                </label>
+
+                                <label class="scenario-option">
+                                    <input type="radio" name="simScenario" value="surat_tapi_inundation">
+                                    <div class="scenario-card">
+                                        <strong>🌊 Surat Tapi River Flood & Inundation</strong>
+                                        <span>South Gujarat | Ukai Dam water release & Rander / Adajan</span>
+                                    </div>
+                                </label>
+
+                                <label class="scenario-option">
+                                    <input type="radio" name="simScenario" value="kutch_bhuj_earthquake">
+                                    <div class="scenario-card">
+                                        <strong>🏚️ Kutch Intraplate Seismic Event M6.3</strong>
+                                        <span>Bhuj / Anjar / Morbi | Structural Fractures & Search Ops</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="speed-control">
+                                <label>Feed Speed Interval:</label>
+                                <select id="feedSpeedSelect" class="styled-select">
+                                    <option value="2.0">⚡ Fast (Every 2s)</option>
+                                    <option value="4.0" selected>⏱️ Normal (Every 4s)</option>
+                                    <option value="8.0">🐢 Slow (Every 8s)</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-primary btn-full" id="btnApplyScenario">Apply Gujarat Scenario Settings</button>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <!-- ===================================================================
+             VIEW 2: ADVANCED ANALYTICS & SITREP DASHBOARD
+             =================================================================== -->
+        <div class="view-pane" id="analyticsView">
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h2>📊 Gujarat Disaster Analytics & Predictive Intelligence</h2>
+                        <p class="sub-text">Real-time situational awareness, casualty impact projections, and resource allocation telemetry.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="window.refreshAnalytics()">🔄 Refresh Analytics</button>
                 </div>
-                <div class="feed-count-badge" id="feedCountBadge">0 alerts</div>
-            </div>
 
-            <!-- Feed Search & Filters -->
-            <div class="feed-controls">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="feedSearchInput" placeholder="Search Gujarat cities, landmarks, victims...">
-                </div>
-                
-                <div class="filter-pills">
-                    <button class="pill active" data-filter="urgency" data-val="ALL">All Urgencies</button>
-                    <button class="pill pill-p1" data-filter="urgency" data-val="P1_CRITICAL">🚨 P1 Critical</button>
-                    <button class="pill pill-p2" data-filter="urgency" data-val="P2_HIGH">⚠️ P2 High</button>
-                    <button class="pill" data-filter="urgency" data-val="P3_MEDIUM">P3 Medium</button>
-                </div>
-
-                <div class="filter-row">
-                    <select id="disasterTypeSelect" class="styled-select">
-                        <option value="ALL">All Disasters</option>
-                        <option value="flood">🌊 Flood (Vishwamitri/Tapi)</option>
-                        <option value="cyclone">🌀 Cyclone (Biparjoy)</option>
-                        <option value="earthquake">🏚️ Earthquake (Kutch/Bhuj)</option>
-                        <option value="industrial_hazard">🏭 Chemical / GIDC Hazard</option>
-                        <option value="building_collapse">🏗️ Building Collapse</option>
-                        <option value="urban_fire">🔥 Urban Fire</option>
-                    </select>
-
-                    <select id="sourceFilterSelect" class="styled-select">
-                        <option value="ALL">All Sources</option>
-                        <option value="social_media_x">𝕏 Twitter/X</option>
-                        <option value="social_media_reddit">Reddit</option>
-                        <option value="citizen_sos">Citizen SOS</option>
-                        <option value="usgs_seismic">USGS Sensor</option>
-                        <option value="weather_radar">IMD Radar</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Scrollable Incident Card Stream -->
-            <div class="incident-stream" id="incidentStream">
-                <div class="empty-state">
-                    <div class="spinner"></div>
-                    <p>Connecting to Gujarat Crisis Feed...</p>
-                </div>
-            </div>
-        </aside>
-
-        <!-- CENTER PANEL: Interactive GIS Situation Map -->
-        <section class="panel map-panel">
-            <div class="map-overlay-header">
-                <div class="map-status-pill">
-                    <span class="status-dot"></span>
-                    <span id="activeScenarioTitle">Scenario: Vadodara Vishwamitri Floods</span>
-                </div>
-                <div class="map-tools">
-                    <button class="map-btn" id="btnToggleHeatmap" title="Toggle Density Heatmap">🔥 Heatmap</button>
-                    <button class="map-btn" id="btnToggleUnits" title="Toggle Responder Units">🚒 Responders</button>
-                    <button class="map-btn" id="btnComputeSafeRoute" title="Compute Hazard-Aware Safe Route">🛣️ Safe Evac Route</button>
-                    <button class="map-btn" id="btnResetView" title="Center on Active Zone">🎯 Recenter</button>
-                </div>
-            </div>
-
-            <!-- Leaflet Container -->
-            <div id="gisMap"></div>
-
-            <!-- Map Legend -->
-            <div class="map-legend">
-                <div class="legend-item"><span class="legend-dot red-pulse"></span> P1 Critical SOS</div>
-                <div class="legend-item"><span class="legend-dot amber-dot"></span> P2 High Urgency</div>
-                <div class="legend-item"><span class="legend-dot blue-dot"></span> P3/P4 Incident</div>
-                <div class="legend-item"><span class="legend-dot green-dot"></span> NDRF/SDRF Fleet</div>
-            </div>
-        </section>
-
-        <!-- RIGHT PANEL: Operations & Dispatch Hub / SitRep Insights -->
-        <aside class="panel ops-panel">
-            <!-- Tabs Header -->
-            <div class="tabs-header">
-                <button class="tab-btn active" data-tab="dispatchTab">🚒 Gujarat Fleet</button>
-                <button class="tab-btn" data-tab="analyticsTab">📊 SitRep Insights</button>
-                <button class="tab-btn" data-tab="scenarioTab">⚙️ Simulation</button>
-            </div>
-
-            <!-- Tab 1: Dispatch & Fleet -->
-            <div class="tab-content active" id="dispatchTab">
-                <div class="ops-section-header">
-                    <h4>GUJARAT RESPONSE BATTALIONS</h4>
-                    <span class="unit-stat" id="unitAvailabilityStat">6 / 7 Available</span>
-                </div>
-                <div class="unit-list" id="unitListContainer">
-                    <!-- Dynamic Response Units Cards -->
-                </div>
-            </div>
-
-            <!-- Tab 2: Analytics & Insights -->
-            <div class="tab-content" id="analyticsTab">
-                <div class="analytics-card">
-                    <h4>GUJARAT DISASTER DISTRIBUTION</h4>
-                    <div class="chart-bar-list" id="disasterTypeChart">
-                        <!-- Dynamic Distribution Bars -->
+                <div class="stats-grid-4">
+                    <div class="stat-card">
+                        <span class="stat-title">CRITICAL CASUALTY RISK</span>
+                        <div class="stat-number text-red" id="analyticsP1Count">--</div>
+                        <span class="stat-note">Immediate priority extraction required</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">AFFECTED POPULATION</span>
+                        <div class="stat-number text-amber" id="analyticsAffectedCount">--</div>
+                        <span class="stat-note">Estimated stranded / impacted citizens</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">FLEET MOBILIZATION RATIO</span>
+                        <div class="stat-number text-cyan" id="analyticsMobilizationRate">--</div>
+                        <span class="stat-note">Active battalions vs total deployed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">RESOLUTION RATE</span>
+                        <div class="stat-number text-emerald" id="analyticsResolutionRate">--</div>
+                        <span class="stat-note">Rescued & stabilized incidents</span>
                     </div>
                 </div>
 
-                <div class="analytics-card">
-                    <h4>TOP CRITICAL ZONES</h4>
-                    <div class="zone-list" id="topZonesContainer">
-                        <!-- Dynamic Zone List -->
+                <div class="charts-grid-2">
+                    <div class="chart-card">
+                        <h3>Disaster Category Breakdown</h3>
+                        <div class="canvas-wrapper">
+                            <canvas id="disasterDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Urgency Level Distribution (P1 - P4)</h3>
+                        <div class="canvas-wrapper">
+                            <canvas id="urgencyBarChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <div class="analytics-card exec-preview-card">
-                    <h4>EXECUTIVE SITREP BRIEFING</h4>
-                    <p id="sitrepSummaryText" class="exec-summary-snippet">Loading latest Gujarat crisis analysis...</p>
-                    <button class="btn btn-secondary btn-full" id="btnOpenFullSitrep">Open Full SitRep Briefing</button>
+                <div class="executive-sitrep-box">
+                    <div class="sitrep-box-header">
+                        <h3>📄 Automated Executive Situation Report (SitRep)</h3>
+                        <button class="btn btn-primary btn-sm" id="btnOpenSitrepIframeFromAnalytics">View Formal Document</button>
+                    </div>
+                    <div class="sitrep-full-text" id="analyticsFullSitrepText">
+                        Generating comprehensive Gujarat multi-agency crisis assessment...
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Tab 3: Simulation Control -->
-            <div class="tab-content" id="scenarioTab">
-                <div class="scenario-box">
-                    <h4>SELECT GUJARAT CRISIS SCENARIO</h4>
-                    <p class="sub-text">Switch real-world Gujarat disaster zones, river basins, and coastal grids.</p>
-                    
-                    <div class="scenario-selector">
-                        <label class="scenario-option">
-                            <input type="radio" name="simScenario" value="vadodara_vishwamitri_flood" checked>
-                            <div class="scenario-card">
-                                <strong>🌊 Vadodara Vishwamitri River Floods</strong>
-                                <span>Central Gujarat | Ajwa Dam discharge & Karelibaug / Sayajigunj</span>
-                            </div>
-                        </label>
-
-                        <label class="scenario-option">
-                            <input type="radio" name="simScenario" value="kutch_biparjoy_cyclone">
-                            <div class="scenario-card">
-                                <strong>🌀 Cyclone Biparjoy Coastal Surge</strong>
-                                <span>Kutch & Saurashtra | Mandvi Port, Kandla & Gandhidham</span>
-                            </div>
-                        </label>
-
-                        <label class="scenario-option">
-                            <input type="radio" name="simScenario" value="surat_tapi_inundation">
-                            <div class="scenario-card">
-                                <strong>🌊 Surat Tapi River Flood & Inundation</strong>
-                                <span>South Gujarat | Ukai Dam water release & Rander / Adajan</span>
-                            </div>
-                        </label>
-
-                        <label class="scenario-option">
-                            <input type="radio" name="simScenario" value="kutch_bhuj_earthquake">
-                            <div class="scenario-card">
-                                <strong>🏚️ Kutch Intraplate Seismic Event M6.3</strong>
-                                <span>Bhuj / Anjar / Morbi | Structural Fractures & Search Ops</span>
-                            </div>
-                        </label>
+        <!-- ===================================================================
+             VIEW 3: FLEET & DISPATCH MANAGEMENT HUB
+             =================================================================== -->
+        <div class="view-pane" id="fleetView">
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h2>🚒 Gujarat Emergency Response Battalions & Marine Fleets</h2>
+                        <p class="sub-text">Live tracking of NDRF, SDRF, Coast Guard, and Trauma Medical Units across Gujarat districts.</p>
                     </div>
-
-                    <div class="speed-control">
-                        <label>Feed Speed Interval:</label>
-                        <select id="feedSpeedSelect" class="styled-select">
-                            <option value="2.0">⚡ Fast (Every 2s)</option>
-                            <option value="4.0" selected>⏱️ Normal (Every 4s)</option>
-                            <option value="8.0">🐢 Slow (Every 8s)</option>
+                    <div class="header-actions">
+                        <select id="fleetStatusFilter" class="styled-select" style="width: 160px;">
+                            <option value="ALL">All Unit Status</option>
+                            <option value="AVAILABLE">🟢 Available Only</option>
+                            <option value="DISPATCHED">🔵 Dispatched Only</option>
                         </select>
                     </div>
+                </div>
 
-                    <button class="btn btn-primary btn-full" id="btnApplyScenario">Apply Gujarat Scenario Settings</button>
+                <div class="fleet-grid" id="fullFleetGrid">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
-        </aside>
-    </main>
+        </div>
+
+        <!-- ===================================================================
+             VIEW 4: SEGREGATED INCIDENT TRIAGE BOARD (KANBAN)
+             =================================================================== -->
+        <div class="view-pane" id="triageView">
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h2>📋 Segregated Incident Triage & Verification Board</h2>
+                        <p class="sub-text">Prioritized multi-channel incident lifecycle management and dispatch escalation.</p>
+                    </div>
+                </div>
+
+                <div class="triage-board">
+                    <!-- Column 1: P1 Critical -->
+                    <div class="triage-col col-p1">
+                        <div class="col-header">
+                            <span class="col-title text-red">🚨 P1 CRITICAL LIFE-THREAT</span>
+                            <span class="col-count" id="countP1Col">0</span>
+                        </div>
+                        <div class="triage-items" id="triageP1Container"></div>
+                    </div>
+
+                    <!-- Column 2: P2 High -->
+                    <div class="triage-col col-p2">
+                        <div class="col-header">
+                            <span class="col-title text-amber">⚠️ P2 HIGH INUNDATION / TRAPPED</span>
+                            <span class="col-count" id="countP2Col">0</span>
+                        </div>
+                        <div class="triage-items" id="triageP2Container"></div>
+                    </div>
+
+                    <!-- Column 3: P3 Medium -->
+                    <div class="triage-col col-p3">
+                        <div class="col-header">
+                            <span class="col-title text-cyan">ℹ️ P3 MEDIUM / ROADBLOCKS</span>
+                            <span class="col-count" id="countP3Col">0</span>
+                        </div>
+                        <div class="triage-items" id="triageP3Container"></div>
+                    </div>
+
+                    <!-- Column 4: Resolved -->
+                    <div class="triage-col col-resolved">
+                        <div class="col-header">
+                            <span class="col-title text-emerald">✅ RESOLVED / SAFE</span>
+                            <span class="col-count" id="countResolvedCol">0</span>
+                        </div>
+                        <div class="triage-items" id="triageResolvedContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================
+             VIEW 5: GUJARATI & INDIC AI/NLP INTELLIGENCE LAB
+             =================================================================== -->
+        <div class="view-pane" id="nlpLabView">
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h2>🧠 Multi-Lingual & Gujarati NLP Intelligence Lab</h2>
+                        <p class="sub-text">Test the real-time vernacular disaster classifier, urgency scoring, entity extraction, and geocoding engine.</p>
+                    </div>
+                </div>
+
+                <div class="nlp-lab-layout">
+                    <div class="nlp-input-card">
+                        <h3>Input Raw Distress Text / Gujarati Vernacular</h3>
+                        <p class="sub-text">Type or select a sample Gujarat distress report to analyze with the NLP engine.</p>
+                        
+                        <div class="nlp-presets">
+                            <button class="btn-xs btn-preset" data-text="બચાવો! વિશ્વામિત્રી નદીનું પાણી ઘરમાં ભરાઈ ગયું છે. 6 લોકો Karelibaug Vadodara માં ફસાયા છીએ. બોટ મોકલો.">
+                                🌊 Gujarati Vadodara Flood Sample
+                            </button>
+                            <button class="btn-xs btn-preset" data-text="Cyclone Biparjoy gale winds ripping roofs in Mandvi Port Kutch. 2 fishermen missing near beach. Send Coast Guard!">
+                                🌀 Cyclone Biparjoy Kutch Sample
+                            </button>
+                            <button class="btn-xs btn-preset" data-text="Tapi river causeway submerged in Rander Surat. Water level 5 feet in residential society. Senior citizen needs insulin.">
+                                🌊 Surat Tapi River Inundation Sample
+                            </button>
+                            <button class="btn-xs btn-preset" data-text="Earthquake shock felt in Bhuj old city. Slab collapse near Darbargadh. 3 workers trapped in debris.">
+                                🏚️ Bhuj Seismic Event Sample
+                            </button>
+                        </div>
+
+                        <textarea id="nlpInputText" rows="4" class="styled-textarea" placeholder="Paste Gujarati, Hindi, or English distress message here...">બચાવો! વિશ્વામિત્રી નદીનું પાણી ઘરમાં ભરાઈ ગયું છે. 6 લોકો Karelibaug Vadodara માં ફસાયા છીએ. બોટ મોકલો.</textarea>
+                        
+                        <button class="btn btn-primary btn-full" id="btnRunNlpTest">⚡ Run AI/NLP Analysis</button>
+                    </div>
+
+                    <div class="nlp-output-card" id="nlpOutputCard">
+                        <h3>NLP Pipeline Intelligence Output</h3>
+                        <div class="nlp-results-placeholder">Click 'Run AI/NLP Analysis' to test entity extraction.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================================================================
+         ACTION MODALS
+         =================================================================== -->
 
     <!-- MODAL 1: CITIZEN SOS REPORTING PORTAL -->
     <div class="modal-overlay" id="sosModal">
@@ -415,7 +623,7 @@
         </div>
     </div>
 
-    <!-- Audio Beep Generator & Client Logic -->
+    <!-- Client Logic -->
     <script src="/app.js"></script>
 </body>
 </html>
