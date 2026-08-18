@@ -1,0 +1,191 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * SAHAY design system — tactical dark command-center theme.
+ * All colors are oklch semantic tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
+  --color-critical: var(--critical);
+  --color-high: var(--high);
+  --color-medium: var(--medium);
+  --color-low: var(--low);
+  --color-resolved: var(--resolved);
+
+  --color-flood: var(--flood);
+  --color-fire: var(--fire);
+  --color-cyclone: var(--cyclone);
+  --color-earthquake: var(--earthquake);
+  --color-landslide: var(--landslide);
+  --color-drought: var(--drought);
+  --color-industrial: var(--industrial);
+  --color-epidemic: var(--epidemic);
+
+  --color-src-twitter: var(--src-twitter);
+  --color-src-news: var(--src-news);
+  --color-src-citizen: var(--src-citizen);
+  --color-src-govt: var(--src-govt);
+  --color-src-iot: var(--src-iot);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Barlow", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-panel: 0 1px 0 0 oklch(1 0 0 / 5%) inset, 0 10px 30px -12px oklch(0 0 0 / 60%);
+  --shadow-glow: 0 0 0 1px oklch(0.72 0.17 55 / 35%), 0 0 28px -6px oklch(0.72 0.17 55 / 45%);
+
+  --animate-pulse-ring: pulse-ring 2.4s ease-out infinite;
+  --animate-rise: rise 0.35s ease-out both;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --background: oklch(0.16 0.025 260);
+  --foreground: oklch(0.97 0.005 250);
+  --surface: oklch(0.21 0.028 260);
+  --surface-foreground: oklch(0.97 0.005 250);
+  --card: oklch(0.22 0.028 260);
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(0.21 0.028 260);
+  --popover-foreground: oklch(0.97 0.005 250);
+
+  --primary: oklch(0.75 0.16 60);
+  --primary-foreground: oklch(0.18 0.03 60);
+  --secondary: oklch(0.28 0.035 262);
+  --secondary-foreground: oklch(0.95 0.005 250);
+  --muted: oklch(0.26 0.03 262);
+  --muted-foreground: oklch(0.73 0.02 258);
+  --accent: oklch(0.55 0.13 155);
+  --accent-foreground: oklch(0.97 0.01 155);
+  --destructive: oklch(0.62 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  --border: oklch(0.32 0.035 260);
+  --input: oklch(0.3 0.035 260);
+  --ring: oklch(0.75 0.16 60);
+
+  --critical: oklch(0.62 0.22 25);
+  --high: oklch(0.7 0.18 48);
+  --medium: oklch(0.8 0.15 90);
+  --low: oklch(0.72 0.17 148);
+  --resolved: oklch(0.65 0.15 250);
+
+  --flood: oklch(0.66 0.16 250);
+  --fire: oklch(0.62 0.22 25);
+  --cyclone: oklch(0.62 0.19 300);
+  --earthquake: oklch(0.7 0.18 48);
+  --landslide: oklch(0.55 0.11 60);
+  --drought: oklch(0.8 0.15 90);
+  --industrial: oklch(0.62 0.02 260);
+  --epidemic: oklch(0.68 0.19 350);
+
+  --src-twitter: oklch(0.72 0.14 235);
+  --src-news: oklch(0.7 0.18 40);
+  --src-citizen: oklch(0.72 0.16 145);
+  --src-govt: oklch(0.75 0.16 60);
+  --src-iot: oklch(0.75 0.12 200);
+
+  --chart-1: oklch(0.75 0.16 60);
+  --chart-2: oklch(0.66 0.16 250);
+  --chart-3: oklch(0.72 0.16 145);
+  --chart-4: oklch(0.62 0.19 300);
+  --chart-5: oklch(0.62 0.22 25);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(circle at 15% -10%, oklch(0.75 0.16 60 / 8%), transparent 45%),
+      radial-gradient(circle at 90% 0%, oklch(0.55 0.13 155 / 8%), transparent 40%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+}
+
+@utility panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
