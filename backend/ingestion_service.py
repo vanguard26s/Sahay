@@ -284,14 +284,14 @@ class IngestionService:
 
     def generate_synthetic_incident(self) -> DisasterIncident:
         """Dynamically construct a realistic crisis report matching active scenario."""
-        scenario = SIMULATION_SCENARIOS.get(self.active_scenario_key, SIMULATION_SCENARIOS["wayanad_landslide"])
-        posts_pool = SIMULATED_SOCIAL_POSTS.get(self.active_scenario_key, SIMULATED_SOCIAL_POSTS["wayanad_landslide"])
+        scenario = SIMULATION_SCENARIOS.get(self.active_scenario_key, SIMULATION_SCENARIOS["vadodara_vishwamitri_flood"])
+        posts_pool = SIMULATED_SOCIAL_POSTS.get(self.active_scenario_key, SIMULATED_SOCIAL_POSTS["vadodara_vishwamitri_flood"])
         
         base_post = random.choice(posts_pool)
         
         # Add random caller variations
-        names = ["Aarav", "Meera", "Venkatesh", "Ananya", "Suresh", "Lakshmi", "Rajesh", "Deepak", "Fathima", "Kavitha"]
-        phone = f"+91-{random.randint(90000, 99999)}{random.randint(10000, 99999)}"
+        names = ["Jignesh", "Bhavik", "Hitesh", "Ankita", "Pradip", "Kinjal", "Mehul", "Sneha", "Ketan", "Payal"]
+        phone = f"+91-{random.randint(98000, 98999)}{random.randint(10000, 99999)}"
         caller = random.choice(names)
         
         incident_id = f"INC-{uuid.uuid4().hex[:8].upper()}"
