@@ -640,3 +640,10 @@ async def websocket_endpoint(websocket: WebSocket):
         active_websockets.discard(websocket)
         logger.warning(f"WebSocket exception: {e}")
 
+
+# --- Static Files Mounting for Frontend Command Center & Map UI ---
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+if os.path.exists(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+
+
