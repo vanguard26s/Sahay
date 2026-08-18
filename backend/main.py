@@ -186,6 +186,34 @@ app.add_middleware(
 
 # --- Health & System Endpoints ---
 
+@app.get("/", tags=["System Information"])
+async def root():
+    """Root platform information, OpenAPI Swagger docs, and API routes."""
+    return {
+        "service": APP_NAME,
+        "version": APP_VERSION,
+        "status": "OPERATIONAL",
+        "region": "Gujarat, India",
+        "documentation": {
+            "swagger_ui": "/docs",
+            "redoc": "/redoc",
+            "openapi_schema": "/openapi.json"
+        },
+        "endpoints": {
+            "health": "/api/health",
+            "incidents": "/api/incidents",
+            "citizen_sos": "/api/sos",
+            "response_units": "/api/units",
+            "dispatch": "/api/dispatch",
+            "safe_routing": "/api/routing/safe-path",
+            "emergency_broadcasts": "/api/alerts/broadcast",
+            "sitrep": "/api/analytics/sitrep",
+            "nlp_analysis": "/api/nlp/classify",
+            "websocket_stream": "/ws/live-stream"
+        }
+    }
+
+
 @app.get("/api/health", tags=["System Information"])
 async def health_check():
     """System health check, pipeline metrics, and database stats."""
@@ -612,8 +640,3 @@ async def websocket_endpoint(websocket: WebSocket):
         active_websockets.discard(websocket)
         logger.warning(f"WebSocket exception: {e}")
 
-
-# --- Static Files Mounting for Frontend Command Center & Map UI ---
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
-if os.path.exists(FRONTEND_DIR):
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
