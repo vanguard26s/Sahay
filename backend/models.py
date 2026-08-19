@@ -98,14 +98,92 @@ class SitRepSummary(BaseModel):
     resolved_count: int
     estimated_affected_population: int
     top_affected_zones: List[Dict[str, Any]]
-    resource_deployment_ratio: float
     disaster_breakdown: Dict[str, int]
+    urgency_breakdown: Dict[str, int]
+    resource_mobilization: Dict[str, Any]
     executive_summary: str
-    recommended_actions: List[str]
 
 
 class SimulationControlRequest(BaseModel):
-    scenario_key: str = "wayanad_landslide"
-    feed_speed_seconds: float = 3.0
-    include_social: bool = True
-    include_sensors: bool = True
+    scenario_key: str
+    feed_speed_seconds: float = 4.0
+    is_active: bool = True
+
+
+# --- Authentication & User Models ---
+
+class UserRegisterRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "CITIZEN"  # CITIZEN or AUTHORITY
+    agency_name: Optional[str] = None
+    badge_number: Optional[str] = None
+    phone: Optional[str] = None
+    city: Optional[str] = "Vadodara"
+
+
+class UserLoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserProfile(BaseModel):
+    user_id: str
+    name: str
+    email: str
+    role: str  # CITIZEN or AUTHORITY
+    agency_name: Optional[str] = None
+    badge_number: Optional[str] = None
+    phone: Optional[str] = None
+    city: Optional[str] = "Vadodara"
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+class AuthResponse(BaseModel):
+    token: str
+    user: UserProfile
+    message: str
+
+
+# --- Multi-Source News & Social Media Data Collection Models ---
+
+class NewsArticleItem(BaseModel):
+    article_id: str
+    source_agency: str  # "Gujarat Samachar", "Sandesh", "ANI", "NDTV", "Times of India", "IMD Bulletins"
+    title: str
+    summary: str
+    disaster_type: str
+    urgency_level: str
+    location_name: str
+    latitude: float
+    longitude: float
+    credibility_score: float = 0.90
+    published_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    url: Optional[str] = None
+    is_verified: bool = True
+
+
+class SocialMediaFeedItem(BaseModel):
+    post_id: str
+    platform: str  # "twitter_x", "reddit", "telegram"
+    author_handle: str
+    content: str
+    disaster_type: str
+    urgency_level: str
+    location_name: str
+    latitude: float
+    longitude: float
+    sentiment_score: float = -0.75  # -1.0 (panic/distress) to 1.0 (calm)
+    reposts_or_upvotes: int = 15
+    extracted_needs: List[str] = Field(default_factory=list)
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    verification_score: float = 0.85
+
+
+class IntelHarvestRequest(BaseModel):
+    source_type: str  # "NEWS_ARTICLE" or "SOCIAL_POST"
+    source_name: str
+    raw_content: str
+    location_hint: Optional[str] = None
+    author_or_url: Optional[str] = None

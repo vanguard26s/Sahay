@@ -134,7 +134,7 @@ class NLPIntelligenceEngine:
         confidence = min(0.98, 0.65 + (scores[best_type] * 0.1))
         return best_type, round(confidence, 2)
 
-    def calculate_urgency(self, text: str, disaster_type: str) -> Tuple[str, float]:
+    def calculate_urgency(self, text: str, disaster_type: str = "flood") -> Tuple[str, float]:
         """Determine urgency priority level (P1 to P4) and numerical score."""
         text_lower = text.lower()
         score = 0.35  # base score

@@ -194,3 +194,80 @@ def test_responder_checkin_endpoint():
     data = res.json()
     assert data["status"] == "UPDATED"
     assert data["unit"]["lat"] == 22.3080
+
+
+def test_auth_register_and_login_citizen():
+    """Test registration and login of a citizen account."""
+    reg_payload = {
+        "name": "Pooja Varma",
+        "email": "pooja.ahmedabad@gmail.com",
+        "password": "Password@123",
+        "role": "CITIZEN",
+        "city": "Ahmedabad",
+        "phone": "+91-9876543210"
+    }
+    reg_res = client.post("/api/auth/register", json=reg_payload)
+    assert reg_res.status_code == 200
+    reg_data = reg_res.json()
+    assert reg_data["user"]["name"] == "Pooja Varma"
+    assert reg_data["user"]["role"] == "CITIZEN"
+    assert "token" in reg_data
+
+    # Login with same credentials
+    login_payload = {
+        "email": "pooja.ahmedabad@gmail.com",
+        "password": "Password@123"
+    }
+    login_res = client.post("/api/auth/login", json=login_payload)
+    assert login_res.status_code == 200
+    login_data = login_res.json()
+    assert login_data["user"]["email"] == "pooja.ahmedabad@gmail.com"
+
+
+def test_auth_login_authority_seed():
+    """Test login with default GSDMA / NDRF Authority seed account."""
+    login_payload = {
+        "email": "commander@gsdma.gujarat.gov.in",
+        "password": "Password@123"
+    }
+    login_res = client.post("/api/auth/login", json=login_payload)
+    assert login_res.status_code == 200
+    login_data = login_res.json()
+    assert login_data["user"]["role"] == "AUTHORITY"
+    assert "GSDMA" in login_data["user"]["agency_name"]
+
+
+def test_agency_news_and_social_ingestion():
+    """Test agency news feeds, social OSINT retrieval, and crawler harvesting."""
+    news_res = client.get("/api/ingestion/news")
+    assert news_res.status_code == 200
+    assert len(news_res.json()) >= 4
+
+    social_res = client.get("/api/ingestion/social-osint")
+    assert social_res.status_code == 200
+    assert len(social_res.json()) >= 3
+
+    harvest_res = client.post("/api/ingestion/news/harvest")
+    assert harvest_res.status_code == 200
+    assert len(harvest_res.json()) > 0
+
+    stats_res = client.get("/api/ingestion/sources-stats")
+    assert stats_res.status_code == 200
+    assert stats_res.json()["overall_credibility_index"] > 0.8
+
+
+def test_manual_agency_intel_submission():
+    """Test field intelligence officer submitting raw news report with AI entity extraction."""
+    intel_payload = {
+        "source_type": "NEWS_ARTICLE",
+        "source_name": "Sandesh Ground Team",
+        "raw_content": "સુરત તાપી નદીમાં પૂર. Adajan Surat માં 50 લોકો ફસાયા. બોટ મોકલો.",
+        "location_hint": "Adajan, Surat"
+    }
+    res = client.post("/api/ingestion/intel/submit", json=intel_payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "INGESTED"
+    assert data["result"]["type"] == "NEWS_ARTICLE"
+    assert "Adajan" in data["result"]["data"]["location_name"]
+

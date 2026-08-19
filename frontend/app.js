@@ -1,13 +1,20 @@
-/**
- * SAHAY: Gujarat Multi-Source Disaster Intelligence & Emergency Command Center
- * Unified Full-Stack Application Logic
- */
-
 // Application State Store
 const state = {
     currentView: "gisView",
+    currentUser: {
+        user_id: "USR-AUTH-001",
+        name: "Major R. K. Patel",
+        email: "commander@gsdma.gujarat.gov.in",
+        role: "AUTHORITY",
+        agency_name: "Gujarat State Disaster Management Authority (GSDMA) / NDRF 6th Bn",
+        badge_number: "GSDMA-CMD-094",
+        city: "Gandhinagar / Vadodara"
+    },
+    token: "demo_token_authority",
     incidents: [],
     units: [],
+    newsArticles: [],
+    socialPosts: [],
     activeScenario: "vadodara_vishwamitri_flood",
     filters: {
         urgency: "ALL",
@@ -652,8 +659,134 @@ function switchView(viewId) {
         renderFullFleetView();
     } else if (viewId === "triageView") {
         renderTriageBoard();
+    } else if (viewId === "agencyNewsView") {
+        renderAgencyNewsView();
     }
 }
+
+// --- Agency News & OSINT Data Collection View ---
+async function renderAgencyNewsView() {
+    const newsContainer = document.getElementById("newsBulletinsContainer");
+    const socialContainer = document.getElementById("socialOsintContainer");
+    if (!newsContainer || !socialContainer) return;
+
+    try {
+        const [newsRes, socialRes, statsRes] = await Promise.all([
+            fetch("/api/ingestion/news"),
+            fetch("/api/ingestion/social-osint"),
+            fetch("/api/ingestion/sources-stats")
+        ]);
+
+        if (newsRes.ok) state.newsArticles = await newsRes.json();
+        if (socialRes.ok) state.socialPosts = await socialRes.json();
+        if (statsRes.ok) {
+            const stats = await statsRes.json();
+            if (document.getElementById("statNewsCount")) document.getElementById("statNewsCount").innerText = `${stats.total_news_bulletins} Bulletins`;
+            if (document.getElementById("statSocialCount")) document.getElementById("statSocialCount").innerText = `${stats.total_social_osint_signals} Signals`;
+            if (document.getElementById("statCredibilityIndex")) document.getElementById("statCredibilityIndex").innerText = `${Math.round(stats.overall_credibility_index * 100)}%`;
+            if (document.getElementById("statNlpAccuracy")) document.getElementById("statNlpAccuracy").innerText = stats.verification_pipeline_accuracy;
+        }
+
+        // Render News Bulletins
+        newsContainer.innerHTML = state.newsArticles.map(article => `
+            <div class="news-card">
+                <div class="news-meta-row">
+                    <span class="news-agency-badge">📰 ${article.source_agency}</span>
+                    <span class="badge-urgency ${article.urgency_level === 'P1_CRITICAL' ? 'urgency-p1' : article.urgency_level === 'P2_HIGH' ? 'urgency-p2' : 'urgency-p3'}">${article.urgency_level}</span>
+                </div>
+                <div class="news-title">${article.title}</div>
+                <div class="news-summary">${article.summary}</div>
+                <div class="news-footer">
+                    <span style="color: var(--accent-cyan);">📍 ${article.location_name}</span>
+                    <span style="color: var(--accent-emerald);">✓ Credibility: ${Math.round(article.credibility_score * 100)}%</span>
+                </div>
+            </div>
+        `).join("");
+
+        // Render Social OSINT
+        socialContainer.innerHTML = state.socialPosts.map(post => `
+            <div class="social-card">
+                <div class="social-card-header">
+                    <span class="social-handle">${post.platform === 'twitter_x' ? '𝕏' : post.platform === 'reddit' ? '🔴' : '✈️'} ${post.author_handle}</span>
+                    <span style="font-size: 10px; color: var(--accent-cyan);">📍 ${post.location_name}</span>
+                </div>
+                <div class="social-text">${post.content}</div>
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted);">
+                    <span>🔁 ${post.reposts_or_upvotes} signals</span>
+                    <span style="color: ${post.sentiment_score < -0.5 ? '#ef4444' : '#38bdf8'};">Sentiment: ${post.sentiment_score} (Distress)</span>
+                </div>
+            </div>
+        `).join("");
+
+    } catch (e) {
+        console.error("Error loading agency news:", e);
+    }
+}
+
+// --- Authentication UI & State Controller ---
+function updateAuthUI() {
+    const user = state.currentUser;
+    const isAuth = user && user.role === "AUTHORITY";
+
+    const nameEl = document.getElementById("userNameLabel");
+    const roleEl = document.getElementById("userRoleLabel");
+    const iconEl = document.getElementById("userRoleIcon");
+
+    if (user) {
+        if (nameEl) nameEl.innerText = user.name;
+        if (roleEl) roleEl.innerText = `${user.role}${user.agency_name ? ` (${user.agency_name.split('/')[0].trim()})` : ''}`;
+        if (iconEl) iconEl.innerText = isAuth ? "🛡️" : "👤";
+    }
+
+    // Role-based privilege adjustments
+    const bcastBtn = document.getElementById("btnOpenBroadcastModal");
+    if (bcastBtn) {
+        bcastBtn.style.opacity = isAuth ? "1" : "0.5";
+        bcastBtn.title = isAuth ? "Transmit Mass SMS / WhatsApp Alert" : "Authority privilege required for mass alerts";
+    }
+}
+
+window.loginAsDemo = async function(role) {
+    if (role === "AUTHORITY") {
+        state.currentUser = {
+            user_id: "USR-AUTH-001",
+            name: "Major R. K. Patel",
+            email: "commander@gsdma.gujarat.gov.in",
+            role: "AUTHORITY",
+            agency_name: "Gujarat State Disaster Management Authority (GSDMA) / NDRF 6th Bn",
+            badge_number: "GSDMA-CMD-094",
+            city: "Gandhinagar / Vadodara"
+        };
+    } else {
+        state.currentUser = {
+            user_id: "USR-CIT-001",
+            name: "Jignesh Shah",
+            email: "jignesh.vadodara@gmail.com",
+            role: "CITIZEN",
+            agency_name: null,
+            badge_number: null,
+            city: "Karelibaug, Vadodara",
+            phone: "+91-9825123456"
+        };
+    }
+    updateAuthUI();
+    document.getElementById("authModal").classList.remove("active");
+    alert(`Signed in as ${state.currentUser.name} (${state.currentUser.role})!`);
+};
+
+window.signOutUser = function() {
+    state.currentUser = {
+        user_id: "USR-GUEST",
+        name: "Guest Citizen",
+        email: "guest@sahay.gujarat",
+        role: "CITIZEN",
+        agency_name: null,
+        badge_number: null,
+        city: "Gujarat"
+    };
+    updateAuthUI();
+    alert("Signed out. Operating in Citizen mode.");
+};
 
 // --- Gujarati & Indic NLP Lab Execution ---
 async function runNlpLabAnalysis() {
@@ -1003,4 +1136,219 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("activeScenarioTitle").innerText = `Scenario: ${coords.title}`;
         }
     });
+
+    // =========================================================================
+    // AUTHENTICATION & DEMO LOGIN EVENT LISTENERS
+    // =========================================================================
+    const openAuthModal = () => {
+        document.getElementById("authModal").classList.add("active");
+    };
+    if (document.getElementById("userProfileChip")) {
+        document.getElementById("userProfileChip").addEventListener("click", openAuthModal);
+    }
+    if (document.getElementById("btnOpenAuthModal")) {
+        document.getElementById("btnOpenAuthModal").addEventListener("click", openAuthModal);
+    }
+    if (document.getElementById("btnCloseAuthModal")) {
+        document.getElementById("btnCloseAuthModal").addEventListener("click", () => {
+            document.getElementById("authModal").classList.remove("active");
+        });
+    }
+    if (document.getElementById("btnSignOut")) {
+        document.getElementById("btnSignOut").addEventListener("click", () => {
+            window.signOutUser();
+        });
+    }
+
+    // 1-Click Demo Logins
+    if (document.getElementById("btnDemoLoginAuthority")) {
+        document.getElementById("btnDemoLoginAuthority").addEventListener("click", () => {
+            window.loginAsDemo("AUTHORITY");
+        });
+    }
+    if (document.getElementById("btnDemoLoginCitizen")) {
+        document.getElementById("btnDemoLoginCitizen").addEventListener("click", () => {
+            window.loginAsDemo("CITIZEN");
+        });
+    }
+
+    // Auth Tab Switching
+    const tabSignIn = document.getElementById("tabSignIn");
+    const tabRegCit = document.getElementById("tabRegisterCitizen");
+    const tabRegAuth = document.getElementById("tabRegisterAuthority");
+    const formSignIn = document.getElementById("signInForm");
+    const formRegCit = document.getElementById("regCitizenForm");
+    const formRegAuth = document.getElementById("regAuthorityForm");
+
+    if (tabSignIn && tabRegCit && tabRegAuth) {
+        tabSignIn.addEventListener("click", () => {
+            [tabSignIn, tabRegCit, tabRegAuth].forEach(t => t.classList.remove("active"));
+            [formSignIn, formRegCit, formRegAuth].forEach(f => f.classList.remove("active"));
+            tabSignIn.classList.add("active");
+            formSignIn.classList.add("active");
+        });
+        tabRegCit.addEventListener("click", () => {
+            [tabSignIn, tabRegCit, tabRegAuth].forEach(t => t.classList.remove("active"));
+            [formSignIn, formRegCit, formRegAuth].forEach(f => f.classList.remove("active"));
+            tabRegCit.classList.add("active");
+            formRegCit.classList.add("active");
+        });
+        tabRegAuth.addEventListener("click", () => {
+            [tabSignIn, tabRegCit, tabRegAuth].forEach(t => t.classList.remove("active"));
+            [formSignIn, formRegCit, formRegAuth].forEach(f => f.classList.remove("active"));
+            tabRegAuth.classList.add("active");
+            formRegAuth.classList.add("active");
+        });
+    }
+
+    // Sign In Form Submission
+    if (formSignIn) {
+        formSignIn.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    state.currentUser = data.user;
+                    state.token = data.token;
+                    updateAuthUI();
+                    document.getElementById("authModal").classList.remove("active");
+                    alert(data.message);
+                } else {
+                    const err = await res.json();
+                    alert("Login failed: " + (err.detail || "Invalid credentials"));
+                }
+            } catch (err) {
+                alert("Network error logging in: " + err);
+            }
+        });
+    }
+
+    // Register Citizen Form Submission
+    if (formRegCit) {
+        formRegCit.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById("regCitName").value.trim(),
+                city: document.getElementById("regCitCity").value.trim(),
+                email: document.getElementById("regCitEmail").value.trim(),
+                phone: document.getElementById("regCitPhone").value.trim(),
+                password: document.getElementById("regCitPassword").value,
+                role: "CITIZEN"
+            };
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    state.currentUser = data.user;
+                    state.token = data.token;
+                    updateAuthUI();
+                    document.getElementById("authModal").classList.remove("active");
+                    alert(data.message);
+                } else {
+                    const err = await res.json();
+                    alert("Registration failed: " + (err.detail || "Error registering"));
+                }
+            } catch (err) {
+                alert("Network error: " + err);
+            }
+        });
+    }
+
+    // Register Authority Form Submission
+    if (formRegAuth) {
+        formRegAuth.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById("regAuthName").value.trim(),
+                agency_name: document.getElementById("regAuthAgency").value,
+                email: document.getElementById("regAuthEmail").value.trim(),
+                badge_number: document.getElementById("regAuthBadge").value.trim(),
+                password: document.getElementById("regAuthPassword").value,
+                role: "AUTHORITY",
+                city: "Gandhinagar / Gujarat"
+            };
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    state.currentUser = data.user;
+                    state.token = data.token;
+                    updateAuthUI();
+                    document.getElementById("authModal").classList.remove("active");
+                    alert(data.message);
+                } else {
+                    const err = await res.json();
+                    alert("Authority registration failed: " + (err.detail || "Error registering"));
+                }
+            } catch (err) {
+                alert("Network error: " + err);
+            }
+        });
+    }
+
+    // =========================================================================
+    // AGENCY NEWS CRAWLER & MANUAL INTEL INGESTION
+    // =========================================================================
+    if (document.getElementById("btnHarvestNews")) {
+        document.getElementById("btnHarvestNews").addEventListener("click", async () => {
+            const btn = document.getElementById("btnHarvestNews");
+            btn.innerText = "⏳ Crawling News...";
+            try {
+                const res = await fetch("/api/ingestion/news/harvest", { method: "POST" });
+                if (res.ok) {
+                    state.newsArticles = await res.json();
+                    renderAgencyNewsView();
+                    btn.innerText = "✓ Bulletins Harvested!";
+                    setTimeout(() => { btn.innerText = "🔄 Crawl & Harvest Latest News"; }, 2000);
+                }
+            } catch (e) {
+                btn.innerText = "Crawl Failed";
+            }
+        });
+    }
+
+    if (document.getElementById("manualIntelForm")) {
+        document.getElementById("manualIntelForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const payload = {
+                source_type: document.getElementById("intelSourceType").value,
+                source_name: document.getElementById("intelSourceName").value.trim(),
+                raw_content: document.getElementById("intelContent").value.trim(),
+                location_hint: document.getElementById("intelLocationHint").value.trim()
+            };
+
+            try {
+                const res = await fetch("/api/ingestion/intel/submit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert("✓ Intelligence Ingested & AI Geocoded Successfully! Updating map and feeds...");
+                    renderAgencyNewsView();
+                    fetchInitialData();
+                }
+            } catch (err) {
+                alert("Error submitting intel: " + err);
+            }
+        });
+    }
+
+    // Initialize Auth UI state
+    updateAuthUI();
 });

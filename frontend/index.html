@@ -36,8 +36,22 @@
             <button class="view-btn" data-view="analyticsView">📊 Analytics & SitRep</button>
             <button class="view-btn" data-view="fleetView">🚒 Fleet & Dispatch</button>
             <button class="view-btn" data-view="triageView">📋 Triage Board</button>
+            <button class="view-btn" data-view="agencyNewsView">📡 Agency News & OSINT</button>
             <button class="view-btn" data-view="nlpLabView">🧠 AI/NLP Lab</button>
         </nav>
+
+        <!-- User Profile & Auth Trigger -->
+        <div class="user-auth-box">
+            <div class="user-chip" id="userProfileChip" title="Click to view profile or switch account">
+                <span class="user-role-icon" id="userRoleIcon">🛡️</span>
+                <div class="user-chip-text">
+                    <span class="user-chip-name" id="userNameLabel">Major R. K. Patel</span>
+                    <span class="user-chip-role" id="userRoleLabel">AUTHORITY (GSDMA)</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btnSignOut" title="Sign Out of Session">🚪 Sign Out</button>
+            <button class="btn btn-primary btn-sm" id="btnOpenAuthModal" style="display: none;">🔑 Sign In / Register</button>
+        </div>
 
         <!-- Live KPI Stats Ticker -->
         <div class="kpi-ticker">
@@ -459,11 +473,215 @@
             </div>
         </div>
 
+        <!-- ===================================================================
+             VIEW 6: DISASTER DATA INGESTION FOR AGENCIES (NEWS & SOCIAL MEDIA)
+             =================================================================== -->
+        <div class="view-pane" id="agencyNewsView">
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h2>📡 Agency Disaster Data Ingestion & OSINT News Harvester</h2>
+                        <p class="sub-text">Automated continuous monitoring of news agency bulletins, crisis social media, and verified field intelligence.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="btnHarvestNews">🔄 Crawl & Harvest Latest News</button>
+                    </div>
+                </div>
+
+                <!-- Agency Telemetry Stats -->
+                <div class="stats-grid-4">
+                    <div class="stat-card">
+                        <span class="stat-title">VERIFIED NEWS BULLETINS</span>
+                        <div class="stat-number text-cyan" id="statNewsCount">6 Agencies</div>
+                        <span class="stat-note">Gujarat Samachar, Sandesh, ANI, NDTV, IMD</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">SOCIAL OSINT SIGNALS</span>
+                        <div class="stat-number text-amber" id="statSocialCount">4 Platforms</div>
+                        <span class="stat-note">Twitter/X, Reddit, Telegram, Crowdsource</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">SOURCE CREDIBILITY INDEX</span>
+                        <div class="stat-number text-emerald" id="statCredibilityIndex">94.8%</div>
+                        <span class="stat-note">Multi-agency cross-verification</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">AI NLP ACCURACY</span>
+                        <div class="stat-number text-red" id="statNlpAccuracy">96.4%</div>
+                        <span class="stat-note">Gujarati & Indic NER precision</span>
+                    </div>
+                </div>
+
+                <!-- News & Social Split Layout -->
+                <div class="agency-ingestion-grid">
+                    <!-- Left: Verified News Agency Feed -->
+                    <div class="ingestion-section">
+                        <div class="section-title-bar">
+                            <h3>📰 Breaking Disaster News Bulletins (Gujarat & National)</h3>
+                            <span class="badge-status status-available">LIVE CRAWLER</span>
+                        </div>
+                        <div class="news-bulletins-list" id="newsBulletinsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Social Media OSINT & Field Intel Input -->
+                    <div class="ingestion-section">
+                        <div class="section-title-bar">
+                            <h3>𝕏 Real-Time Social Media OSINT Stream</h3>
+                            <span class="badge-status status-dispatched">OSINT RADAR</span>
+                        </div>
+                        <div class="social-osint-list" id="socialOsintContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- Manual Intelligence Submission Form -->
+                        <div class="manual-intel-card">
+                            <h4>📥 Ingest Field Agency Intelligence / Custom Link</h4>
+                            <p class="sub-text">Field officers can paste raw news links or citizen tweets to extract entities and inject into live response map.</p>
+                            <form id="manualIntelForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Source Type *</label>
+                                        <select id="intelSourceType" class="styled-select" required>
+                                            <option value="NEWS_ARTICLE">📰 News Agency Report</option>
+                                            <option value="SOCIAL_POST">𝕏 Citizen / Social Post</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Agency / Source Name *</label>
+                                        <input type="text" id="intelSourceName" required placeholder="e.g. Gujarat Samachar / @reporter_vadodara" value="District Magistrate Office">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Raw News Text / Social Content *</label>
+                                    <textarea id="intelContent" rows="3" required placeholder="Paste distress headline or field text...">Ajwa dam discharge crosses 50,000 cusecs. 120 residents in Sayajigunj and Fatehgunj relocated to municipal schools. Power cut in sector 3.</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Location Landmark Hint (Optional)</label>
+                                    <input type="text" id="intelLocationHint" placeholder="e.g. Sayajigunj Vadodara" value="Sayajigunj, Vadodara">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full">⚡ Process & Ingest to Incident Map</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ===================================================================
          ACTION MODALS
          =================================================================== -->
+
+    <!-- MODAL 5: USER AUTHENTICATION (SIGN IN & REGISTER) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">🔐 SAHAY COMMAND ACCESS & AUTHENTICATION</div>
+                <button class="modal-close" id="btnCloseAuthModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 1-Click Demo Quick Logins -->
+                <div class="demo-auth-box">
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">⚡ INSTANT DEMO ONE-CLICK LOGIN:</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary btn-sm" style="flex: 1;" id="btnDemoLoginAuthority">
+                            🛡️ Authority (Major Patel - GSDMA)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btnDemoLoginCitizen">
+                            👤 Citizen (Jignesh Shah - Vadodara)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabbed Auth Selector -->
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tabSignIn">Sign In</button>
+                    <button class="auth-tab-btn" id="tabRegisterCitizen">Register Citizen</button>
+                    <button class="auth-tab-btn" id="tabRegisterAuthority">Register Authority</button>
+                </div>
+
+                <!-- Form 1: Sign In -->
+                <form id="signInForm" class="auth-form active">
+                    <div class="form-group">
+                        <label>Registered Email Address *</label>
+                        <input type="email" id="loginEmail" required placeholder="e.g. commander@gsdma.gujarat.gov.in" value="commander@gsdma.gujarat.gov.in">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="loginPassword" required placeholder="••••••••" value="Password@123">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">🚀 Sign In to Command System</button>
+                </form>
+
+                <!-- Form 2: Register Citizen -->
+                <form id="regCitizenForm" class="auth-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="regCitName" required placeholder="e.g. Amit Desai">
+                        </div>
+                        <div class="form-group">
+                            <label>City / District (Gujarat) *</label>
+                            <input type="text" id="regCitCity" required placeholder="e.g. Vadodara / Surat" value="Vadodara">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="regCitEmail" required placeholder="e.g. amit@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Phone Number *</label>
+                            <input type="tel" id="regCitPhone" required placeholder="+91-9825000000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Create Password *</label>
+                        <input type="password" id="regCitPassword" required placeholder="Minimum 6 characters">
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-full">👤 Create Citizen Account</button>
+                </form>
+
+                <!-- Form 3: Register Authority -->
+                <form id="regAuthorityForm" class="auth-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Officer Full Name *</label>
+                            <input type="text" id="regAuthName" required placeholder="e.g. Capt. S. Mehta">
+                        </div>
+                        <div class="form-group">
+                            <label>Official Agency *</label>
+                            <select id="regAuthAgency" class="styled-select" required>
+                                <option value="GSDMA">GSDMA (State Disaster Authority)</option>
+                                <option value="NDRF_6BN">NDRF 6th Battalion (Jarod)</option>
+                                <option value="SDRF_GUJ">Gujarat SDRF (Gandhinagar/Surat)</option>
+                                <option value="COAST_GUARD">Indian Coast Guard (Okha/Kandla)</option>
+                                <option value="POLICE_FIRE">Gujarat Police & Fire Services</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Official Government Email *</label>
+                            <input type="email" id="regAuthEmail" required placeholder="officer@gujarat.gov.in">
+                        </div>
+                        <div class="form-group">
+                            <label>Badge / Service ID *</label>
+                            <input type="text" id="regAuthBadge" required placeholder="e.g. NDRF-6BN-9921">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Create Secure Password *</label>
+                        <input type="password" id="regAuthPassword" required placeholder="Minimum 6 characters">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">🛡️ Register Authority Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL 1: CITIZEN SOS REPORTING PORTAL -->
     <div class="modal-overlay" id="sosModal">
@@ -627,3 +845,4 @@
     <script src="/app.js"></script>
 </body>
 </html>
+

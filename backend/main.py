@@ -25,7 +25,14 @@ from backend.models import (
     DispatchRequest,
     StatusUpdateRequest,
     SitRepSummary,
-    SimulationControlRequest
+    SimulationControlRequest,
+    UserRegisterRequest,
+    UserLoginRequest,
+    AuthResponse,
+    UserProfile,
+    NewsArticleItem,
+    SocialMediaFeedItem,
+    IntelHarvestRequest
 )
 from backend.nlp_engine import nlp_engine
 from backend.ingestion_service import ingestion_service
@@ -33,6 +40,8 @@ from backend.dispatch_service import dispatch_service, haversine_distance_km
 from backend.sitrep_service import sitrep_service
 from backend.routing_service import routing_service
 from backend.broadcast_service import broadcast_service, BroadcastRequest, BroadcastRecord
+from backend.auth_service import auth_service
+from backend.news_social_harvester import news_social_harvester
 from backend.database import SessionLocal, DBIncident, DBResponseUnit, DBDispatchOrder, DBAlertBroadcast
 
 # Logging setup
@@ -256,6 +265,78 @@ async def health_check():
         "active_scenario": ingestion_service.active_scenario_key,
         "stream_active": ingestion_service.is_streaming
     }
+
+
+# --- Authentication & Role-Based Access Control Endpoints ---
+
+@app.post("/api/auth/register", response_model=AuthResponse, tags=["Authentication & Access Control"])
+async def register(req: UserRegisterRequest):
+    """Register a new Citizen or Authority account."""
+    try:
+        return auth_service.register_user(req)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/auth/login", response_model=AuthResponse, tags=["Authentication & Access Control"])
+async def login(req: UserLoginRequest):
+    """Authenticate user credentials and issue a session token."""
+    try:
+        return auth_service.login_user(req)
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+
+@app.get("/api/auth/me", response_model=UserProfile, tags=["Authentication & Access Control"])
+async def get_current_user(token: Optional[str] = Query(None)):
+    """Retrieve profile of authenticated user from token."""
+    if not token:
+        return auth_service.users["commander@gsdma.gujarat.gov.in"]["profile"]
+    user = auth_service.get_user_by_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Session expired or invalid token.")
+    return user
+
+
+@app.post("/api/auth/logout", tags=["Authentication & Access Control"])
+async def logout(token: Optional[str] = Query(None)):
+    """Log out active user session."""
+    if token:
+        auth_service.logout_token(token)
+    return {"status": "SUCCESS", "message": "Signed out successfully."}
+
+
+# --- Agency Data Ingestion & OSINT News Endpoints ---
+
+@app.get("/api/ingestion/news", response_model=List[NewsArticleItem], tags=["Agency Data Ingestion & News"])
+async def get_disaster_news(limit: int = Query(50, ge=1, le=200)):
+    """Retrieve verified breaking disaster news bulletins for agencies."""
+    return news_social_harvester.get_news_articles(limit)
+
+
+@app.post("/api/ingestion/news/harvest", response_model=List[NewsArticleItem], tags=["Agency Data Ingestion & News"])
+async def trigger_news_harvest():
+    """Trigger real-time news agency crawler to ingest breaking bulletins."""
+    return news_social_harvester.harvest_latest_news()
+
+
+@app.get("/api/ingestion/social-osint", response_model=List[SocialMediaFeedItem], tags=["Agency Data Ingestion & News"])
+async def get_social_osint(limit: int = Query(50, ge=1, le=200)):
+    """Retrieve multi-source OSINT social media crisis signals."""
+    return news_social_harvester.get_social_posts(limit)
+
+
+@app.post("/api/ingestion/intel/submit", tags=["Agency Data Ingestion & News"])
+async def submit_agency_intel(req: IntelHarvestRequest):
+    """Field agency intelligence input form: Ingest raw news or tweet with automatic AI NLP extraction."""
+    result = news_social_harvester.process_manual_intel(req)
+    return {"status": "INGESTED", "result": result}
+
+
+@app.get("/api/ingestion/sources-stats", tags=["Agency Data Ingestion & News"])
+async def get_sources_stats():
+    """Telemetry and credibility metrics across news agencies and social platforms."""
+    return news_social_harvester.get_sources_stats()
 
 
 # --- Incident Management Endpoints ---
