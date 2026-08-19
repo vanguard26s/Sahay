@@ -3,57 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAHAY | Gujarat Multi-Source Disaster Intelligence & Emergency Command</title>
-    <!-- Google Fonts -->
+    <title>SAHAY | Gujarat Multi-Source Disaster Intelligence & Emergency Command System</title>
+    <meta name="description" content="Autonomous disaster response, live citizen SOS, emergency facilities navigation, direct SMS alerts, and AI situational awareness for Gujarat SEOC.">
+
+    <!-- Leaflet GIS & Heatmap Stylesheets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for Live Telemetry -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Leaflet GIS & Heatmap Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-    <!-- Chart.js for High Performance Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Custom Futuristic Dark Stylesheet -->
     <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-    <!-- Top Command Navigation Bar -->
-    <header class="top-nav">
-        <div class="brand-container">
-            <div class="logo-badge">
-                <span class="radar-dot"></span>
-                <span class="logo-icon">🛡️</span>
-            </div>
-            <div>
-                <div class="brand-title">SAHAY <span class="badge-version">GUJARAT SEOC v2.6</span></div>
-                <div class="brand-sub">Autonomous Multi-Source Disaster Intelligence & Emergency Command System</div>
-            </div>
-        </div>
+<body class="theme-dark">
 
-        <!-- Navigation View Mode Switcher -->
-        <nav class="view-mode-nav">
-            <button class="view-btn active" data-view="gisView">🗺️ Tactical GIS Map</button>
-            <button class="view-btn" data-view="analyticsView">📊 Analytics & SitRep</button>
-            <button class="view-btn" data-view="fleetView">🚒 Fleet & Dispatch</button>
-            <button class="view-btn" data-view="triageView">📋 Triage Board</button>
-            <button class="view-btn" data-view="agencyNewsView">📡 Agency News & OSINT</button>
-            <button class="view-btn" data-view="nlpLabView">🧠 AI/NLP Lab</button>
-        </nav>
-
-        <!-- User Profile & Auth Trigger -->
-        <div class="user-auth-box">
-            <div class="user-chip" id="userProfileChip" title="Click to view profile or switch account">
-                <span class="user-role-icon" id="userRoleIcon">🛡️</span>
-                <div class="user-chip-text">
-                    <span class="user-chip-name" id="userNameLabel">Major R. K. Patel</span>
-                    <span class="user-chip-role" id="userRoleLabel">AUTHORITY (GSDMA)</span>
+    <!-- ===================================================================
+         PORTAL 0: FUTURISTIC LANDING & GATEWAY SELECTOR (CITIZEN vs AUTHORITY)
+         =================================================================== -->
+    <div class="portal-screen active" id="portalGateway">
+        <div class="gateway-container">
+            <div class="gateway-header">
+                <div class="brand-badge-large">
+                    <span class="radar-dot pulse-large"></span>
+                    <span class="brand-icon">🛡️</span>
+                </div>
+                <h1 class="gateway-title">SAHAY <span class="badge-version">GUJARAT SEOC v3.0</span></h1>
+                <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time SMS Dispatch & Rescue Command System</p>
+                <div class="emergency-hotlines-banner">
+                    <span>🚨 STATE EMERGENCY HELPLINES:</span>
+                    <strong>DIAL 112</strong> <em>(All Emergency)</em> | 
+                    <strong>1077</strong> <em>(Disaster Control)</em> | 
+                    <strong>108</strong> <em>(Ambulance)</em> | 
+                    <strong>101</strong> <em>(Fire & Rescue)</em>
                 </div>
             </div>
-            <button class="btn btn-secondary btn-sm" id="btnSignOut" title="Sign Out of Session">🚪 Sign Out</button>
-            <button class="btn btn-primary btn-sm" id="btnOpenAuthModal" style="display: none;">🔑 Sign In / Register</button>
-        </div>
 
-        <!-- Live KPI Stats Ticker -->
+            <!-- Portal Selection Cards -->
+            <div class="gateway-cards-grid">
+                <!-- Portal 1: Citizen -->
+                <div class="portal-choice-card citizen-card">
+                    <div class="card-glow-bg"></div>
+                    <div class="card-icon">👤</div>
+                    <h2>CITIZEN EMERGENCY PORTAL</h2>
+                    <p class="card-desc">For citizens, victims, and families in affected disaster zones. Fast SOS beacon, nearby hospital & police locator with live navigation, rainfall warnings, and safety remedies.</p>
+                    
+                    <ul class="portal-features-list">
+                        <li>⚡ <strong>Instant Emergency SOS</strong> with Loud Alarm Siren</li>
+                        <li>🏥 <strong>Nearby Hospitals, Fire & Police Stations</strong> with Direct Phone Numbers</li>
+                        <li>🧭 <strong>Turn-by-Turn Safe Navigation Map</strong> to nearest emergency hubs</li>
+                        <li>🌧️ <strong>Live Rainfall, Dam Discharge & Weather Alerts</strong></li>
+                        <li>🩹 <strong>Disaster Remedies & First-Aid Guides</strong> (Floods, Cyclones, Quakes)</li>
+                        <li>📥 <strong>Download Personal SOS Receipt</strong></li>
+                    </ul>
+
+                    <div class="card-actions-col">
+                        <button class="btn btn-danger btn-lg btn-pulse btn-full" id="btnEnterCitizenPortal">
+                            🚨 ENTER CITIZEN PORTAL
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-full" id="btnQuickCitizenDemo">
+                            ⚡ 1-Click Demo: Jignesh Shah (Vadodara Citizen)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Portal 2: Authority Command Center -->
+                <div class="portal-choice-card authority-card">
+                    <div class="card-glow-bg"></div>
+                    <div class="card-icon">🛡️</div>
+                    <h2>AUTHORITY COMMAND CENTER</h2>
+                    <p class="card-desc">For GSDMA, NDRF 6th Bn, SDRF, Police Commissioners, and SEOC officials. Tactical GIS crisis mapping, direct mobile SMS alert dispatching, fleet coordination, and SitRep downloads.</p>
+                    
+                    <ul class="portal-features-list">
+                        <li>🗺️ <strong>Tactical GIS Incident Map</strong> with Live Gujarat Scenario Grids</li>
+                        <li>📱 <strong>Direct Real-Time SMS Alert Sender</strong> to any mobile number</li>
+                        <li>🚒 <strong>Fleet Mobilization Tracker</strong> (NDRF, SDRF, Coast Guard, Trauma QRT)</li>
+                        <li>📋 <strong>Segregated Triage Kanban Board</strong> (P1 Critical to Resolved)</li>
+                        <li>📥 <strong>Download Incident Logs (CSV)</strong> & Executive SitRep (PDF)</li>
+                        <li>📡 <strong>Agency OSINT & News Harvester</strong> (Gujarat Samachar, Sandesh, ANI)</li>
+                    </ul>
+
+                    <div class="card-actions-col">
+                        <button class="btn btn-primary btn-lg btn-full" id="btnEnterAuthorityPortal">
+                            🛡️ ENTER COMMAND CENTER
+                        </button>
+                        <button class="btn btn-secondary btn-sm btn-full" id="btnQuickAuthorityDemo">
+                            ⚡ 1-Click Demo: Major R. K. Patel (GSDMA / NDRF)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer info -->
+            <div class="gateway-footer">
+                <span>Gujarat State Disaster Management Authority (GSDMA) | Government of Gujarat</span>
+                <div class="auth-trigger-link">
+                    <button class="btn-link" id="btnOpenAuthFromGateway">🔐 Custom Account Sign In / Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         PORTAL 1: DEDICATED CITIZEN EMERGENCY PORTAL
+         =================================================================== -->
+    <div class="portal-screen" id="citizenPortal">
+        <!-- Top Nav for Citizen -->
+        <header class="top-nav">
+            <div class="brand-container">
+                <div class="logo-badge">
+                    <span class="radar-dot"></span>
+                    <span class="logo-icon">👤</span>
+                </div>
+                <div>
+                    <div class="brand-title">SAHAY <span class="badge-version">CITIZEN RESCUE HUB</span></div>
+                    <div class="brand-sub">Emergency SOS, Nearby Hospitals, Police & Fire Navigation, and Disaster Remedies</div>
+                </div>
+            </div>
+
+            <div class="user-auth-box">
+                <div class="user-chip" id="citizenUserChip">
+                    <span class="user-role-icon">👤</span>
+                    <div class="user-chip-text">
+                        <span class="user-chip-name" id="citizenNameLabel">Jignesh Shah</span>
+                        <span class="user-chip-role">CITIZEN (VADODARA)</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnReturnToGateway">🏠 Switch Portal</button>
+                <button class="btn btn-secondary btn-sm" id="btnCitizenSignOut">🚪 Sign Out</button>
+            </div>
+        </header>
+
+        <div class="portal-main-content">
+            <!-- Alert Banner & SOS Sound Trigger -->
+            <div class="citizen-sos-banner">
+                <div class="sos-banner-left">
+                    <button class="btn btn-danger btn-pulse btn-sos-massive" id="btnTriggerCitizenSos">
+                        🚨 TRANSMIT EMERGENCY SOS (P1 CRITICAL)
+                    </button>
+                    <div class="siren-control-box">
+                        <button class="btn btn-secondary btn-sm" id="btnToggleSirenSound">
+                            🔊 Emergency Siren: <span id="sirenSoundStatus">READY</span>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btnDownloadSosReceipt">
+                            📥 Download My SOS Receipt
+                        </button>
+                    </div>
+                </div>
+                <div class="sos-banner-right">
+                    <div class="live-weather-card">
+                        <div class="weather-title">🌧️ LIVE GUJARAT WEATHER & RAINFALL ALERT</div>
+                        <div class="weather-status text-amber">⚠️ RED ALERT: Vishwamitri River Level 35.4 Ft (Ajwa Dam Outflow 45,000 Cusecs)</div>
+                        <p class="weather-desc">Low-lying areas in Karelibaug, Sayajigunj & Fatehgunj on evacuation notice. Crocodile alert active in flooded sectors.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citizen Navigation Tabs -->
+            <div class="citizen-tabs-bar">
+                <button class="cit-tab-btn active" data-cit-tab="tabFacilities">🏥 Nearby Hospitals, Fire & Police Directory</button>
+                <button class="cit-tab-btn" data-cit-tab="tabCitizenMap">🧭 Live Emergency Navigation Map</button>
+                <button class="cit-tab-btn" data-cit-tab="tabRemedies">🩹 Disaster Remedies & First-Aid Guide</button>
+                <button class="cit-tab-btn" data-cit-tab="tabLiveAlerts">📢 Emergency Alerts & Bulletins</button>
+            </div>
+
+            <!-- TAB 1: NEARBY EMERGENCY FACILITIES DIRECTORY -->
+            <div class="cit-tab-pane active" id="tabFacilities">
+                <div class="facilities-filter-bar">
+                    <div class="filter-group">
+                        <label>Filter Emergency Service:</label>
+                        <select id="facilityTypeFilter" class="styled-select">
+                            <option value="ALL" selected>🏥 All Emergency Facilities</option>
+                            <option value="HOSPITAL">🏥 Hospitals & Level-1 Trauma Care</option>
+                            <option value="FIRE_STATION">🚒 Fire & Rescue Stations</option>
+                            <option value="POLICE_STATION">👮 Police Stations & Control Rooms</option>
+                        </select>
+                    </div>
+                    <div class="facility-search-note">
+                        <span>📍 Sorted by distance from your current location in Vadodara / Gujarat</span>
+                    </div>
+                </div>
+
+                <div class="facilities-grid" id="emergencyFacilitiesContainer">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- TAB 2: CITIZEN NAVIGATION MAP -->
+            <div class="cit-tab-pane" id="tabCitizenMap">
+                <div class="citizen-map-layout">
+                    <div class="citizen-map-panel">
+                        <div id="citizenGisMap" style="width: 100%; height: 550px; border-radius: 8px;"></div>
+                    </div>
+                    <div class="citizen-route-sidebar" id="citizenRouteInfoBox">
+                        <h3>🧭 Active Evacuation Navigation</h3>
+                        <p class="sub-text">Click 'Navigate on Map' on any hospital, fire station, or police station to view the safe turn-by-turn route corridor.</p>
+                        <div id="citizenRouteDetails">
+                            <div class="empty-state">Select an emergency facility above to compute safe driving route avoiding flooded zones.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: DISASTER REMEDIES & FIRST AID GUIDE -->
+            <div class="cit-tab-pane" id="tabRemedies">
+                <div class="remedies-container">
+                    <div class="section-title-bar">
+                        <h2>🩹 Actionable Disaster Remedies, Safety Checklists & First Aid</h2>
+                        <p class="sub-text">Life-saving Do's and Don'ts curated by Gujarat State Disaster Management Authority (GSDMA).</p>
+                    </div>
+
+                    <div class="remedies-accordion-list" id="remediesAccordionContainer">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: LIVE DISASTER ALERTS & BROADCASTS -->
+            <div class="cit-tab-pane" id="tabLiveAlerts">
+                <div class="citizen-alerts-list" id="citizenAlertsContainer">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+         PORTAL 2: DEDICATED AUTHORITY COMMAND CENTER
+         =================================================================== -->
+    <div class="portal-screen" id="authorityPortal">
+        <!-- Top Command Navigation Bar -->
+        <header class="top-nav">
+            <div class="brand-container">
+                <div class="logo-badge">
+                    <span class="radar-dot"></span>
+                    <span class="logo-icon">🛡️</span>
+                </div>
+                <div>
+                    <div class="brand-title">SAHAY <span class="badge-version">COMMAND CENTER</span></div>
+                    <div class="brand-sub">Autonomous Gujarat Incident Intelligence, Real-Time SMS Dispatch & Fleet Logistics</div>
+                </div>
+            </div>
+
+            <!-- View Switcher -->
+            <nav class="view-mode-nav">
+                <button class="view-btn active" data-view="gisView">🗺️ Tactical GIS Map</button>
+                <button class="view-btn" data-view="smsDispatcherTab">📱 Real-Time SMS Dispatcher</button>
+                <button class="view-btn" data-view="analyticsView">📊 Analytics & SitRep</button>
+                <button class="view-btn" data-view="fleetView">🚒 Fleet & Battalions</button>
+                <button class="view-btn" data-view="triageView">📋 Triage Board</button>
+                <button class="view-btn" data-view="agencyNewsView">📡 Agency News & OSINT</button>
+            </nav>
+
+            <div class="user-auth-box">
+                <div class="user-chip" id="authOfficerChip">
+                    <span class="user-role-icon">🛡️</span>
+                    <div class="user-chip-text">
+                        <span class="user-chip-name" id="authOfficerName">Major R. K. Patel</span>
+                        <span class="user-chip-role">GSDMA COMMANDER</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnAuthReturnGateway">🏠 Switch Portal</button>
+                <button class="btn btn-secondary btn-sm" id="btnAuthSignOut">🚪 Sign Out</button>
+            </div>
+        </header>
+
+        <!-- KPI Ticker -->
         <div class="kpi-ticker">
             <div class="kpi-item">
                 <span class="kpi-label">TOTAL INCIDENTS</span>
@@ -66,7 +289,7 @@
             </div>
             <div class="kpi-divider"></div>
             <div class="kpi-item">
-                <span class="kpi-label">UNITS DEPLOYED</span>
+                <span class="kpi-label">FLEET DEPLOYED</span>
                 <span class="kpi-val text-cyan" id="kpiDispatched">--</span>
             </div>
             <div class="kpi-divider"></div>
@@ -74,624 +297,321 @@
                 <span class="kpi-label">RESOLVED</span>
                 <span class="kpi-val text-emerald" id="kpiResolved">--</span>
             </div>
+            <div class="kpi-divider"></div>
+            <!-- Download Center Quick Buttons -->
+            <div class="kpi-actions">
+                <button class="btn btn-secondary btn-xs" id="btnDownloadCsvReport">📥 Download Incidents (CSV)</button>
+                <button class="btn btn-primary btn-xs" id="btnOpenSitrepTop">📄 Print SitRep (PDF)</button>
+            </div>
         </div>
 
-        <!-- Global Action Controls -->
-        <div class="header-actions">
-            <button class="btn btn-audio" id="btnToggleAudio" title="Toggle Emergency Siren Audio">
-                <span id="audioIcon">🔊</span> Audio
-            </button>
-            <button class="btn btn-secondary" id="btnSyncUsgs" title="Sync Live USGS Global Seismic Feed">
-                🔄 USGS Sensor
-            </button>
-            <button class="btn btn-secondary" id="btnOpenBroadcastModal" title="Transmit Mass SMS & WhatsApp Alerts">
-                📢 Broadcast
-            </button>
-            <button class="btn btn-secondary" id="btnSitRepReport" title="View Executive Situation Report">
-                📄 SitRep
-            </button>
-            <button class="btn btn-primary" id="btnTriggerBurst" title="Inject a live synthetic disaster event">
-                ⚡ Inject Event
-            </button>
-            <button class="btn btn-danger btn-pulse" id="btnOpenSosModal">
-                🚨 CITIZEN SOS
-            </button>
-        </div>
-    </header>
-
-    <!-- MAIN VIEW CONTAINER -->
-    <div class="views-wrapper">
-
-        <!-- ===================================================================
-             VIEW 1: TACTICAL GIS MAP (DEFAULT COMMAND CENTER)
-             =================================================================== -->
-        <div class="view-pane active" id="gisView">
-            <main class="app-layout">
-                <!-- LEFT PANEL: Multi-Source Feed & Filters -->
-                <aside class="panel feed-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span>📡 Gujarat Crisis Stream</span>
-                            <span class="pulse-indicator" id="streamStatusBadge">STREAMING</span>
-                        </div>
-                        <div class="feed-count-badge" id="feedCountBadge">0 alerts</div>
-                    </div>
-
-                    <!-- Feed Search & Filters -->
-                    <div class="feed-controls">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="feedSearchInput" placeholder="Search cities, landmarks, victims (e.g. Karelibaug, Adajan)...">
-                        </div>
-                        
-                        <div class="filter-pills">
-                            <button class="pill active" data-filter="urgency" data-val="ALL">All Urgencies</button>
-                            <button class="pill pill-p1" data-filter="urgency" data-val="P1_CRITICAL">🚨 P1 Critical</button>
-                            <button class="pill pill-p2" data-filter="urgency" data-val="P2_HIGH">⚠️ P2 High</button>
-                            <button class="pill" data-filter="urgency" data-val="P3_MEDIUM">P3 Medium</button>
-                        </div>
-
-                        <div class="filter-row">
-                            <select id="disasterTypeSelect" class="styled-select">
-                                <option value="ALL">All Disasters</option>
-                                <option value="flood">🌊 Flood (Vishwamitri/Tapi)</option>
-                                <option value="cyclone">🌀 Cyclone (Biparjoy)</option>
-                                <option value="earthquake">🏚️ Earthquake (Kutch/Bhuj)</option>
-                                <option value="industrial_hazard">🏭 Chemical / GIDC Hazard</option>
-                                <option value="building_collapse">🏗️ Building Collapse</option>
-                                <option value="urban_fire">🔥 Urban Fire</option>
-                            </select>
-
-                            <select id="sourceFilterSelect" class="styled-select">
-                                <option value="ALL">All Sources</option>
-                                <option value="social_media_x">𝕏 Twitter/X</option>
-                                <option value="social_media_reddit">Reddit</option>
-                                <option value="citizen_sos">Citizen SOS</option>
-                                <option value="usgs_seismic">USGS Sensor</option>
-                                <option value="weather_radar">IMD Radar</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Scrollable Incident Card Stream -->
-                    <div class="incident-stream" id="incidentStream">
-                        <div class="empty-state">
-                            <div class="spinner"></div>
-                            <p>Connecting to Gujarat Crisis Feed...</p>
-                        </div>
-                    </div>
-                </aside>
-
-                <!-- CENTER PANEL: Interactive GIS Situation Map -->
-                <section class="panel map-panel">
-                    <div class="map-overlay-header">
-                        <div class="map-status-pill">
-                            <span class="status-dot"></span>
-                            <span id="activeScenarioTitle">Scenario: Vadodara Vishwamitri Floods</span>
-                        </div>
-                        <div class="map-tools">
-                            <button class="map-btn" id="btnToggleHeatmap" title="Toggle Density Heatmap">🔥 Heatmap</button>
-                            <button class="map-btn" id="btnToggleUnits" title="Toggle Responder Units">🚒 Responders</button>
-                            <button class="map-btn" id="btnComputeSafeRoute" title="Compute Hazard-Aware Safe Route">🛣️ Safe Evac Route</button>
-                            <button class="map-btn" id="btnResetView" title="Center on Active Zone">🎯 Recenter</button>
-                        </div>
-                    </div>
-
-                    <!-- Leaflet Container -->
-                    <div id="gisMap"></div>
-
-                    <!-- Map Legend -->
-                    <div class="map-legend">
-                        <div class="legend-item"><span class="legend-dot red-pulse"></span> P1 Critical SOS</div>
-                        <div class="legend-item"><span class="legend-dot amber-dot"></span> P2 High Urgency</div>
-                        <div class="legend-item"><span class="legend-dot blue-dot"></span> P3/P4 Incident</div>
-                        <div class="legend-item"><span class="legend-dot green-dot"></span> NDRF/SDRF Unit</div>
-                    </div>
-                </section>
-
-                <!-- RIGHT PANEL: Operations & Dispatch Hub / SitRep Insights -->
-                <aside class="panel ops-panel">
-                    <!-- Tabs Header -->
-                    <div class="tabs-header">
-                        <button class="tab-btn active" data-tab="dispatchTab">🚒 Fleet Summary</button>
-                        <button class="tab-btn" data-tab="analyticsTab">📊 SitRep Insights</button>
-                        <button class="tab-btn" data-tab="scenarioTab">⚙️ Simulation</button>
-                    </div>
-
-                    <!-- Tab 1: Dispatch & Fleet -->
-                    <div class="tab-content active" id="dispatchTab">
-                        <div class="ops-section-header">
-                            <h4>GUJARAT RESPONSE BATTALIONS</h4>
-                            <span class="unit-stat" id="unitAvailabilityStat">6 / 7 Available</span>
-                        </div>
-                        <div class="unit-list" id="unitListContainer">
-                            <!-- Dynamic Response Units Cards -->
-                        </div>
-                    </div>
-
-                    <!-- Tab 2: Analytics & Insights -->
-                    <div class="tab-content" id="analyticsTab">
-                        <div class="analytics-card">
-                            <h4>GUJARAT DISASTER DISTRIBUTION</h4>
-                            <div class="chart-bar-list" id="disasterTypeChart">
-                                <!-- Dynamic Distribution Bars -->
+        <div class="views-wrapper">
+            <!-- VIEW 1: TACTICAL GIS MAP -->
+            <div class="view-pane active" id="gisView">
+                <div class="dashboard-grid">
+                    <!-- Left: Incident Feed -->
+                    <aside class="sidebar-left">
+                        <div class="sidebar-header">
+                            <h3>🚨 INCIDENT FEED</h3>
+                            <div class="pulse-live">
+                                <span class="pulse-dot"></span>
+                                <span id="streamStatusBadge">STREAMING LIVE</span>
                             </div>
                         </div>
 
-                        <div class="analytics-card">
-                            <h4>TOP CRITICAL ZONES</h4>
-                            <div class="zone-list" id="topZonesContainer">
-                                <!-- Dynamic Zone List -->
-                            </div>
-                        </div>
-
-                        <div class="analytics-card exec-preview-card">
-                            <h4>EXECUTIVE SITREP BRIEFING</h4>
-                            <p id="sitrepSummaryText" class="exec-summary-snippet">Loading latest Gujarat crisis analysis...</p>
-                            <button class="btn btn-secondary btn-full" id="btnOpenFullSitrep">Open Full SitRep Briefing</button>
-                        </div>
-                    </div>
-
-                    <!-- Tab 3: Simulation Control -->
-                    <div class="tab-content" id="scenarioTab">
-                        <div class="scenario-box">
-                            <h4>SELECT GUJARAT CRISIS SCENARIO</h4>
-                            <p class="sub-text">Switch real-world Gujarat disaster zones, river basins, and coastal grids.</p>
-                            
-                            <div class="scenario-selector">
-                                <label class="scenario-option">
-                                    <input type="radio" name="simScenario" value="vadodara_vishwamitri_flood" checked>
-                                    <div class="scenario-card">
-                                        <strong>🌊 Vadodara Vishwamitri River Floods</strong>
-                                        <span>Central Gujarat | Ajwa Dam discharge & Karelibaug / Sayajigunj</span>
-                                    </div>
-                                </label>
-
-                                <label class="scenario-option">
-                                    <input type="radio" name="simScenario" value="kutch_biparjoy_cyclone">
-                                    <div class="scenario-card">
-                                        <strong>🌀 Cyclone Biparjoy Coastal Surge</strong>
-                                        <span>Kutch & Saurashtra | Mandvi Port, Kandla & Gandhidham</span>
-                                    </div>
-                                </label>
-
-                                <label class="scenario-option">
-                                    <input type="radio" name="simScenario" value="surat_tapi_inundation">
-                                    <div class="scenario-card">
-                                        <strong>🌊 Surat Tapi River Flood & Inundation</strong>
-                                        <span>South Gujarat | Ukai Dam water release & Rander / Adajan</span>
-                                    </div>
-                                </label>
-
-                                <label class="scenario-option">
-                                    <input type="radio" name="simScenario" value="kutch_bhuj_earthquake">
-                                    <div class="scenario-card">
-                                        <strong>🏚️ Kutch Intraplate Seismic Event M6.3</strong>
-                                        <span>Bhuj / Anjar / Morbi | Structural Fractures & Search Ops</span>
-                                    </div>
-                                </label>
-                            </div>
-
-                            <div class="speed-control">
-                                <label>Feed Speed Interval:</label>
-                                <select id="feedSpeedSelect" class="styled-select">
-                                    <option value="2.0">⚡ Fast (Every 2s)</option>
-                                    <option value="4.0" selected>⏱️ Normal (Every 4s)</option>
-                                    <option value="8.0">🐢 Slow (Every 8s)</option>
+                        <!-- Filter Controls -->
+                        <div class="filter-bar">
+                            <input type="text" id="searchInput" placeholder="Search Gujarat locality, city..." class="search-input">
+                            <div class="filter-row">
+                                <select id="filterUrgency" class="styled-select">
+                                    <option value="ALL">All Urgency (P1-P4)</option>
+                                    <option value="P1_CRITICAL">🚨 P1 Critical Only</option>
+                                    <option value="P2_HIGH">⚠️ P2 High</option>
+                                    <option value="P3_MEDIUM">ℹ️ P3 Medium</option>
+                                </select>
+                                <select id="filterType" class="styled-select">
+                                    <option value="ALL">All Disasters</option>
+                                    <option value="flood">Flood</option>
+                                    <option value="cyclone">Cyclone</option>
+                                    <option value="earthquake">Earthquake</option>
                                 </select>
                             </div>
-
-                            <button class="btn btn-primary btn-full" id="btnApplyScenario">Apply Gujarat Scenario Settings</button>
                         </div>
-                    </div>
-                </aside>
-            </main>
-        </div>
 
-        <!-- ===================================================================
-             VIEW 2: ADVANCED ANALYTICS & SITREP DASHBOARD
-             =================================================================== -->
-        <div class="view-pane" id="analyticsView">
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h2>📊 Gujarat Disaster Analytics & Predictive Intelligence</h2>
-                        <p class="sub-text">Real-time situational awareness, casualty impact projections, and resource allocation telemetry.</p>
-                    </div>
-                    <button class="btn btn-secondary" onclick="window.refreshAnalytics()">🔄 Refresh Analytics</button>
-                </div>
-
-                <div class="stats-grid-4">
-                    <div class="stat-card">
-                        <span class="stat-title">CRITICAL CASUALTY RISK</span>
-                        <div class="stat-number text-red" id="analyticsP1Count">--</div>
-                        <span class="stat-note">Immediate priority extraction required</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">AFFECTED POPULATION</span>
-                        <div class="stat-number text-amber" id="analyticsAffectedCount">--</div>
-                        <span class="stat-note">Estimated stranded / impacted citizens</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">FLEET MOBILIZATION RATIO</span>
-                        <div class="stat-number text-cyan" id="analyticsMobilizationRate">--</div>
-                        <span class="stat-note">Active battalions vs total deployed</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">RESOLUTION RATE</span>
-                        <div class="stat-number text-emerald" id="analyticsResolutionRate">--</div>
-                        <span class="stat-note">Rescued & stabilized incidents</span>
-                    </div>
-                </div>
-
-                <div class="charts-grid-2">
-                    <div class="chart-card">
-                        <h3>Disaster Category Breakdown</h3>
-                        <div class="canvas-wrapper">
-                            <canvas id="disasterDoughnutChart"></canvas>
+                        <!-- Incident Cards List -->
+                        <div class="incident-feed-list" id="incidentListContainer">
+                            <div class="spinner"></div>
                         </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Urgency Level Distribution (P1 - P4)</h3>
-                        <div class="canvas-wrapper">
-                            <canvas id="urgencyBarChart"></canvas>
+                    </aside>
+
+                    <!-- Center: Tactical GIS Map -->
+                    <main class="map-panel">
+                        <div class="map-overlay-header">
+                            <div class="map-status-pill">
+                                <span class="status-dot"></span>
+                                <span id="activeScenarioTitle">Scenario: Vadodara Vishwamitri Floods</span>
+                            </div>
+                            <div class="map-action-buttons">
+                                <button class="btn-map-control" id="btnToggleHeatmap">🔥 Heatmap</button>
+                                <button class="btn-map-control" id="btnToggleUnits">🚒 Fleet Bases</button>
+                                <button class="btn-map-control" id="btnComputeSafeRoute">🧭 Evacuation Route</button>
+                                <button class="btn-map-control" id="btnResetView">🎯 Reset Center</button>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="executive-sitrep-box">
-                    <div class="sitrep-box-header">
-                        <h3>📄 Automated Executive Situation Report (SitRep)</h3>
-                        <button class="btn btn-primary btn-sm" id="btnOpenSitrepIframeFromAnalytics">View Formal Document</button>
-                    </div>
-                    <div class="sitrep-full-text" id="analyticsFullSitrepText">
-                        Generating comprehensive Gujarat multi-agency crisis assessment...
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Tactical GIS Map Canvas -->
+                        <div id="gisMap"></div>
+                    </main>
 
-        <!-- ===================================================================
-             VIEW 3: FLEET & DISPATCH MANAGEMENT HUB
-             =================================================================== -->
-        <div class="view-pane" id="fleetView">
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h2>🚒 Gujarat Emergency Response Battalions & Marine Fleets</h2>
-                        <p class="sub-text">Live tracking of NDRF, SDRF, Coast Guard, and Trauma Medical Units across Gujarat districts.</p>
-                    </div>
-                    <div class="header-actions">
-                        <select id="fleetStatusFilter" class="styled-select" style="width: 160px;">
-                            <option value="ALL">All Unit Status</option>
-                            <option value="AVAILABLE">🟢 Available Only</option>
-                            <option value="DISPATCHED">🔵 Dispatched Only</option>
-                        </select>
-                    </div>
-                </div>
+                    <!-- Right: Response Command Panel -->
+                    <aside class="sidebar-right">
+                        <div class="scenario-box">
+                            <h4>SELECT CRISIS SCENARIO (GUJARAT)</h4>
+                            <p class="sub-text">Switch real-world Gujarat disaster zones and coordinate grids.</p>
+                            
+                            <div class="scenario-options">
+                                <label class="scenario-card active">
+                                    <input type="radio" name="simScenario" value="vadodara_vishwamitri_flood" checked>
+                                    <div class="scenario-info">
+                                        <strong>🌊 Vadodara Vishwamitri Floods & Crocodile Alert</strong>
+                                        <span>Ajwa Dam overflow, Karelibaug, Sayajigunj & Fatehgunj inundation.</span>
+                                    </div>
+                                </label>
+                                <label class="scenario-card">
+                                    <input type="radio" name="simScenario" value="kutch_biparjoy_cyclone">
+                                    <div class="scenario-info">
+                                        <strong>🌀 Cyclone Biparjoy Coastal Surge (Kutch)</strong>
+                                        <span>Mandvi Port, Kandla & Gandhidham power grid disruptions.</span>
+                                    </div>
+                                </label>
+                                <label class="scenario-card">
+                                    <input type="radio" name="simScenario" value="surat_tapi_flood">
+                                    <div class="scenario-info">
+                                        <strong>🌊 Surat Tapi River Causeway Inundation</strong>
+                                        <span>Ukai Dam 1.8L cusec discharge, Rander & Adajan waterlogging.</span>
+                                    </div>
+                                </label>
+                                <label class="scenario-card">
+                                    <input type="radio" name="simScenario" value="bhuj_earthquake">
+                                    <div class="scenario-info">
+                                        <strong>🏚️ Kutch Intraplate Seismic Event M6.3</strong>
+                                        <span>Bhuj old city, Darbargadh & Morbi structural fractures.</span>
+                                    </div>
+                                </label>
+                            </div>
 
-                <div class="fleet-grid" id="fullFleetGrid">
-                    <!-- Populated dynamically -->
+                            <button class="btn btn-primary btn-full" id="btnApplyScenario">⚡ Apply Scenario</button>
+                        </div>
+
+                        <!-- Fleet Quick Glance -->
+                        <div class="fleet-quick-box">
+                            <h4>GUJARAT RESPONSE UNITS</h4>
+                            <div class="units-list" id="unitsQuickList">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
-        </div>
 
-        <!-- ===================================================================
-             VIEW 4: SEGREGATED INCIDENT TRIAGE BOARD (KANBAN)
-             =================================================================== -->
-        <div class="view-pane" id="triageView">
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h2>📋 Segregated Incident Triage & Verification Board</h2>
-                        <p class="sub-text">Prioritized multi-channel incident lifecycle management and dispatch escalation.</p>
-                    </div>
-                </div>
-
-                <div class="triage-board">
-                    <!-- Column 1: P1 Critical -->
-                    <div class="triage-col col-p1">
-                        <div class="col-header">
-                            <span class="col-title text-red">🚨 P1 CRITICAL LIFE-THREAT</span>
-                            <span class="col-count" id="countP1Col">0</span>
-                        </div>
-                        <div class="triage-items" id="triageP1Container"></div>
-                    </div>
-
-                    <!-- Column 2: P2 High -->
-                    <div class="triage-col col-p2">
-                        <div class="col-header">
-                            <span class="col-title text-amber">⚠️ P2 HIGH INUNDATION / TRAPPED</span>
-                            <span class="col-count" id="countP2Col">0</span>
-                        </div>
-                        <div class="triage-items" id="triageP2Container"></div>
-                    </div>
-
-                    <!-- Column 3: P3 Medium -->
-                    <div class="triage-col col-p3">
-                        <div class="col-header">
-                            <span class="col-title text-cyan">ℹ️ P3 MEDIUM / ROADBLOCKS</span>
-                            <span class="col-count" id="countP3Col">0</span>
-                        </div>
-                        <div class="triage-items" id="triageP3Container"></div>
-                    </div>
-
-                    <!-- Column 4: Resolved -->
-                    <div class="triage-col col-resolved">
-                        <div class="col-header">
-                            <span class="col-title text-emerald">✅ RESOLVED / SAFE</span>
-                            <span class="col-count" id="countResolvedCol">0</span>
-                        </div>
-                        <div class="triage-items" id="triageResolvedContainer"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===================================================================
-             VIEW 5: GUJARATI & INDIC AI/NLP INTELLIGENCE LAB
-             =================================================================== -->
-        <div class="view-pane" id="nlpLabView">
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h2>🧠 Multi-Lingual & Gujarati NLP Intelligence Lab</h2>
-                        <p class="sub-text">Test the real-time vernacular disaster classifier, urgency scoring, entity extraction, and geocoding engine.</p>
-                    </div>
-                </div>
-
-                <div class="nlp-lab-layout">
-                    <div class="nlp-input-card">
-                        <h3>Input Raw Distress Text / Gujarati Vernacular</h3>
-                        <p class="sub-text">Type or select a sample Gujarat distress report to analyze with the NLP engine.</p>
-                        
-                        <div class="nlp-presets">
-                            <button class="btn-xs btn-preset" data-text="બચાવો! વિશ્વામિત્રી નદીનું પાણી ઘરમાં ભરાઈ ગયું છે. 6 લોકો Karelibaug Vadodara માં ફસાયા છીએ. બોટ મોકલો.">
-                                🌊 Gujarati Vadodara Flood Sample
-                            </button>
-                            <button class="btn-xs btn-preset" data-text="Cyclone Biparjoy gale winds ripping roofs in Mandvi Port Kutch. 2 fishermen missing near beach. Send Coast Guard!">
-                                🌀 Cyclone Biparjoy Kutch Sample
-                            </button>
-                            <button class="btn-xs btn-preset" data-text="Tapi river causeway submerged in Rander Surat. Water level 5 feet in residential society. Senior citizen needs insulin.">
-                                🌊 Surat Tapi River Inundation Sample
-                            </button>
-                            <button class="btn-xs btn-preset" data-text="Earthquake shock felt in Bhuj old city. Slab collapse near Darbargadh. 3 workers trapped in debris.">
-                                🏚️ Bhuj Seismic Event Sample
-                            </button>
-                        </div>
-
-                        <textarea id="nlpInputText" rows="4" class="styled-textarea" placeholder="Paste Gujarati, Hindi, or English distress message here...">બચાવો! વિશ્વામિત્રી નદીનું પાણી ઘરમાં ભરાઈ ગયું છે. 6 લોકો Karelibaug Vadodara માં ફસાયા છીએ. બોટ મોકલો.</textarea>
-                        
-                        <button class="btn btn-primary btn-full" id="btnRunNlpTest">⚡ Run AI/NLP Analysis</button>
-                    </div>
-
-                    <div class="nlp-output-card" id="nlpOutputCard">
-                        <h3>NLP Pipeline Intelligence Output</h3>
-                        <div class="nlp-results-placeholder">Click 'Run AI/NLP Analysis' to test entity extraction.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===================================================================
-             VIEW 6: DISASTER DATA INGESTION FOR AGENCIES (NEWS & SOCIAL MEDIA)
-             =================================================================== -->
-        <div class="view-pane" id="agencyNewsView">
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h2>📡 Agency Disaster Data Ingestion & OSINT News Harvester</h2>
-                        <p class="sub-text">Automated continuous monitoring of news agency bulletins, crisis social media, and verified field intelligence.</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-primary" id="btnHarvestNews">🔄 Crawl & Harvest Latest News</button>
-                    </div>
-                </div>
-
-                <!-- Agency Telemetry Stats -->
-                <div class="stats-grid-4">
-                    <div class="stat-card">
-                        <span class="stat-title">VERIFIED NEWS BULLETINS</span>
-                        <div class="stat-number text-cyan" id="statNewsCount">6 Agencies</div>
-                        <span class="stat-note">Gujarat Samachar, Sandesh, ANI, NDTV, IMD</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">SOCIAL OSINT SIGNALS</span>
-                        <div class="stat-number text-amber" id="statSocialCount">4 Platforms</div>
-                        <span class="stat-note">Twitter/X, Reddit, Telegram, Crowdsource</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">SOURCE CREDIBILITY INDEX</span>
-                        <div class="stat-number text-emerald" id="statCredibilityIndex">94.8%</div>
-                        <span class="stat-note">Multi-agency cross-verification</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-title">AI NLP ACCURACY</span>
-                        <div class="stat-number text-red" id="statNlpAccuracy">96.4%</div>
-                        <span class="stat-note">Gujarati & Indic NER precision</span>
-                    </div>
-                </div>
-
-                <!-- News & Social Split Layout -->
-                <div class="agency-ingestion-grid">
-                    <!-- Left: Verified News Agency Feed -->
-                    <div class="ingestion-section">
-                        <div class="section-title-bar">
-                            <h3>📰 Breaking Disaster News Bulletins (Gujarat & National)</h3>
-                            <span class="badge-status status-available">LIVE CRAWLER</span>
-                        </div>
-                        <div class="news-bulletins-list" id="newsBulletinsContainer">
-                            <!-- Populated dynamically -->
+            <!-- VIEW 2: REAL-TIME SMS & ALERT DISPATCHER -->
+            <div class="view-pane" id="smsDispatcherTab">
+                <div class="page-container">
+                    <div class="page-header">
+                        <div>
+                            <h2>📱 Real-Time Mobile SMS & Emergency Alert Dispatcher</h2>
+                            <p class="sub-text">Transmit live SMS warnings to specific citizen numbers or mass cellular broadcasts for heavy rainfall, dam discharge, and cyclone evacuations.</p>
                         </div>
                     </div>
 
-                    <!-- Right: Live Social Media OSINT & Field Intel Input -->
-                    <div class="ingestion-section">
-                        <div class="section-title-bar">
-                            <h3>𝕏 Real-Time Social Media OSINT Stream</h3>
-                            <span class="badge-status status-dispatched">OSINT RADAR</span>
-                        </div>
-                        <div class="social-osint-list" id="socialOsintContainer">
-                            <!-- Populated dynamically -->
-                        </div>
-
-                        <!-- Manual Intelligence Submission Form -->
-                        <div class="manual-intel-card">
-                            <h4>📥 Ingest Field Agency Intelligence / Custom Link</h4>
-                            <p class="sub-text">Field officers can paste raw news links or citizen tweets to extract entities and inject into live response map.</p>
-                            <form id="manualIntelForm">
+                    <div class="sms-dispatcher-grid">
+                        <!-- Direct SMS Form -->
+                        <div class="sms-form-card">
+                            <h3>✉️ Send Direct Alert to Given Phone Number</h3>
+                            <p class="sub-text">Sends real-time SMS notification directly to a citizen, responder, or field officer's mobile device.</p>
+                            
+                            <form id="directSmsForm">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Source Type *</label>
-                                        <select id="intelSourceType" class="styled-select" required>
-                                            <option value="NEWS_ARTICLE">📰 News Agency Report</option>
-                                            <option value="SOCIAL_POST">𝕏 Citizen / Social Post</option>
-                                        </select>
+                                        <label>Recipient Mobile Number *</label>
+                                        <input type="tel" id="directSmsPhone" required placeholder="e.g. +91-9825123456" value="+91-9825123456">
                                     </div>
                                     <div class="form-group">
-                                        <label>Agency / Source Name *</label>
-                                        <input type="text" id="intelSourceName" required placeholder="e.g. Gujarat Samachar / @reporter_vadodara" value="District Magistrate Office">
+                                        <label>Alert Category *</label>
+                                        <select id="directSmsType" class="styled-select" required>
+                                            <option value="RAINFALL_FLOOD" selected>🌧️ Heavy Rainfall & Flood Warning</option>
+                                            <option value="CYCLONE_WARNING">🌀 Cyclone & Gale Alert</option>
+                                            <option value="DAM_RELEASE">🌊 Dam Gate Opening / River Surge</option>
+                                            <option value="EVACUATION">🚨 Urgent Evacuation Order</option>
+                                        </select>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Raw News Text / Social Content *</label>
-                                    <textarea id="intelContent" rows="3" required placeholder="Paste distress headline or field text...">Ajwa dam discharge crosses 50,000 cusecs. 120 residents in Sayajigunj and Fatehgunj relocated to municipal schools. Power cut in sector 3.</textarea>
+                                    <label>Target Locality / Zone (Gujarat) *</label>
+                                    <input type="text" id="directSmsZone" required value="Karelibaug / Vishwamitri Basin, Vadodara">
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Location Landmark Hint (Optional)</label>
-                                    <input type="text" id="intelLocationHint" placeholder="e.g. Sayajigunj Vadodara" value="Sayajigunj, Vadodara">
+                                    <label>Alert Text Message Content *</label>
+                                    <textarea id="directSmsMessage" rows="3" required>[SAHAY EMERGENCY ALERT] Heavy rainfall in Vadodara catchment. Vishwamitri river rising fast. NDRF boat teams deployed in Karelibaug. Move to high ground immediately. Helpline: 1077.</textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-full">⚡ Process & Ingest to Incident Map</button>
+
+                                <button type="submit" class="btn btn-primary btn-full" id="btnSubmitDirectSms">
+                                    📡 SEND LIVE SMS ALERT TO NUMBER
+                                </button>
                             </form>
+                        </div>
+
+                        <!-- Sent SMS History -->
+                        <div class="sms-history-card">
+                            <h3>📋 Real-Time SMS Delivery Logs</h3>
+                            <div class="sms-history-list" id="directSmsHistoryContainer">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: ANALYTICS & SITREP -->
+            <div class="view-pane" id="analyticsView">
+                <div class="page-container">
+                    <div class="page-header">
+                        <div>
+                            <h2>📊 Predictive Disaster Analytics & Situation Report (SitRep)</h2>
+                            <p class="sub-text">Automated real-time synthesis of ground telemetry, casualty projections, and fleet mobilization.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary" id="btnDownloadCsvFromAnalytics">📥 Download Incidents (CSV)</button>
+                            <button class="btn btn-primary" id="btnOpenSitrepIframeFromAnalytics">📄 View Executive SitRep (PDF)</button>
+                        </div>
+                    </div>
+
+                    <!-- Analytics KPI Grid -->
+                    <div class="stats-grid-4">
+                        <div class="stat-card">
+                            <span class="stat-title">CRITICAL CASUALTY RISK</span>
+                            <div class="stat-number text-red" id="analyticsP1Count">--</div>
+                            <span class="stat-note">P1 Life-Threatening Distress</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-title">ESTIMATED AFFECTED CITIZENS</span>
+                            <div class="stat-number text-amber" id="analyticsAffectedCount">--</div>
+                            <span class="stat-note">Gujarat Danger Zones</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-title">FLEET MOBILIZATION RATE</span>
+                            <div class="stat-number text-cyan" id="analyticsMobilizationRate">--</div>
+                            <span class="stat-note">NDRF / SDRF Units Active</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-title">INCIDENT RESOLUTION RATE</span>
+                            <div class="stat-number text-emerald" id="analyticsResolutionRate">--</div>
+                            <span class="stat-note">Stabilized Incidents</span>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid-2">
+                        <div class="chart-card">
+                            <h3>Disaster Category Breakdown</h3>
+                            <div class="chart-wrapper"><canvas id="disasterDoughnutChart"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Urgency Priority Distribution (P1 - P4)</h3>
+                            <div class="chart-wrapper"><canvas id="urgencyBarChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: FLEET & BATTALIONS -->
+            <div class="view-pane" id="fleetView">
+                <div class="page-container">
+                    <div class="page-header">
+                        <div>
+                            <h2>🚒 Gujarat Response Battalions & Fleet Logistics</h2>
+                            <p class="sub-text">National Disaster Response Force (NDRF 6th Bn), Gujarat SDRF, Coast Guard, and Trauma Medical Units.</p>
+                        </div>
+                    </div>
+                    <div class="fleet-cards-grid" id="fullFleetGridContainer">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 5: TRIAGE KANBAN BOARD -->
+            <div class="view-pane" id="triageView">
+                <div class="page-container">
+                    <div class="page-header">
+                        <h2>📋 Segregated Incident Triage Board</h2>
+                        <p class="sub-text">Automated priority categorization based on vernacular NLP analysis and victim count.</p>
+                    </div>
+                    <div class="triage-columns-grid">
+                        <div class="triage-column col-p1">
+                            <div class="column-header"><span>🚨 P1 CRITICAL</span><span class="badge-count" id="countP1">0</span></div>
+                            <div class="triage-card-list" id="triageP1List"></div>
+                        </div>
+                        <div class="triage-column col-p2">
+                            <div class="column-header"><span>⚠️ P2 HIGH</span><span class="badge-count" id="countP2">0</span></div>
+                            <div class="triage-card-list" id="triageP2List"></div>
+                        </div>
+                        <div class="triage-column col-p3">
+                            <div class="column-header"><span>ℹ️ P3 MEDIUM</span><span class="badge-count" id="countP3">0</span></div>
+                            <div class="triage-card-list" id="triageP3List"></div>
+                        </div>
+                        <div class="triage-column col-resolved">
+                            <div class="column-header"><span>✅ RESOLVED</span><span class="badge-count" id="countResolved">0</span></div>
+                            <div class="triage-card-list" id="triageResolvedList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: AGENCY NEWS & OSINT -->
+            <div class="view-pane" id="agencyNewsView">
+                <div class="page-container">
+                    <div class="page-header">
+                        <div>
+                            <h2>📡 Agency Disaster Data Ingestion & OSINT News Harvester</h2>
+                            <p class="sub-text">Continuous monitoring of breaking news bulletins (Gujarat Samachar, Sandesh, ANI) and social media crisis feeds.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btnHarvestNews">🔄 Crawl & Harvest Latest News</button>
+                    </div>
+                    <div class="agency-ingestion-grid">
+                        <div class="ingestion-section">
+                            <div class="section-title-bar">
+                                <h3>📰 Breaking Disaster News Bulletins</h3>
+                                <span class="badge-status status-available">VERIFIED CRAWLER</span>
+                            </div>
+                            <div class="news-bulletins-list" id="newsBulletinsContainer"></div>
+                        </div>
+                        <div class="ingestion-section">
+                            <div class="section-title-bar">
+                                <h3>𝕏 Real-Time Social Media OSINT Signals</h3>
+                                <span class="badge-status status-dispatched">RADAR FEED</span>
+                            </div>
+                            <div class="social-osint-list" id="socialOsintContainer"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- ===================================================================
          ACTION MODALS
          =================================================================== -->
 
-    <!-- MODAL 5: USER AUTHENTICATION (SIGN IN & REGISTER) -->
-    <div class="modal-overlay" id="authModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-title">🔐 SAHAY COMMAND ACCESS & AUTHENTICATION</div>
-                <button class="modal-close" id="btnCloseAuthModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <!-- 1-Click Demo Quick Logins -->
-                <div class="demo-auth-box">
-                    <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">⚡ INSTANT DEMO ONE-CLICK LOGIN:</div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-primary btn-sm" style="flex: 1;" id="btnDemoLoginAuthority">
-                            🛡️ Authority (Major Patel - GSDMA)
-                        </button>
-                        <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btnDemoLoginCitizen">
-                            👤 Citizen (Jignesh Shah - Vadodara)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tabbed Auth Selector -->
-                <div class="auth-tabs">
-                    <button class="auth-tab-btn active" id="tabSignIn">Sign In</button>
-                    <button class="auth-tab-btn" id="tabRegisterCitizen">Register Citizen</button>
-                    <button class="auth-tab-btn" id="tabRegisterAuthority">Register Authority</button>
-                </div>
-
-                <!-- Form 1: Sign In -->
-                <form id="signInForm" class="auth-form active">
-                    <div class="form-group">
-                        <label>Registered Email Address *</label>
-                        <input type="email" id="loginEmail" required placeholder="e.g. commander@gsdma.gujarat.gov.in" value="commander@gsdma.gujarat.gov.in">
-                    </div>
-                    <div class="form-group">
-                        <label>Password *</label>
-                        <input type="password" id="loginPassword" required placeholder="••••••••" value="Password@123">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">🚀 Sign In to Command System</button>
-                </form>
-
-                <!-- Form 2: Register Citizen -->
-                <form id="regCitizenForm" class="auth-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="regCitName" required placeholder="e.g. Amit Desai">
-                        </div>
-                        <div class="form-group">
-                            <label>City / District (Gujarat) *</label>
-                            <input type="text" id="regCitCity" required placeholder="e.g. Vadodara / Surat" value="Vadodara">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Email Address *</label>
-                            <input type="email" id="regCitEmail" required placeholder="e.g. amit@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Contact Phone Number *</label>
-                            <input type="tel" id="regCitPhone" required placeholder="+91-9825000000">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Create Password *</label>
-                        <input type="password" id="regCitPassword" required placeholder="Minimum 6 characters">
-                    </div>
-                    <button type="submit" class="btn btn-danger btn-full">👤 Create Citizen Account</button>
-                </form>
-
-                <!-- Form 3: Register Authority -->
-                <form id="regAuthorityForm" class="auth-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Officer Full Name *</label>
-                            <input type="text" id="regAuthName" required placeholder="e.g. Capt. S. Mehta">
-                        </div>
-                        <div class="form-group">
-                            <label>Official Agency *</label>
-                            <select id="regAuthAgency" class="styled-select" required>
-                                <option value="GSDMA">GSDMA (State Disaster Authority)</option>
-                                <option value="NDRF_6BN">NDRF 6th Battalion (Jarod)</option>
-                                <option value="SDRF_GUJ">Gujarat SDRF (Gandhinagar/Surat)</option>
-                                <option value="COAST_GUARD">Indian Coast Guard (Okha/Kandla)</option>
-                                <option value="POLICE_FIRE">Gujarat Police & Fire Services</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Official Government Email *</label>
-                            <input type="email" id="regAuthEmail" required placeholder="officer@gujarat.gov.in">
-                        </div>
-                        <div class="form-group">
-                            <label>Badge / Service ID *</label>
-                            <input type="text" id="regAuthBadge" required placeholder="e.g. NDRF-6BN-9921">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Create Secure Password *</label>
-                        <input type="password" id="regAuthPassword" required placeholder="Minimum 6 characters">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">🛡️ Register Authority Profile</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 1: CITIZEN SOS REPORTING PORTAL -->
+    <!-- MODAL 1: CITIZEN SOS MODAL -->
     <div class="modal-overlay" id="sosModal">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title text-red">🚨 CITIZEN EMERGENCY SOS PORTAL (GUJARAT)</div>
+                <div class="modal-title text-red">🚨 CITIZEN EMERGENCY SOS REPORTING (GUJARAT)</div>
                 <button class="modal-close" id="btnCloseSosModal">&times;</button>
             </div>
             <form id="sosForm" class="modal-body">
-                <p class="modal-desc">Your emergency report is directly dispatched with priority P1 to Gujarat NDRF, SDRF, and local emergency responders.</p>
+                <p class="modal-desc">Your emergency report is directly dispatched with priority P1 to Gujarat NDRF, SDRF, and nearest responders.</p>
 
                 <div class="form-row">
                     <div class="form-group">
@@ -728,7 +648,7 @@
 
                 <div class="form-group">
                     <label>Emergency Situation Details *</label>
-                    <textarea id="sosDescription" rows="3" required placeholder="Describe trapped location, water height, injuries, urgent needs...">Water level has reached 6 feet on ground floor. 5 family members including senior citizen on terrace. Crocodile seen in flood water. Send NDRF boat urgently!</textarea>
+                    <textarea id="sosDescription" rows="3" required placeholder="Describe trapped location, water height, injuries, urgent needs...">Water level has reached 6 feet on ground floor. 5 family members including senior citizen on terrace. Send NDRF boat urgently!</textarea>
                 </div>
 
                 <div class="form-group">
@@ -743,7 +663,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btnCancelSos">Cancel</button>
-                    <button type="submit" class="btn btn-danger btn-pulse" id="btnSubmitSos">🚀 TRANSMIT SOS BROADCAST</button>
+                    <button type="submit" class="btn btn-danger btn-pulse" id="btnSubmitSos">🚀 TRANSMIT SOS & SOUND ALARM</button>
                 </div>
             </form>
         </div>
@@ -757,18 +677,10 @@
                 <button class="modal-close" id="btnCloseDispatchModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="incident-dispatch-summary" id="dispatchIncidentSummary">
-                    <!-- Populated dynamically -->
-                </div>
-
+                <div class="incident-dispatch-summary" id="dispatchIncidentSummary"></div>
                 <h4 style="margin: 15px 0 10px 0; color: #38bdf8;">RANKED NEAREST RESPONSE UNITS</h4>
                 <div class="nearest-units-list" id="nearestUnitsContainer">
                     <div class="spinner"></div>
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Special Instructions / Route Notes:</label>
-                    <input type="text" id="dispatchCustomNotes" placeholder="e.g. Approach via Vadodara bypass road, carry 2 extra life jackets.">
                 </div>
             </div>
             <div class="modal-footer">
@@ -777,7 +689,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: SITREP PREVIEW MODAL -->
+    <!-- MODAL 3: SITREP MODAL -->
     <div class="modal-overlay" id="sitrepModal">
         <div class="modal-card modal-large">
             <div class="modal-header">
@@ -788,56 +700,44 @@
                 <iframe id="sitrepIframe" src="/api/sitrep/report" style="width: 100%; height: 600px; border: none;"></iframe>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="btnPrintSitrep" onclick="document.getElementById('sitrepIframe').contentWindow.print()">🖨️ Print / Save PDF</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('sitrepIframe').contentWindow.print()">🖨️ Print / Save PDF</button>
                 <button class="btn btn-primary" id="btnCloseSitrepBtn">Done</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 4: EMERGENCY ALERT BROADCAST MODAL -->
-    <div class="modal-overlay" id="broadcastModal">
+    <!-- MODAL 4: AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
         <div class="modal-card">
             <div class="modal-header">
-                <div class="modal-title text-amber">📢 MULTI-CHANNEL EMERGENCY BROADCAST (SMS & WHATSAPP)</div>
-                <button class="modal-close" id="btnCloseBroadcastModal">&times;</button>
+                <div class="modal-title">🔐 SAHAY ACCESS & AUTHENTICATION</div>
+                <button class="modal-close" id="btnCloseAuthModal">&times;</button>
             </div>
-            <form id="broadcastForm" class="modal-body">
-                <p class="modal-desc">Transmit instant mass public warning messages and evacuation orders directly to mobile phones within the Gujarat disaster radius.</p>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Delivery Channel *</label>
-                        <select id="broadcastChannel" class="styled-select" required>
-                            <option value="SMS_AND_WHATSAPP" selected>📱 SMS & WhatsApp (High Priority)</option>
-                            <option value="CAP_EMERGENCY">📡 CAP Broadcast & Siren Gateways</option>
-                            <option value="RESPONDER_RADIO">📻 Ground Responder Radio Net</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Severity Level *</label>
-                        <select id="broadcastSeverity" class="styled-select" required>
-                            <option value="CRITICAL_EVACUATION" selected>🚨 Critical Evacuation Order</option>
-                            <option value="HIGH_EMERGENCY">⚠️ High Disaster Warning</option>
-                            <option value="ADVISORY">ℹ️ Public Safety Advisory</option>
-                        </select>
+            <div class="modal-body">
+                <div class="demo-auth-box">
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">⚡ INSTANT DEMO LOGIN:</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary btn-sm" style="flex: 1;" id="btnDemoAuthModalAuthority">
+                            🛡️ Authority (Major Patel)
+                        </button>
+                        <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btnDemoAuthModalCitizen">
+                            👤 Citizen (Jignesh Shah)
+                        </button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Target Locality / Zone (Gujarat) *</label>
-                    <input type="text" id="broadcastZone" required value="Vadodara / Vishwamitri Flood Basin (Wards 1-7)">
-                </div>
-
-                <div class="form-group">
-                    <label>Alert Broadcast Message *</label>
-                    <textarea id="broadcastMessage" rows="3" required>[GUJARAT DISASTER CELL] Vishwamitri river alert: Ajwa dam discharge exceeds 45,000 cusecs. Immediate evacuation ordered for Karelibaug, Sayajigunj & Fatehgunj. Relocate to VMC Relief Centers. Crocodile warning issued. Helpline: 1077 / 0265-2423101.</textarea>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="btnCancelBroadcast">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btnTransmitBroadcast">📡 TRANSMIT BROADCAST TO 4,500+ CITIZENS</button>
-                </div>
-            </form>
+                <form id="authModalLoginForm" class="auth-form active">
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="authModalEmail" required placeholder="commander@gsdma.gujarat.gov.in" value="commander@gsdma.gujarat.gov.in">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="authModalPassword" required placeholder="••••••••" value="Password@123">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -845,4 +745,3 @@
     <script src="/app.js"></script>
 </body>
 </html>
-

@@ -32,7 +32,11 @@ from backend.models import (
     UserProfile,
     NewsArticleItem,
     SocialMediaFeedItem,
-    IntelHarvestRequest
+    IntelHarvestRequest,
+    DirectSMSAlertRequest,
+    DirectSMSAlertRecord,
+    EmergencyFacility,
+    RemedyGuide
 )
 from backend.nlp_engine import nlp_engine
 from backend.ingestion_service import ingestion_service
@@ -42,6 +46,7 @@ from backend.routing_service import routing_service
 from backend.broadcast_service import broadcast_service, BroadcastRequest, BroadcastRecord
 from backend.auth_service import auth_service
 from backend.news_social_harvester import news_social_harvester
+from backend.emergency_directory_service import emergency_directory_service
 from backend.database import SessionLocal, DBIncident, DBResponseUnit, DBDispatchOrder, DBAlertBroadcast
 
 # Logging setup
@@ -580,23 +585,110 @@ async def send_emergency_broadcast(req: BroadcastRequest):
         db_bcast = DBAlertBroadcast(
             broadcast_id=record.broadcast_id,
             target_channel=record.target_channel,
-            recipient_count=record.recipient_count,
             target_zone=record.target_zone,
             severity=record.severity,
             message=record.message,
-            timestamp=record.timestamp
+            recipient_count=record.recipient_count,
+            delivery_rate_percent=record.delivery_rate_percent,
+            status=record.status
         )
         db.add(db_bcast)
         db.commit()
         db.close()
     except Exception as e:
-        logger.warning(f"Error saving broadcast to DB: {e}")
+        logger.error(f"Error persisting broadcast to DB: {e}")
 
     await broadcast_to_websockets({
         "event": "ALERT_BROADCAST_SENT",
         "data": record.model_dump()
     })
     return record
+
+
+@app.post("/api/alerts/send-sms", response_model=DirectSMSAlertRecord, tags=["Emergency Broadcast & Alerts"])
+async def send_direct_sms(req: DirectSMSAlertRequest):
+    """
+    Send real-time emergency alert message directly to a recipient phone number (e.g. +91-9825123456).
+    """
+    record = broadcast_service.send_direct_sms(req)
+    return record
+
+
+@app.get("/api/alerts/direct-history", response_model=List[DirectSMSAlertRecord], tags=["Emergency Broadcast & Alerts"])
+async def get_direct_sms_history():
+    """Retrieve history of real-time direct SMS alerts sent to mobile numbers."""
+    return broadcast_service.get_direct_sms_history()
+
+
+# --- Emergency Facilities Directory & Navigation ---
+
+@app.get("/api/facilities/nearby", tags=["Emergency Directory & Navigation"])
+async def get_nearby_facilities(
+    lat: float = Query(22.3072, description="User or incident Latitude"),
+    lng: float = Query(73.1812, description="User or incident Longitude"),
+    type: Optional[str] = Query("ALL", description="HOSPITAL, FIRE_STATION, POLICE_STATION, or ALL"),
+    limit: int = Query(15, ge=1, le=50)
+):
+    """
+    Retrieve nearest Gujarat hospitals, fire stations, and police stations with contact numbers,
+    available ICU/trauma facilities, and estimated driving ETAs.
+    """
+    return emergency_directory_service.find_nearby_facilities(lat=lat, lng=lng, facility_type=type, limit=limit)
+
+
+@app.get("/api/remedies", response_model=List[RemedyGuide], tags=["Disaster Remedies & Guides"])
+async def get_disaster_remedies():
+    """
+    Retrieve comprehensive disaster remedies, safety checklists (Before/During/After),
+    and First-Aid emergency instructions for Floods, Cyclones, Earthquakes, and Gas Hazards.
+    """
+    return emergency_directory_service.get_remedy_guides()
+
+
+@app.get("/api/reports/download-csv", tags=["Analytics & Reports"])
+async def download_incidents_csv():
+    """
+    Download complete real-time disaster incidents, SOS distress reports, and alert logs as CSV file.
+    """
+    import io
+    import csv
+    from fastapi.responses import Response
+
+    incidents = ingestion_service.get_all_incidents()
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow([
+        "Incident_ID", "Timestamp", "Disaster_Type", "Urgency_Level",
+        "Location_Name", "Latitude", "Longitude", "Status",
+        "Victims_Estimated", "Identified_Needs", "Source", "Raw_Distress_Text"
+    ])
+
+    for inc in incidents:
+        writer.writerow([
+            inc.id,
+            inc.created_at,
+            inc.disaster_type,
+            inc.urgency_level,
+            inc.location_name,
+            inc.latitude,
+            inc.longitude,
+            inc.status,
+            inc.victim_count_estimated,
+            "; ".join(inc.needs_identified),
+            inc.source,
+            inc.raw_text.replace("\n", " ")
+        ])
+
+    csv_data = output.getvalue()
+    filename = f"SAHAY_Disaster_Incident_Report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
 
 
 # --- Responder Field Check-in Endpoint ---

@@ -271,3 +271,65 @@ def test_manual_agency_intel_submission():
     assert data["result"]["type"] == "NEWS_ARTICLE"
     assert "Adajan" in data["result"]["data"]["location_name"]
 
+
+def test_direct_sms_alert_dispatch():
+    """Test real-time direct SMS alert dispatch to a given phone number."""
+    sms_payload = {
+        "phone_number": "+91-9825123456",
+        "alert_type": "RAINFALL_FLOOD",
+        "zone_name": "Vadodara Vishwamitri Basin",
+        "message": "[SAHAY ALERT] Flash flood warning for Vishwamitri river.",
+        "urgency": "CRITICAL"
+    }
+    res = client.post("/api/alerts/send-sms", json=sms_payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["phone_number"] == "+91-9825123456"
+    assert data["delivery_status"] == "DELIVERED"
+
+    # Test history retrieval
+    hist_res = client.get("/api/alerts/direct-history")
+    assert hist_res.status_code == 200
+    assert len(hist_res.json()) >= 1
+
+
+def test_emergency_facilities_directory():
+    """Test Gujarat emergency hospitals, fire stations, and police stations directory with proximity search."""
+    res = client.get("/api/facilities/nearby?lat=22.3072&lng=73.1812&type=ALL")
+    assert res.status_code == 200
+    facilities = res.json()
+    assert len(facilities) >= 5
+    first = facilities[0]
+    assert "facility" in first
+    assert "distance_km" in first
+    assert "eta_minutes" in first
+    assert len(first["facility"]["available_facilities"]) > 0
+
+    # Test hospital specific filter
+    hosp_res = client.get("/api/facilities/nearby?lat=22.3072&lng=73.1812&type=HOSPITAL")
+    assert hosp_res.status_code == 200
+    assert all(f["facility"]["type"] == "HOSPITAL" for f in hosp_res.json())
+
+
+def test_disaster_remedies_guidelines():
+    """Test disaster remedies, safety checklists, and first aid guides."""
+    res = client.get("/api/remedies")
+    assert res.status_code == 200
+    remedies = res.json()
+    assert len(remedies) >= 4
+    types = [r["disaster_type"] for r in remedies]
+    assert "FLOOD" in types
+    assert "CYCLONE" in types
+    assert "EARTHQUAKE" in types
+    assert len(remedies[0]["before_steps"]) > 0
+    assert len(remedies[0]["first_aid_tips"]) > 0
+
+
+def test_download_incidents_csv():
+    """Test downloading disaster incident logs as CSV."""
+    res = client.get("/api/reports/download-csv")
+    assert res.status_code == 200
+    assert "text/csv" in res.headers.get("content-type", "")
+    assert "Incident_ID,Timestamp,Disaster_Type" in res.text
+
+

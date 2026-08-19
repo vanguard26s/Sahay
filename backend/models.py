@@ -189,3 +189,55 @@ class IntelHarvestRequest(BaseModel):
     raw_content: str
     location_hint: Optional[str] = None
     author_or_url: Optional[str] = None
+
+
+# --- Real-Time Direct SMS Alerts & Rainfall Warning Models ---
+
+class DirectSMSAlertRequest(BaseModel):
+    phone_number: str = Field(..., description="Recipient mobile number e.g. +91-9825123456")
+    alert_type: str = Field("RAINFALL_FLOOD", description="RAINFALL_FLOOD, CYCLONE_WARNING, DAM_RELEASE, EVACUATION")
+    zone_name: str = Field("Vadodara Vishwamitri Basin", description="Locality or danger zone")
+    message: str = Field(..., description="Alert text message content")
+    urgency: str = Field("CRITICAL", description="CRITICAL, HIGH, ADVISORY")
+
+
+class DirectSMSAlertRecord(BaseModel):
+    alert_id: str
+    phone_number: str
+    alert_type: str
+    zone_name: str
+    message: str
+    urgency: str
+    delivery_status: str = "DELIVERED"
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+# --- Emergency Facilities Directory Models ---
+
+class EmergencyFacility(BaseModel):
+    facility_id: str
+    name: str
+    type: str  # "HOSPITAL", "FIRE_STATION", "POLICE_STATION"
+    phone: str
+    alternate_phone: Optional[str] = None
+    address: str
+    city: str
+    lat: float
+    lng: float
+    available_facilities: List[str] = Field(default_factory=list)
+    total_capacity: Optional[str] = "Full Operational"
+    is_24x7: bool = True
+
+
+# --- Disaster Remedy Guide Model ---
+
+class RemedyGuide(BaseModel):
+    disaster_type: str
+    title: str
+    summary: str
+    before_steps: List[str]
+    during_steps: List[str]
+    after_steps: List[str]
+    first_aid_tips: List[str]
+    emergency_helpline: str
+
