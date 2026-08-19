@@ -420,9 +420,55 @@ async function sendDirectSmsAlert(phone, alertType, zone, message) {
     }
 }
 
+async function loadTelecomStatus() {
+    try {
+        const resp = await fetch("/api/alerts/telecom-status");
+        const data = await resp.json();
+        const badge = document.getElementById("telecomStatusBadge");
+        if (badge) {
+            if (data.is_real_telecom_live) {
+                badge.innerText = "🟢 CELLULAR GATEWAY LIVE";
+                badge.style.background = "rgba(16, 185, 129, 0.15)";
+                badge.style.color = "#10b981";
+                badge.style.border = "1px solid #10b981";
+            } else {
+                badge.innerText = "READY / WHATSAPP ACTIVE";
+                badge.style.background = "rgba(56, 189, 248, 0.15)";
+                badge.style.color = "#38bdf8";
+            }
+        }
+    } catch (e) {}
+}
+
+async function saveTelecomConfig() {
+    const fast2smsKey = document.getElementById("cfgFast2smsKey")?.value?.trim();
+    if (!fast2smsKey) {
+        showToast("⚠️ Please enter Fast2SMS API Key");
+        return;
+    }
+
+    try {
+        const resp = await fetch("/api/alerts/telecom-config", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                provider: "FAST2SMS",
+                fast2sms_api_key: fast2smsKey
+            })
+        });
+        const res = await resp.json();
+        showToast("🟢 Telecom Gateway Activated! Real SMS will deliver to mobile numbers.");
+        loadTelecomStatus();
+    } catch (e) {
+        showToast("❌ Failed to save gateway config");
+    }
+}
+
 async function loadDirectSmsHistory() {
     const container = document.getElementById("directSmsHistoryContainer");
     if (!container) return;
+
+    loadTelecomStatus();
 
     try {
         const resp = await fetch("/api/alerts/direct-history");
@@ -436,15 +482,28 @@ async function loadDirectSmsHistory() {
 
         let html = "";
         logs.forEach(l => {
+            const waUrl = l.whatsapp_direct_url || `https://api.whatsapp.com/send?phone=${l.phone_number.replace(/\D/g, '')}&text=${encodeURIComponent(l.message)}`;
+            const carrierNote = l.telecom_carrier || "Cellular Gateway";
+
             html += `
                 <div class="sms-log-item">
                     <div class="sms-log-header">
                         <span class="sms-log-phone">📱 ${escapeHtml(l.phone_number)}</span>
-                        <span style="color: var(--accent-emerald); font-weight: 700;">✓ DELIVERED</span>
+                        <span style="color: var(--accent-emerald); font-weight: 700;">${escapeHtml(l.delivery_status || '✓ DELIVERED')}</span>
                     </div>
                     <div style="font-size: 11.5px; color: var(--accent-amber); font-weight: 600;">Zone: ${escapeHtml(l.zone_name)}</div>
                     <div class="sms-log-msg">${escapeHtml(l.message)}</div>
-                    <div style="font-size: 10px; color: var(--text-muted);">${new Date(l.timestamp).toLocaleTimeString()}</div>
+                    
+                    <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>📡 Route: ${escapeHtml(carrierNote)}</span>
+                        <span>${new Date(l.timestamp).toLocaleTimeString()}</span>
+                    </div>
+
+                    <div style="margin-top: 8px; display: flex; gap: 6px;">
+                        <a href="${waUrl}" target="_blank" class="btn btn-primary btn-xs" style="text-decoration: none; background: #25D366; border-color: #20ba5a; color: #000; font-weight: 800; flex: 1;">
+                            💬 Transmit Real WhatsApp Alert to ${escapeHtml(l.phone_number)}
+                        </a>
+                    </div>
                 </div>
             `;
         });
@@ -1122,6 +1181,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error switching scenario:", e);
         }
     });
+
+    // Telecom Gateway Save Button
+    document.getElementById("btnSaveTelecomConfig")?.addEventListener("click", saveTelecomConfig);
 
     // Start on Gateway
     showPortal("gateway");

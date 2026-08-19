@@ -43,7 +43,7 @@ from backend.ingestion_service import ingestion_service
 from backend.dispatch_service import dispatch_service, haversine_distance_km
 from backend.sitrep_service import sitrep_service
 from backend.routing_service import routing_service
-from backend.broadcast_service import broadcast_service, BroadcastRequest, BroadcastRecord
+from backend.broadcast_service import broadcast_service, BroadcastRequest, BroadcastRecord, TelecomGatewayConfig
 from backend.auth_service import auth_service
 from backend.news_social_harvester import news_social_harvester
 from backend.emergency_directory_service import emergency_directory_service
@@ -605,19 +605,34 @@ async def send_emergency_broadcast(req: BroadcastRequest):
     return record
 
 
-@app.post("/api/alerts/send-sms", response_model=DirectSMSAlertRecord, tags=["Emergency Broadcast & Alerts"])
+@app.get("/api/alerts/telecom-status", tags=["Emergency Broadcast & Alerts"])
+async def get_telecom_status():
+    """Check whether a live physical telecom SMS gateway (Fast2SMS or Twilio) is configured."""
+    return broadcast_service.get_telecom_config_status()
+
+
+@app.post("/api/alerts/telecom-config", tags=["Emergency Broadcast & Alerts"])
+async def set_telecom_config(config: TelecomGatewayConfig):
+    """Configure live API key for Fast2SMS or Twilio to deliver real cellular SMS to mobile numbers."""
+    broadcast_service.update_telecom_config(config)
+    return {"status": "UPDATED", "config": broadcast_service.get_telecom_config_status()}
+
+
+@app.post("/api/alerts/send-sms", tags=["Emergency Broadcast & Alerts"])
 async def send_direct_sms(req: DirectSMSAlertRequest):
     """
     Send real-time emergency alert message directly to a recipient phone number (e.g. +91-9825123456).
+    Fires live Fast2SMS or Twilio cellular API if configured, and generates 1-click WhatsApp web dispatch link.
     """
     record = broadcast_service.send_direct_sms(req)
     return record
 
 
-@app.get("/api/alerts/direct-history", response_model=List[DirectSMSAlertRecord], tags=["Emergency Broadcast & Alerts"])
+@app.get("/api/alerts/direct-history", tags=["Emergency Broadcast & Alerts"])
 async def get_direct_sms_history():
     """Retrieve history of real-time direct SMS alerts sent to mobile numbers."""
     return broadcast_service.get_direct_sms_history()
+
 
 
 # --- Emergency Facilities Directory & Navigation ---

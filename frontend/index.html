@@ -461,11 +461,32 @@
                                     📡 SEND LIVE SMS ALERT TO NUMBER
                                 </button>
                             </form>
+
+                            <!-- Telecom Cellular Gateway Configuration -->
+                            <div class="telecom-config-box" style="margin-top: 15px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong style="font-size: 12.5px; color: var(--accent-cyan);">⚙️ Real-World Telecom Gateway Setup</strong>
+                                    <span id="telecomStatusBadge" style="font-size: 10.5px; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 10px;">READY</span>
+                                </div>
+                                <p style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 10px;">
+                                    To deliver actual physical cellular SMS to real Indian mobile numbers, paste your free <strong>Fast2SMS API Key</strong> (<a href="https://www.fast2sms.com" target="_blank" style="color: var(--accent-cyan);">get free key at fast2sms.com</a>) or Twilio credentials. You can also click the <strong>💬 Instant WhatsApp Alert</strong> button on any log below to send it immediately to that phone for free!
+                                </p>
+                                
+                                <div class="form-group" style="margin-bottom: 8px;">
+                                    <label style="font-size: 11px;">Fast2SMS India API Key (Free Indian SMS):</label>
+                                    <input type="password" id="cfgFast2smsKey" placeholder="Paste Fast2SMS API Key here...">
+                                </div>
+
+                                <button class="btn btn-secondary btn-xs btn-full" id="btnSaveTelecomConfig">💾 Save & Activate Telecom Gateway</button>
+                            </div>
                         </div>
 
                         <!-- Sent SMS History -->
                         <div class="sms-history-card">
-                            <h3>📋 Real-Time SMS Delivery Logs</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>📋 Real-Time SMS Delivery Logs</h3>
+                                <span style="font-size: 11px; color: var(--accent-emerald);">⚡ Instant WhatsApp + Cellular Ready</span>
+                            </div>
                             <div class="sms-history-list" id="directSmsHistoryContainer">
                                 <!-- Populated dynamically -->
                             </div>
@@ -473,6 +494,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- VIEW 3: ANALYTICS & SITREP -->
             <div class="view-pane" id="analyticsView">
