@@ -241,3 +241,62 @@ class RemedyGuide(BaseModel):
     first_aid_tips: List[str]
     emergency_helpline: str
 
+
+# --- Emergency Relief Shelters & Safe Havens Models ---
+
+class ReliefShelter(BaseModel):
+    shelter_id: str
+    name: str
+    locality: str
+    city: str
+    lat: float
+    lng: float
+    capacity_total: int
+    current_occupants: int
+    food_packets_available: int
+    drinking_water_litres: int
+    medical_team_on_site: bool = True
+    contact_phone: str
+    status: str = "OPEN"  # "OPEN", "NEAR_CAPACITY", "FULL"
+
+
+# --- Emergency Blood & Oxygen Inventory Models ---
+
+class BloodOxygenInventory(BaseModel):
+    center_id: str
+    name: str
+    city: str
+    phone: str
+    blood_units: Dict[str, int]  # {"O+": 85, "A+": 60, "B+": 75, "AB-": 18}
+    oxygen_cylinders_available: int
+    anti_venom_vials: int
+    last_updated: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+# --- Live Dam & River Early Flood Warning Gauges ---
+
+class DamWaterGauge(BaseModel):
+    gauge_id: str
+    river_or_dam_name: str
+    location: str
+    current_level_ft: float
+    warning_level_ft: float
+    danger_level_ft: float
+    discharge_cusecs: int
+    risk_level: str  # "RED_ALERT", "AMBER_WARNING", "NORMAL"
+    trend: str  # "RISING_FAST", "STABLE", "RECEDING"
+
+
+# --- Family Safety & Missing Persons Registry Models ---
+
+class SafePersonRecord(BaseModel):
+    record_id: str
+    full_name: str
+    phone_number: str
+    current_location: str
+    status: str = "SAFE"  # "SAFE", "EVACUATING", "NEED_ASSISTANCE"
+    notes: Optional[str] = None
+    family_members_count: int = 1
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+

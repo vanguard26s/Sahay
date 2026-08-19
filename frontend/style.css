@@ -1263,6 +1263,104 @@ body {
 
 .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
 
+/* ==========================================================================
+   SHELTERS, DAM GAUGES, BLOOD STOCK & SAFE REGISTRY CARDS
+   ========================================================================== */
+
+.shelters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 16px;
+}
+
+.shelter-card, .dam-card, .blood-card, .safe-person-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.shelter-card:hover, .dam-card:hover, .blood-card:hover, .safe-person-card:hover {
+    border-color: var(--accent-cyan);
+    background: var(--bg-surface-elevated);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.shelter-header, .dam-header, .blood-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.shelter-name, .dam-name, .blood-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-primary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 4px 0;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #ef4444);
+    border-radius: 4px;
+}
+
+.shelter-stats-grid, .dam-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: var(--bg-primary);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+}
+
+.blood-tags-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.blood-tag-box {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px;
+    text-align: center;
+}
+
+.blood-type-lbl { font-size: 11px; font-weight: 700; color: var(--accent-red); display: block; }
+.blood-count-val { font-size: 13px; font-weight: 800; font-family: var(--font-mono); color: #fff; }
+
+.safe-search-bar {
+    display: flex;
+    gap: 10px;
+    background: var(--bg-surface);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.safe-persons-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 14px;
+}
+
 /* Text color helpers */
 .text-red { color: var(--accent-red) !important; }
 .text-amber { color: var(--accent-amber) !important; }
@@ -1292,9 +1390,10 @@ body {
 }
 
 @media (max-width: 900px) {
-    .gateway-cards-grid, .citizen-sos-banner, .citizen-map-layout, .sms-dispatcher-grid, .charts-grid-2, .stats-grid-4, .triage-columns-grid {
+    .gateway-cards-grid, .citizen-sos-banner, .citizen-map-layout, .sms-dispatcher-grid, .charts-grid-2, .stats-grid-4, .shelters-grid, .dam-gauges-grid, .blood-inventory-grid {
         grid-template-columns: 1fr;
     }
     .dashboard-grid { grid-template-columns: 1fr; }
     .sidebar-left, .sidebar-right { height: 350px; }
 }
+

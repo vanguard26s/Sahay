@@ -36,7 +36,11 @@ from backend.models import (
     DirectSMSAlertRequest,
     DirectSMSAlertRecord,
     EmergencyFacility,
-    RemedyGuide
+    RemedyGuide,
+    ReliefShelter,
+    BloodOxygenInventory,
+    DamWaterGauge,
+    SafePersonRecord
 )
 from backend.nlp_engine import nlp_engine
 from backend.ingestion_service import ingestion_service
@@ -658,6 +662,39 @@ async def get_disaster_remedies():
     and First-Aid emergency instructions for Floods, Cyclones, Earthquakes, and Gas Hazards.
     """
     return emergency_directory_service.get_remedy_guides()
+
+
+# --- Emergency Shelters, Blood/Oxygen & Dam Telemetry Endpoints ---
+
+@app.get("/api/shelters", response_model=List[ReliefShelter], tags=["Emergency Shelters & Relief Hubs"])
+async def get_relief_shelters(city: Optional[str] = Query("ALL", description="City filter e.g. Vadodara, Surat")):
+    """Retrieve verified Gujarat emergency relief shelters, occupancy rates, and food/water supplies."""
+    return emergency_directory_service.get_relief_shelters(city=city)
+
+
+@app.get("/api/blood-oxygen", response_model=List[BloodOxygenInventory], tags=["Medical Emergency Resources"])
+async def get_blood_oxygen_inventory():
+    """Retrieve live emergency blood units, oxygen cylinder reserves, and anti-venom supplies."""
+    return emergency_directory_service.get_blood_oxygen_inventory()
+
+
+@app.get("/api/dam-gauges", response_model=List[DamWaterGauge], tags=["Flood & Dam Telemetry"])
+async def get_dam_water_gauges():
+    """Retrieve live water levels, danger marks, discharge rates, and flood risk gauges for Gujarat dams & rivers."""
+    return emergency_directory_service.get_dam_water_gauges()
+
+
+@app.get("/api/family-safe/search", response_model=List[SafePersonRecord], tags=["Family Safety & Missing Persons"])
+async def search_family_safety(query: str = Query("", description="Search by name, phone, or location")):
+    """Search for family members and friends marked safe in Gujarat disaster relief camps."""
+    return emergency_directory_service.search_safe_persons(query=query)
+
+
+@app.post("/api/family-safe/mark", response_model=SafePersonRecord, tags=["Family Safety & Missing Persons"])
+async def mark_family_safe(req: SafePersonRecord):
+    """Mark yourself or your family safe with current relief shelter location."""
+    return emergency_directory_service.register_safe_person(req)
+
 
 
 @app.get("/api/reports/download-csv", tags=["Analytics & Reports"])

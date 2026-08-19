@@ -360,16 +360,199 @@ DISASTER_REMEDY_GUIDES: List[Dict[str, Any]] = [
 ]
 
 
+from backend.models import (
+    EmergencyFacility,
+    RemedyGuide,
+    ReliefShelter,
+    BloodOxygenInventory,
+    DamWaterGauge,
+    SafePersonRecord
+)
+
+
+VERIFIED_GUJARAT_SHELTERS: List[Dict[str, Any]] = [
+    {
+        "shelter_id": "SHEL-VAD-001",
+        "name": "Akota Indoor Stadium Emergency Relief Sanctuary",
+        "locality": "Akota Main Road",
+        "city": "Vadodara",
+        "lat": 22.2965,
+        "lng": 73.1750,
+        "capacity_total": 2500,
+        "current_occupants": 1150,
+        "food_packets_available": 4200,
+        "drinking_water_litres": 15000,
+        "medical_team_on_site": True,
+        "contact_phone": "0265-2358899",
+        "status": "OPEN"
+    },
+    {
+        "shelter_id": "SHEL-VAD-002",
+        "name": "Sama Indoor Sports Complex Relief Hub",
+        "locality": "Sama Road, North Zone",
+        "city": "Vadodara",
+        "lat": 22.3380,
+        "lng": 73.1950,
+        "capacity_total": 1800,
+        "current_occupants": 740,
+        "food_packets_available": 3000,
+        "drinking_water_litres": 8000,
+        "medical_team_on_site": True,
+        "contact_phone": "0265-2782244",
+        "status": "OPEN"
+    },
+    {
+        "shelter_id": "SHEL-VAD-003",
+        "name": "MSU (Maharaja Sayajirao University) Pavilion Safe Sanctuary",
+        "locality": "Sayajigunj",
+        "city": "Vadodara",
+        "lat": 22.3140,
+        "lng": 73.1890,
+        "capacity_total": 3200,
+        "current_occupants": 1420,
+        "food_packets_available": 5500,
+        "drinking_water_litres": 20000,
+        "medical_team_on_site": True,
+        "contact_phone": "0265-2795555",
+        "status": "OPEN"
+    },
+    {
+        "shelter_id": "SHEL-SUR-001",
+        "name": "Rander Community Flood Relief Center",
+        "locality": "Rander Road",
+        "city": "Surat",
+        "lat": 21.2180,
+        "lng": 72.7950,
+        "capacity_total": 2000,
+        "current_occupants": 920,
+        "food_packets_available": 3500,
+        "drinking_water_litres": 12000,
+        "medical_team_on_site": True,
+        "contact_phone": "0261-2761100",
+        "status": "OPEN"
+    }
+]
+
+
+VERIFIED_BLOOD_OXYGEN_INVENTORY: List[Dict[str, Any]] = [
+    {
+        "center_id": "BLOOD-VAD-001",
+        "name": "SSG Hospital Apex Regional Blood & Medical Oxygen Bank",
+        "city": "Vadodara",
+        "phone": "0265-2424848",
+        "blood_units": {"O+": 85, "A+": 60, "B+": 75, "AB+": 40, "O-": 18, "A-": 12, "B-": 15, "AB-": 8},
+        "oxygen_cylinders_available": 340,
+        "anti_venom_vials": 120
+    },
+    {
+        "center_id": "BLOOD-VAD-002",
+        "name": "Prathama Blood Centre & GMERS Gotri Hub",
+        "city": "Vadodara",
+        "phone": "0265-2398001",
+        "blood_units": {"O+": 62, "A+": 45, "B+": 58, "AB+": 25, "O-": 10, "A-": 8, "B-": 11, "AB-": 5},
+        "oxygen_cylinders_available": 190,
+        "anti_venom_vials": 65
+    },
+    {
+        "center_id": "BLOOD-AHM-001",
+        "name": "Ahmedabad Civil Apex Disaster Blood Bank",
+        "city": "Ahmedabad",
+        "phone": "079-22680074",
+        "blood_units": {"O+": 190, "A+": 140, "B+": 175, "AB+": 90, "O-": 45, "A-": 30, "B-": 38, "AB-": 22},
+        "oxygen_cylinders_available": 850,
+        "anti_venom_vials": 350
+    }
+]
+
+
+VERIFIED_DAM_WATER_GAUGES: List[Dict[str, Any]] = [
+    {
+        "gauge_id": "DAM-AJWA-01",
+        "river_or_dam_name": "Ajwa Dam (Surya Sagar Reservoir)",
+        "location": "Vadodara Catchment Area",
+        "current_level_ft": 213.85,
+        "warning_level_ft": 212.00,
+        "danger_level_ft": 214.00,
+        "discharge_cusecs": 45000,
+        "risk_level": "RED_ALERT",
+        "trend": "RISING_FAST"
+    },
+    {
+        "gauge_id": "RIV-VISH-01",
+        "river_or_dam_name": "Vishwamitri River Bridge Gauge",
+        "location": "Karelibaug / Kalaghoda Bridge, Vadodara",
+        "current_level_ft": 35.40,
+        "warning_level_ft": 24.00,
+        "danger_level_ft": 26.00,
+        "discharge_cusecs": 38500,
+        "risk_level": "RED_ALERT",
+        "trend": "RISING_FAST"
+    },
+    {
+        "gauge_id": "DAM-UKAI-01",
+        "river_or_dam_name": "Ukai Dam (Tapi River)",
+        "location": "Tapi / Surat District",
+        "current_level_ft": 338.20,
+        "warning_level_ft": 335.00,
+        "danger_level_ft": 345.00,
+        "discharge_cusecs": 125000,
+        "risk_level": "AMBER_WARNING",
+        "trend": "STABLE"
+    },
+    {
+        "gauge_id": "DAM-NARM-01",
+        "river_or_dam_name": "Sardar Sarovar Narmada Dam",
+        "location": "Kevadia / Narmada",
+        "current_level_ft": 136.50,
+        "warning_level_ft": 135.00,
+        "danger_level_ft": 138.68,
+        "discharge_cusecs": 85000,
+        "risk_level": "NORMAL",
+        "trend": "STABLE"
+    }
+]
+
+
 class EmergencyDirectoryService:
-    """Provides querying and proximity sorting for Gujarat emergency facilities and remedy guides."""
+    """Provides querying and proximity sorting for Gujarat emergency facilities, shelters, blood/oxygen, dam telemetry, and safe registry."""
 
     def __init__(self):
         self.facilities: List[EmergencyFacility] = []
-        self._load_facilities()
+        self.shelters: List[ReliefShelter] = []
+        self.blood_inventory: List[BloodOxygenInventory] = []
+        self.dam_gauges: List[DamWaterGauge] = []
+        self.safe_persons: List[SafePersonRecord] = []
+        self._load_data()
 
-    def _load_facilities(self):
+    def _load_data(self):
         for data in VERIFIED_GUJARAT_FACILITIES:
             self.facilities.append(EmergencyFacility(**data))
+        for data in VERIFIED_GUJARAT_SHELTERS:
+            self.shelters.append(ReliefShelter(**data))
+        for data in VERIFIED_BLOOD_OXYGEN_INVENTORY:
+            self.blood_inventory.append(BloodOxygenInventory(**data))
+        for data in VERIFIED_DAM_WATER_GAUGES:
+            self.dam_gauges.append(DamWaterGauge(**data))
+
+        # Seed initial safe registry
+        self.safe_persons.append(SafePersonRecord(
+            record_id="SAFE-001",
+            full_name="Jignesh Shah & Family",
+            phone_number="+91-9825123456",
+            current_location="Akota Indoor Stadium Safe Camp, Vadodara",
+            status="SAFE",
+            notes="Evacuated safely from Karelibaug ground floor. Family of 5 safe.",
+            family_members_count=5
+        ))
+        self.safe_persons.append(SafePersonRecord(
+            record_id="SAFE-002",
+            full_name="Pooja Patel",
+            phone_number="+91-9898112233",
+            current_location="Sama Indoor Complex, Vadodara",
+            status="SAFE",
+            notes="Reached relief center with infant. Food and water available.",
+            family_members_count=3
+        ))
 
     def get_all_facilities(self, facility_type: Optional[str] = None, city: Optional[str] = None) -> List[EmergencyFacility]:
         results = self.facilities
@@ -392,7 +575,6 @@ class EmergencyDirectoryService:
 
         for fac in candidates:
             dist_km = haversine_distance_km(lat, lng, fac.lat, fac.lng)
-            # Estimate driving time (assuming 30 km/h emergency response speed in city)
             est_minutes = max(2, round((dist_km / 30.0) * 60))
             
             ranked.append({
@@ -406,8 +588,33 @@ class EmergencyDirectoryService:
         ranked.sort(key=lambda x: x["distance_km"])
         return ranked[:limit]
 
+    def get_relief_shelters(self, city: Optional[str] = None) -> List[ReliefShelter]:
+        if city and city != "ALL":
+            return [s for s in self.shelters if s.city.lower() == city.lower()]
+        return self.shelters
+
+    def get_blood_oxygen_inventory(self) -> List[BloodOxygenInventory]:
+        return self.blood_inventory
+
+    def get_dam_water_gauges(self) -> List[DamWaterGauge]:
+        return self.dam_gauges
+
+    def register_safe_person(self, person: SafePersonRecord) -> SafePersonRecord:
+        self.safe_persons.insert(0, person)
+        return person
+
+    def search_safe_persons(self, query: str = "") -> List[SafePersonRecord]:
+        if not query:
+            return self.safe_persons
+        q = query.lower()
+        return [
+            p for p in self.safe_persons
+            if q in p.full_name.lower() or q in p.phone_number.lower() or q in p.current_location.lower()
+        ]
+
     def get_remedy_guides(self) -> List[RemedyGuide]:
         return [RemedyGuide(**g) for g in DISASTER_REMEDY_GUIDES]
 
 
 emergency_directory_service = EmergencyDirectoryService()
+

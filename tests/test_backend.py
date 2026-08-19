@@ -333,3 +333,61 @@ def test_download_incidents_csv():
     assert "Incident_ID,Timestamp,Disaster_Type" in res.text
 
 
+def test_relief_shelters_api():
+    """Test emergency evacuation relief shelters directory."""
+    res = client.get("/api/shelters")
+    assert res.status_code == 200
+    shelters = res.json()
+    assert len(shelters) >= 3
+    assert shelters[0]["capacity_total"] > 1000
+    assert shelters[0]["food_packets_available"] > 0
+    assert shelters[0]["drinking_water_litres"] > 0
+
+
+def test_blood_oxygen_inventory_api():
+    """Test emergency blood groups and oxygen cylinder reserves."""
+    res = client.get("/api/blood-oxygen")
+    assert res.status_code == 200
+    inventory = res.json()
+    assert len(inventory) >= 2
+    assert "O+" in inventory[0]["blood_units"]
+    assert inventory[0]["oxygen_cylinders_available"] > 100
+    assert inventory[0]["anti_venom_vials"] > 0
+
+
+def test_dam_water_gauges_api():
+    """Test live dam and river flood telemetry gauges."""
+    res = client.get("/api/dam-gauges")
+    assert res.status_code == 200
+    gauges = res.json()
+    assert len(gauges) >= 3
+    names = [g["river_or_dam_name"] for g in gauges]
+    assert any("Ajwa" in n for n in names)
+    assert any("Vishwamitri" in n for n in names)
+    assert gauges[0]["discharge_cusecs"] > 0
+
+
+def test_family_safe_registry_api():
+    """Test family safety registration and lookup."""
+    # Test registration
+    payload = {
+        "record_id": "SAFE-TEST-001",
+        "full_name": "Rohan Desai",
+        "phone_number": "+91-9876543210",
+        "current_location": "Akota Relief Camp",
+        "status": "SAFE",
+        "notes": "Safe with brother.",
+        "family_members_count": 2
+    }
+    post_res = client.post("/api/family-safe/mark", json=payload)
+    assert post_res.status_code == 200
+    assert post_res.json()["full_name"] == "Rohan Desai"
+
+    # Test search
+    search_res = client.get("/api/family-safe/search?query=Rohan")
+    assert search_res.status_code == 200
+    assert len(search_res.json()) >= 1
+    assert search_res.json()[0]["full_name"] == "Rohan Desai"
+
+
+
