@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAHAY | Gujarat Disaster Intelligence & Emergency Command System</title>
-    <meta name="description" content="Autonomous disaster response, live citizen SOS, emergency facilities navigation, real-time SMS alerts, relief shelters, and flood gauges for Gujarat SEOC.">
+    <meta name="description" content="Autonomous disaster response, citizen emergency SOS, nearby facilities navigation, real-time mobile SMS alerts, and situation reports for Gujarat SEOC.">
 
     <!-- Leaflet GIS Stylesheet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -37,7 +37,7 @@
                     <span class="brand-icon">🛡️</span>
                 </div>
                 <h1 class="gateway-title">SAHAY <span class="badge-version">GUJARAT SEOC v3.5</span></h1>
-                <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time SMS Dispatch, Relief Shelters & Dam Telemetry</p>
+                <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time Mobile SMS Alerts, and Safe Facilities Navigation</p>
                 <div class="emergency-hotlines-banner">
                     <span>🚨 STATE EMERGENCY HELPLINES:</span>
                     <strong>DIAL 112</strong> <em>(All Emergency)</em> | 
@@ -54,16 +54,14 @@
                     <div class="card-glow-bg"></div>
                     <div class="card-icon">👤</div>
                     <h2>CITIZEN EMERGENCY PORTAL</h2>
-                    <p class="card-desc">For citizens, victims, and families in affected disaster zones. Fast SOS beacon, nearby hospital & police locator with live navigation, relief shelters, and safety remedies.</p>
+                    <p class="card-desc">For citizens, victims, and families in affected disaster zones. Fast SOS beacon, nearby hospital & police locator with live navigation, and safety remedies.</p>
                     
                     <ul class="portal-features-list">
                         <li>⚡ <strong>Instant Emergency SOS</strong> with Loud Alarm Siren</li>
                         <li>🏥 <strong>Nearby Hospitals, Fire & Police Stations</strong> with Direct Phone Numbers</li>
                         <li>🧭 <strong>Turn-by-Turn Safe Navigation Map</strong> to nearest emergency hubs</li>
-                        <li>🎪 <strong>Relief Shelters, Free Food & Clean Water Camps</strong></li>
-                        <li>👥 <strong>"I Am Safe" Family Safety & Missing Persons Registry</strong></li>
                         <li>🩹 <strong>Disaster Remedies & First-Aid Guides</strong> (Floods, Cyclones, Quakes)</li>
-                        <li>📥 <strong>Download Personal SOS Receipt</strong></li>
+                        <li>📥 <strong>Download Personal SOS Distress Receipt</strong></li>
                     </ul>
 
                     <div class="card-actions-col">
@@ -81,14 +79,12 @@
                     <div class="card-glow-bg"></div>
                     <div class="card-icon">🛡️</div>
                     <h2>AUTHORITY COMMAND CENTER</h2>
-                    <p class="card-desc">For GSDMA, NDRF 6th Bn, SDRF, Police Commissioners, and SEOC officials. Tactical GIS crisis mapping, real mobile SMS/WhatsApp dispatching, dam telemetry, and SitRep downloads.</p>
+                    <p class="card-desc">For GSDMA, NDRF 6th Bn, SDRF, Police Commissioners, and SEOC officials. Tactical GIS crisis mapping, real mobile SMS alert dispatching, and SitRep downloads.</p>
                     
                     <ul class="portal-features-list">
                         <li>🗺️ <strong>Tactical GIS Incident Map</strong> with Live Gujarat Scenario Grids</li>
-                        <li>📱 <strong>Direct Real-Time SMS Alert Sender</strong> to any mobile number</li>
-                        <li>🌊 <strong>Live Dam Water Levels & Early Flood Warning Gauges</strong> (Ajwa / Ukai)</li>
-                        <li>🩸 <strong>Blood Units & Medical Oxygen Cylinder Inventory</strong></li>
-                        <li>🎪 <strong>Relief Shelter & Evacuation Camp Management</strong></li>
+                        <li>📱 <strong>Direct Real-Time Mobile SMS Sender</strong> to any phone number</li>
+                        <li>📊 <strong>Predictive Disaster Analytics</strong> & Casualty Projections</li>
                         <li>📥 <strong>Download Incident Logs (CSV)</strong> & Executive SitRep (PDF)</li>
                         <li>📡 <strong>Agency OSINT & News Harvester</strong> (Gujarat Samachar, Sandesh, ANI)</li>
                     </ul>
@@ -127,7 +123,7 @@
                 </div>
                 <div>
                     <div class="brand-title">SAHAY <span class="badge-version">CITIZEN RESCUE HUB</span></div>
-                    <div class="brand-sub">Emergency SOS, Nearby Hospitals, Police & Fire Navigation, Relief Camps, and Safe Registry</div>
+                    <div class="brand-sub">Emergency SOS, Nearby Hospitals, Police & Fire Navigation, and Safety Remedies</div>
                 </div>
             </div>
 
@@ -158,16 +154,13 @@
                         <button class="btn btn-secondary btn-sm" id="btnDownloadSosReceipt">
                             📥 Download My SOS Receipt
                         </button>
-                        <button class="btn btn-primary btn-sm" id="btnOpenMarkSafeModal">
-                            ✅ Mark Myself Safe
-                        </button>
                     </div>
                 </div>
                 <div class="sos-banner-right">
                     <div class="live-weather-card">
                         <div class="weather-title">🌧️ LIVE GUJARAT WEATHER & RAINFALL ALERT</div>
                         <div class="weather-status text-amber">⚠️ RED ALERT: Vishwamitri River Level 35.4 Ft (Ajwa Dam Outflow 45,000 Cusecs)</div>
-                        <p class="weather-desc">Low-lying areas in Karelibaug, Sayajigunj & Fatehgunj on evacuation notice. Move to Akota Stadium or Sama Relief Camp.</p>
+                        <p class="weather-desc">Low-lying areas in Karelibaug, Sayajigunj & Fatehgunj on evacuation notice. NDRF boat teams deployed.</p>
                     </div>
                 </div>
             </div>
@@ -175,9 +168,7 @@
             <!-- Citizen Navigation Tabs -->
             <div class="citizen-tabs-bar">
                 <button class="cit-tab-btn active" data-cit-tab="tabFacilities">🏥 Nearby Hospitals, Fire & Police</button>
-                <button class="cit-tab-btn" data-cit-tab="tabShelters">🎪 Emergency Relief Camps & Food Hubs</button>
                 <button class="cit-tab-btn" data-cit-tab="tabCitizenMap">🧭 Live Emergency Navigation Map</button>
-                <button class="cit-tab-btn" data-cit-tab="tabFamilySafe">👥 Family Safety & Missing Registry</button>
                 <button class="cit-tab-btn" data-cit-tab="tabRemedies">🩹 Disaster Remedies & First-Aid</button>
                 <button class="cit-tab-btn" data-cit-tab="tabLiveAlerts">📢 Emergency Bulletins</button>
             </div>
@@ -204,18 +195,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: RELIEF SHELTERS & SAFE CAMPS -->
-            <div class="cit-tab-pane" id="tabShelters">
-                <div class="section-title-bar" style="margin-bottom: 15px;">
-                    <h2>🎪 Verified Gujarat Disaster Relief Camps & Free Food Sanctuaries</h2>
-                    <p class="sub-text">Safe high-ground sanctuaries providing dry sleeping quarters, community kitchens, clean drinking water, and medical doctors.</p>
-                </div>
-                <div class="shelters-grid" id="citizenSheltersContainer">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
-
-            <!-- TAB 3: CITIZEN NAVIGATION MAP -->
+            <!-- TAB 2: CITIZEN NAVIGATION MAP -->
             <div class="cit-tab-pane" id="tabCitizenMap">
                 <div class="citizen-map-layout">
                     <div class="citizen-map-panel">
@@ -223,29 +203,15 @@
                     </div>
                     <div class="citizen-route-sidebar" id="citizenRouteInfoBox">
                         <h3>🧭 Active Evacuation Navigation</h3>
-                        <p class="sub-text">Click 'Navigate on Map' on any hospital, shelter, fire station, or police station to view the safe turn-by-turn route corridor.</p>
+                        <p class="sub-text">Click 'Navigate on Map' on any hospital, fire station, or police station to view the safe turn-by-turn route corridor.</p>
                         <div id="citizenRouteDetails">
-                            <div class="empty-state">Select an emergency facility or relief camp above to compute safe driving route avoiding flooded zones.</div>
+                            <div class="empty-state">Select an emergency facility above to compute safe driving route avoiding flooded zones.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: FAMILY SAFETY & MISSING REGISTRY -->
-            <div class="cit-tab-pane" id="tabFamilySafe">
-                <div class="family-safe-layout">
-                    <div class="safe-search-bar">
-                        <input type="text" id="familySearchInput" placeholder="🔍 Search family member by Name, Phone (+91...), or Relief Camp..." class="search-input">
-                        <button class="btn btn-primary" id="btnSearchFamily">Search Registry</button>
-                        <button class="btn btn-secondary" id="btnOpenMarkSafeFromTab">✅ Mark Myself Safe</button>
-                    </div>
-                    <div class="safe-persons-list" id="familySafeContainer" style="margin-top: 15px;">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 5: DISASTER REMEDIES & FIRST AID GUIDE -->
+            <!-- TAB 3: DISASTER REMEDIES & FIRST AID GUIDE -->
             <div class="cit-tab-pane" id="tabRemedies">
                 <div class="remedies-container">
                     <div class="section-title-bar">
@@ -259,7 +225,7 @@
                 </div>
             </div>
 
-            <!-- TAB 6: LIVE DISASTER ALERTS & BROADCASTS -->
+            <!-- TAB 4: LIVE DISASTER ALERTS & BROADCASTS -->
             <div class="cit-tab-pane" id="tabLiveAlerts">
                 <div class="citizen-alerts-list" id="citizenAlertsContainer">
                     <!-- Populated dynamically -->
@@ -281,17 +247,14 @@
                 </div>
                 <div>
                     <div class="brand-title">SAHAY <span class="badge-version">COMMAND CENTER</span></div>
-                    <div class="brand-sub">Autonomous Gujarat Incident Intelligence, Real-Time SMS Dispatch, Dam Telemetry & Resource Hub</div>
+                    <div class="brand-sub">Autonomous Gujarat Incident Intelligence, Real-Time Mobile SMS Dispatch & Predictive Analytics</div>
                 </div>
             </div>
 
-            <!-- View Switcher (Cleaned up: Removed Fleet & Kanban, Added Shelters, Dam Gauges, Blood Inventory) -->
+            <!-- View Switcher -->
             <nav class="view-mode-nav">
                 <button class="view-btn active" data-view="gisView">🗺️ Tactical GIS Map</button>
                 <button class="view-btn" data-view="smsDispatcherTab">📱 Real-Time SMS Dispatcher</button>
-                <button class="view-btn" data-view="damGaugesView">🌊 Dam Water Levels</button>
-                <button class="view-btn" data-view="bloodOxygenView">🩸 Blood & Oxygen Stock</button>
-                <button class="view-btn" data-view="authoritySheltersView">🎪 Relief Shelters</button>
                 <button class="view-btn" data-view="analyticsView">📊 Analytics & SitRep</button>
                 <button class="view-btn" data-view="agencyNewsView">📡 Agency News & OSINT</button>
             </nav>
@@ -322,13 +285,8 @@
             </div>
             <div class="kpi-divider"></div>
             <div class="kpi-item">
-                <span class="kpi-label">RELIEF SHELTERS OPEN</span>
-                <span class="kpi-val text-cyan" id="kpiSheltersCount">4 Active</span>
-            </div>
-            <div class="kpi-divider"></div>
-            <div class="kpi-item">
-                <span class="kpi-label">AJWA DAM WATER LEVEL</span>
-                <span class="kpi-val text-red" id="kpiAjwaLevel">213.85 Ft (RED)</span>
+                <span class="kpi-label">SMS BROADCAST GATEWAY</span>
+                <span class="kpi-val text-emerald" id="kpiSmsStatus">CELLULAR ACTIVE</span>
             </div>
             <div class="kpi-divider"></div>
             <!-- Download Center Quick Buttons -->
@@ -435,17 +393,21 @@
                             <button class="btn btn-primary btn-full" id="btnApplyScenario">⚡ Apply Scenario</button>
                         </div>
 
-                        <!-- Quick Gauges Glance -->
+                        <!-- Quick Facilities Glance -->
                         <div class="fleet-quick-box">
-                            <h4>LIVE RESERVOIR & RIVER GAUGES</h4>
-                            <div id="quickGaugesBox" style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px;">
-                                <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 8px; border-radius: 4px;">
-                                    <strong>🌊 Ajwa Dam: 213.85 Ft</strong> <span class="text-red">(DANGER 214.0 Ft)</span><br>
-                                    <span>Discharge: 45,000 Cusecs | Trend: Rising Fast</span>
+                            <h4>EMERGENCY RESPONSE HUBS</h4>
+                            <div id="quickFacilitiesList" style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px;">
+                                <div style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px;">
+                                    <strong>🏥 SSG Hospital Level-1 Trauma Care</strong><br>
+                                    <span>Phone: 0265-2424848 | 150 ICU Beds</span>
                                 </div>
-                                <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; padding: 8px; border-radius: 4px;">
-                                    <strong>🌊 Vishwamitri Gauge: 35.4 Ft</strong> <span class="text-red">(RED ALERT)</span><br>
-                                    <span>Danger Mark: 26.0 Ft | Water Over Bridge</span>
+                                <div style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px;">
+                                    <strong>🚒 Dandia Bazar Fire HQ & IRB Boats</strong><br>
+                                    <span>Phone: 0265-2412888 | 10 Rescue Boats</span>
+                                </div>
+                                <div style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px;">
+                                    <strong>👮 Vadodara City Police Control Room</strong><br>
+                                    <span>Phone: 0265-2415111 / DIAL 112</span>
                                 </div>
                             </div>
                         </div>
@@ -459,15 +421,15 @@
                     <div class="page-header">
                         <div>
                             <h2>📱 Real-Time Mobile SMS & Emergency Alert Dispatcher</h2>
-                            <p class="sub-text">Transmit live SMS warnings to specific citizen numbers with Native Mobile SMS Intent & WhatsApp Web Real-World Transmission.</p>
+                            <p class="sub-text">Transmit live SMS warnings directly to recipient mobile phone numbers via Cellular SMS Gateways and Native Device SMS.</p>
                         </div>
                     </div>
 
                     <div class="sms-dispatcher-grid">
                         <!-- Direct SMS Form -->
                         <div class="sms-form-card">
-                            <h3>✉️ Send Direct Alert to Given Phone Number</h3>
-                            <p class="sub-text">Enters recipient phone number to trigger direct SMS transmission to that real device.</p>
+                            <h3>✉️ Send Direct SMS Alert to Phone Number</h3>
+                            <p class="sub-text">Enters recipient phone number to trigger direct SMS message transmission to that mobile device.</p>
                             
                             <form id="directSmsForm">
                                 <div class="form-row">
@@ -492,12 +454,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Alert Text Message Content *</label>
+                                    <label>Alert SMS Text Message *</label>
                                     <textarea id="directSmsMessage" rows="3" required>[SAHAY EMERGENCY ALERT] Heavy rainfall in Vadodara catchment. Vishwamitri river rising fast. Move to high ground immediately. Helpline: 1077.</textarea>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary btn-full" id="btnSubmitDirectSms">
-                                    📡 SEND LIVE SMS ALERT TO NUMBER
+                                    📡 SEND LIVE SMS TO PHONE NUMBER
                                 </button>
                             </form>
 
@@ -505,10 +467,10 @@
                             <div class="telecom-config-box" style="margin-top: 15px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                     <strong style="font-size: 12.5px; color: var(--accent-cyan);">⚙️ Real-World Telecom Gateway Setup</strong>
-                                    <span id="telecomStatusBadge" style="font-size: 10.5px; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 10px;">READY</span>
+                                    <span id="telecomStatusBadge" style="font-size: 10.5px; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 10px;">CELLULAR ACTIVE</span>
                                 </div>
                                 <p style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 10px;">
-                                    To deliver actual physical cellular SMS across Indian cellular towers, paste your free <strong>Fast2SMS API Key</strong> (<a href="https://www.fast2sms.com" target="_blank" style="color: var(--accent-cyan);">get free key at fast2sms.com</a>) or Twilio credentials. You can also click the <strong>💬 Instant WhatsApp Alert</strong> button on any log below to deliver the message immediately for free!
+                                    To deliver actual physical cellular SMS across Indian cellular towers, paste your free <strong>Fast2SMS API Key</strong> (<a href="https://www.fast2sms.com" target="_blank" style="color: var(--accent-cyan);">get free key at fast2sms.com</a>) or Twilio credentials.
                                 </p>
                                 
                                 <div class="form-group" style="margin-bottom: 8px;">
@@ -524,7 +486,7 @@
                         <div class="sms-history-card">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <h3>📋 Real-Time SMS Delivery Logs</h3>
-                                <span style="font-size: 11px; color: var(--accent-emerald);">⚡ Instant WhatsApp + Cellular Ready</span>
+                                <span style="font-size: 11px; color: var(--accent-emerald);">⚡ Direct Mobile SMS Ready</span>
                             </div>
                             <div class="sms-history-list" id="directSmsHistoryContainer">
                                 <!-- Populated dynamically -->
@@ -534,52 +496,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 3: DAM WATER LEVELS & FLOOD GAUGES -->
-            <div class="view-pane" id="damGaugesView">
-                <div class="page-container">
-                    <div class="page-header">
-                        <div>
-                            <h2>🌊 Gujarat Dam Water Levels & River Flood Warning Early Gauges</h2>
-                            <p class="sub-text">Continuous reservoir telemetry, warning thresholds, water discharge rates, and automated flood danger indicators.</p>
-                        </div>
-                    </div>
-                    <div class="dam-gauges-grid" id="damGaugesContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px;">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 4: BLOOD & MEDICAL OXYGEN STOCK -->
-            <div class="view-pane" id="bloodOxygenView">
-                <div class="page-container">
-                    <div class="page-header">
-                        <div>
-                            <h2>🩸 Emergency Blood Units, Oxygen Cylinders & Anti-Venom Bank</h2>
-                            <p class="sub-text">Real-time inventory across SSG Hospital Vadodara, GMERS Gotri, and Ahmedabad Civil Apex Disaster Blood Bank.</p>
-                        </div>
-                    </div>
-                    <div class="blood-inventory-grid" id="bloodInventoryContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px;">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 5: AUTHORITY RELIEF SHELTERS -->
-            <div class="view-pane" id="authoritySheltersView">
-                <div class="page-container">
-                    <div class="page-header">
-                        <div>
-                            <h2>🎪 Gujarat Evacuation Sanctuaries & Community Relief Hubs</h2>
-                            <p class="sub-text">Live shelter capacity tracking, food packet distribution counts, drinking water reserves, and on-site medical staff.</p>
-                        </div>
-                    </div>
-                    <div class="shelters-grid" id="authoritySheltersContainer">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 6: ANALYTICS & SITREP -->
+            <!-- VIEW 3: ANALYTICS & SITREP -->
             <div class="view-pane" id="analyticsView">
                 <div class="page-container">
                     <div class="page-header">
@@ -606,9 +523,9 @@
                             <span class="stat-note">Gujarat Danger Zones</span>
                         </div>
                         <div class="stat-card">
-                            <span class="stat-title">RELIEF SHELTER OCCUPANCY</span>
-                            <div class="stat-number text-cyan" id="analyticsShelterRate">42.5%</div>
-                            <span class="stat-note">Capacity Available</span>
+                            <span class="stat-title">ACTIVE DISASTER ZONES</span>
+                            <div class="stat-number text-cyan" id="analyticsZonesCount">4 Districts</div>
+                            <span class="stat-note">Vadodara, Kutch, Surat, Bhuj</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-title">INCIDENT STABILIZATION RATE</span>
@@ -630,7 +547,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 7: AGENCY NEWS & OSINT -->
+            <!-- VIEW 4: AGENCY NEWS & OSINT -->
             <div class="view-pane" id="agencyNewsView">
                 <div class="page-container">
                     <div class="page-header">
@@ -731,52 +648,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: MARK SAFE / FAMILY REGISTRY MODAL -->
-    <div class="modal-overlay" id="markSafeModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-title text-emerald">✅ MARK MYSELF & FAMILY SAFE</div>
-                <button class="modal-close" id="btnCloseMarkSafeModal">&times;</button>
-            </div>
-            <form id="markSafeForm" class="modal-body">
-                <p class="modal-desc">Register your safe location so relatives, family members, and disaster control rooms can verify your well-being.</p>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Your Full Name *</label>
-                        <input type="text" id="safePersonName" required value="Jignesh Shah & Family">
-                    </div>
-                    <div class="form-group">
-                        <label>Your Phone Number *</label>
-                        <input type="tel" id="safePersonPhone" required value="+91-9825123456">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Current Safe Location / Camp *</label>
-                        <input type="text" id="safePersonLocation" required value="Akota Indoor Stadium Relief Sanctuary, Vadodara">
-                    </div>
-                    <div class="form-group">
-                        <label>Family Members with You *</label>
-                        <input type="number" id="safePersonCount" min="1" max="20" value="5" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Status Message / Notes for Relatives</label>
-                    <textarea id="safePersonNotes" rows="2">Evacuated safely from Karelibaug ground floor. All 5 family members safe with dry food and shelter.</textarea>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="btnCancelMarkSafe">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitMarkSafe">✅ REGISTER AS SAFE</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 3: SITREP MODAL -->
+    <!-- MODAL 2: SITREP MODAL -->
     <div class="modal-overlay" id="sitrepModal">
         <div class="modal-card modal-large">
             <div class="modal-header">
@@ -793,7 +665,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: AUTH MODAL -->
+    <!-- MODAL 3: AUTH MODAL -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-card">
             <div class="modal-header">

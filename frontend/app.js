@@ -18,10 +18,6 @@ const state = {
     token: null,
     incidents: [],
     facilities: [],
-    shelters: [],
-    bloodStock: [],
-    damGauges: [],
-    safePersons: [],
     remedies: [],
     directSmsHistory: [],
     activeScenario: "vadodara_vishwamitri_flood",
@@ -37,7 +33,6 @@ const state = {
     routeLayer: null,
     citizenRouteLayer: null,
     heatLayer: null,
-    ws: null,
     charts: {
         disasterChart: null,
         urgencyChart: null
@@ -60,8 +55,6 @@ function showPortal(portalId) {
         setTimeout(() => {
             initCitizenMap();
             loadNearbyFacilities();
-            loadReliefShelters();
-            loadFamilySafeRegistry();
             loadDisasterRemedies();
             loadCitizenAlerts();
         }, 100);
@@ -72,9 +65,6 @@ function showPortal(portalId) {
             initAuthorityMap();
             loadAllData();
             loadDirectSmsHistory();
-            loadDamWaterGauges();
-            loadBloodOxygenInventory();
-            loadReliefShelters();
         }, 100);
     }
 }
@@ -94,12 +84,6 @@ function switchAuthView(viewId) {
         setTimeout(() => state.map.invalidateSize(), 200);
     } else if (viewId === "analyticsView") {
         renderAnalyticsCharts();
-    } else if (viewId === "damGaugesView") {
-        loadDamWaterGauges();
-    } else if (viewId === "bloodOxygenView") {
-        loadBloodOxygenInventory();
-    } else if (viewId === "authoritySheltersView") {
-        loadReliefShelters();
     } else if (viewId === "agencyNewsView") {
         loadAgencyNewsAndSocial();
     } else if (viewId === "smsDispatcherTab") {
@@ -120,10 +104,6 @@ function switchCitizenTab(tabId) {
 
     if (tabId === "tabCitizenMap" && state.citizenMap) {
         setTimeout(() => state.citizenMap.invalidateSize(), 200);
-    } else if (tabId === "tabShelters") {
-        loadReliefShelters();
-    } else if (tabId === "tabFamilySafe") {
-        loadFamilySafeRegistry();
     }
 }
 
@@ -205,7 +185,7 @@ function toggleSirenSound() {
 }
 
 // ==========================================================================
-// REAL-TIME DIRECT SMS & NATIVE CELLULAR DISPATCHER
+// REAL-TIME DIRECT MOBILE SMS DISPATCHER (PURE CELLULAR / PHONE SMS)
 // ==========================================================================
 
 async function sendDirectSmsAlert(phone, alertType, zone, message) {
@@ -223,17 +203,17 @@ async function sendDirectSmsAlert(phone, alertType, zone, message) {
         });
 
         const record = await resp.json();
-        showToast(`📲 Alert Dispatched to ${phone}!`);
+        showToast(`📲 SMS Alert Dispatched to ${phone}!`);
         loadDirectSmsHistory();
 
-        // 1. Trigger Native SMS App URI on mobile phones
+        // Trigger Native Cellular SMS App on mobile device
         const cleanDigits = phone.replace(/\D/g, '');
-        const smsUri = `sms:${cleanDigits}?body=${encodeURIComponent(`[SAHAY EMERGENCY ALERT - ${alertType}] ${message} (Helpline: 112 / 1077)`)}`;
+        const fullSmsText = `[SAHAY EMERGENCY ALERT - ${alertType}] ${message} (Helpline: 112 / 1077)`;
+        const smsUri = `sms:${cleanDigits}?body=${encodeURIComponent(fullSmsText)}`;
         
-        // 2. Open WhatsApp Web or Native SMS
-        if (record.whatsapp_direct_url) {
-            window.open(record.whatsapp_direct_url, "_blank");
-        }
+        try {
+            window.location.href = smsUri;
+        } catch (e) {}
 
         return record;
     } catch (e) {
@@ -254,7 +234,7 @@ async function loadTelecomStatus() {
                 badge.style.color = "#10b981";
                 badge.style.border = "1px solid #10b981";
             } else {
-                badge.innerText = "READY / WHATSAPP ACTIVE";
+                badge.innerText = "CELLULAR SMS ACTIVE";
                 badge.style.background = "rgba(56, 189, 248, 0.15)";
                 badge.style.color = "#38bdf8";
             }
@@ -279,7 +259,7 @@ async function saveTelecomConfig() {
             })
         });
         const res = await resp.json();
-        showToast("🟢 Telecom Gateway Activated! Real SMS will deliver to mobile numbers.");
+        showToast("🟢 Telecom Cellular Gateway Activated!");
         loadTelecomStatus();
     } catch (e) {
         showToast("❌ Failed to save gateway config");
@@ -305,9 +285,8 @@ async function loadDirectSmsHistory() {
         let html = "";
         logs.forEach(l => {
             const cleanDigits = l.phone_number.replace(/\D/g, '');
-            const waUrl = l.whatsapp_direct_url || `https://api.whatsapp.com/send?phone=${cleanDigits}&text=${encodeURIComponent(l.message)}`;
-            const nativeSmsUrl = `sms:${cleanDigits}?body=${encodeURIComponent(l.message)}`;
-            const carrierNote = l.telecom_carrier || "Cellular Gateway";
+            const smsUri = `sms:${cleanDigits}?body=${encodeURIComponent(l.message)}`;
+            const carrierNote = l.telecom_carrier || "Cellular Network";
 
             html += `
                 <div class="sms-log-item">
@@ -323,12 +302,9 @@ async function loadDirectSmsHistory() {
                         <span>${new Date(l.timestamp).toLocaleTimeString()}</span>
                     </div>
 
-                    <div style="margin-top: 8px; display: flex; gap: 6px;">
-                        <a href="${waUrl}" target="_blank" class="btn btn-primary btn-xs" style="text-decoration: none; background: #25D366; border-color: #20ba5a; color: #000; font-weight: 800; flex: 1;">
-                            💬 Send via WhatsApp (${escapeHtml(l.phone_number)})
-                        </a>
-                        <a href="${nativeSmsUrl}" class="btn btn-secondary btn-xs" style="text-decoration: none; font-weight: 700;">
-                            📲 Open Phone SMS
+                    <div style="margin-top: 8px;">
+                        <a href="${smsUri}" class="btn btn-primary btn-xs btn-full" style="text-decoration: none; font-weight: 700; text-align: center;">
+                            📲 Open Phone SMS Messages App (${escapeHtml(l.phone_number)})
                         </a>
                     </div>
                 </div>
@@ -338,235 +314,6 @@ async function loadDirectSmsHistory() {
         container.innerHTML = html;
     } catch (e) {
         console.error("Error loading SMS history:", e);
-    }
-}
-
-// ==========================================================================
-// RELIEF SHELTERS & SAFE CAMPS
-// ==========================================================================
-
-async function loadReliefShelters() {
-    const citContainer = document.getElementById("citizenSheltersContainer");
-    const authContainer = document.getElementById("authoritySheltersContainer");
-
-    try {
-        const resp = await fetch("/api/shelters");
-        const shelters = await resp.json();
-        state.shelters = shelters;
-
-        let html = "";
-        shelters.forEach(s => {
-            const occPercent = Math.round((s.current_occupants / s.capacity_total) * 100);
-            const badgeColor = occPercent > 80 ? "#ef4444" : occPercent > 50 ? "#f59e0b" : "#10b981";
-
-            html += `
-                <div class="shelter-card">
-                    <div class="shelter-header">
-                        <div class="shelter-name">🎪 ${escapeHtml(s.name)}</div>
-                        <span style="font-size: 10.5px; font-weight: 800; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 10px;">${s.status}</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary);">📍 ${escapeHtml(s.locality)}, ${escapeHtml(s.city)}</div>
-                    
-                    <div style="margin: 6px 0;">
-                        <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: #fff;">
-                            <span>Occupancy: ${s.current_occupants} / ${s.capacity_total} people</span>
-                            <span style="color: ${badgeColor};">${occPercent}% Full</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: ${occPercent}%; background: ${badgeColor};"></div>
-                        </div>
-                    </div>
-
-                    <div class="shelter-stats-grid">
-                        <span>🍞 Food Packets: <strong>${s.food_packets_available}</strong></span>
-                        <span>💧 Clean Water: <strong>${s.drinking_water_litres.toLocaleString()} L</strong></span>
-                        <span>🩺 Medical Doctors: <strong>${s.medical_team_on_site ? '✓ On Site' : 'En Route'}</strong></span>
-                        <span>📞 Contact: <strong>${escapeHtml(s.contact_phone)}</strong></span>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; margin-top: 6px;">
-                        <a href="tel:${s.contact_phone}" class="btn btn-secondary btn-sm" style="flex: 1; text-decoration: none;">📞 Call Camp HQ</a>
-                        <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="navigateToLocation(${s.lat}, ${s.lng}, '${escapeHtml(s.name)}')">🧭 Navigate on Map</button>
-                    </div>
-                </div>
-            `;
-        });
-
-        if (citContainer) citContainer.innerHTML = html;
-        if (authContainer) authContainer.innerHTML = html;
-
-        const kpiShelters = document.getElementById("kpiSheltersCount");
-        if (kpiShelters) kpiShelters.innerText = `${shelters.length} Open Camps`;
-    } catch (e) {
-        console.error("Error loading shelters:", e);
-    }
-}
-
-// ==========================================================================
-// DAM WATER GAUGES & EARLY FLOOD WARNING
-// ==========================================================================
-
-async function loadDamWaterGauges() {
-    const container = document.getElementById("damGaugesContainer");
-    if (!container) return;
-
-    try {
-        const resp = await fetch("/api/dam-gauges");
-        const gauges = await resp.json();
-        state.damGauges = gauges;
-
-        let html = "";
-        gauges.forEach(g => {
-            const riskColor = g.risk_level === "RED_ALERT" ? "#ef4444" : g.risk_level === "AMBER_WARNING" ? "#f59e0b" : "#10b981";
-            const riskLabel = g.risk_level === "RED_ALERT" ? "🚨 RED DANGER ALERT" : g.risk_level === "AMBER_WARNING" ? "⚠️ AMBER WARNING" : "🟢 NORMAL SAFE FLOW";
-
-            html += `
-                <div class="dam-card">
-                    <div class="dam-header">
-                        <div class="dam-name">🌊 ${escapeHtml(g.river_or_dam_name)}</div>
-                        <span style="font-size: 10px; font-weight: 800; color: ${riskColor}; border: 1px solid ${riskColor}; padding: 2px 6px; border-radius: 4px;">${riskLabel}</span>
-                    </div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary);">📍 ${escapeHtml(g.location)}</div>
-
-                    <div class="dam-stats-grid">
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 10px;">CURRENT LEVEL:</span><br>
-                            <strong style="font-size: 16px; color: ${riskColor}; font-family: var(--font-mono);">${g.current_level_ft} Ft</strong>
-                        </div>
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 10px;">DANGER MARK:</span><br>
-                            <strong style="font-size: 14px; color: #fff; font-family: var(--font-mono);">${g.danger_level_ft} Ft</strong>
-                        </div>
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 10px;">WATER DISCHARGE:</span><br>
-                            <strong style="font-size: 12.5px; color: var(--accent-cyan); font-family: var(--font-mono);">${g.discharge_cusecs.toLocaleString()} Cusecs</strong>
-                        </div>
-                        <div>
-                            <span style="color: var(--text-muted); font-size: 10px;">HYDROLOGY TREND:</span><br>
-                            <strong style="font-size: 12.5px; color: ${riskColor};">${g.trend.replace('_', ' ')}</strong>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    } catch (e) {
-        console.error("Error loading dam gauges:", e);
-    }
-}
-
-// ==========================================================================
-// BLOOD & MEDICAL OXYGEN STOCK INVENTORY
-// ==========================================================================
-
-async function loadBloodOxygenInventory() {
-    const container = document.getElementById("bloodInventoryContainer");
-    if (!container) return;
-
-    try {
-        const resp = await fetch("/api/blood-oxygen");
-        const centers = await resp.json();
-        state.bloodStock = centers;
-
-        let html = "";
-        centers.forEach(c => {
-            const bloodTags = Object.entries(c.blood_units).map(([type, count]) => `
-                <div class="blood-tag-box">
-                    <span class="blood-type-lbl">${type}</span>
-                    <span class="blood-count-val">${count} Units</span>
-                </div>
-            `).join("");
-
-            html += `
-                <div class="blood-card">
-                    <div class="blood-header">
-                        <div class="blood-name">🩸 ${escapeHtml(c.name)}</div>
-                        <span style="font-size: 11px; color: var(--accent-cyan);">📍 ${escapeHtml(c.city)}</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">📞 Emergency Blood Desk: <strong>${escapeHtml(c.phone)}</strong></div>
-
-                    <div style="display: flex; gap: 10px; background: rgba(56, 189, 248, 0.08); border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 11.5px;">
-                        <span>🫁 Oxygen Cylinders: <strong class="text-cyan">${c.oxygen_cylinders_available} Available</strong></span>
-                        <span>🐍 Anti-Venom Vials: <strong class="text-emerald">${c.anti_venom_vials} Vials</strong></span>
-                    </div>
-
-                    <div style="margin-top: 8px;">
-                        <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">BLOOD GROUP RESERVES:</span>
-                        <div class="blood-tags-grid">${bloodTags}</div>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    } catch (e) {
-        console.error("Error loading blood inventory:", e);
-    }
-}
-
-// ==========================================================================
-// FAMILY SAFETY & MISSING PERSONS REGISTRY
-// ==========================================================================
-
-async function loadFamilySafeRegistry(query = "") {
-    const container = document.getElementById("familySafeContainer");
-    if (!container) return;
-
-    try {
-        const resp = await fetch(`/api/family-safe/search?query=${encodeURIComponent(query)}`);
-        const persons = await resp.json();
-        state.safePersons = persons;
-
-        if (!persons || persons.length === 0) {
-            container.innerHTML = '<div class="empty-state">No records found matching search.</div>';
-            return;
-        }
-
-        let html = "";
-        persons.forEach(p => {
-            html += `
-                <div class="safe-person-card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <strong style="font-size: 15px; color: #fff;">👤 ${escapeHtml(p.full_name)}</strong>
-                        <span style="font-size: 10.5px; font-weight: 800; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 10px;">✓ MARKED SAFE</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--accent-cyan);">📍 Location: <strong>${escapeHtml(p.current_location)}</strong></div>
-                    <div style="font-size: 12px; color: var(--text-secondary);">📱 Phone: ${escapeHtml(p.phone_number)} | Family with them: <strong>${p.family_members_count} persons</strong></div>
-                    <div style="font-size: 11.5px; background: var(--bg-primary); padding: 8px; border-radius: 4px; color: #cbd5e1; margin-top: 4px;">"${escapeHtml(p.notes || 'Safe and accounted for.')}"</div>
-                    <div style="font-size: 10px; color: var(--text-muted);">${new Date(p.timestamp).toLocaleString()}</div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    } catch (e) {
-        console.error("Error loading safe persons:", e);
-    }
-}
-
-async function markMyselfSafe(data) {
-    try {
-        const resp = await fetch("/api/family-safe/mark", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                record_id: `SAFE-${Date.now().toString().slice(-6)}`,
-                full_name: data.name,
-                phone_number: data.phone,
-                current_location: data.location,
-                family_members_count: data.count,
-                notes: data.notes,
-                status: "SAFE"
-            })
-        });
-
-        const record = await resp.json();
-        showToast("✅ Successfully registered in Safe Family Registry!");
-        document.getElementById("markSafeModal")?.classList.remove("active");
-        loadFamilySafeRegistry();
-    } catch (e) {
-        console.error("Error registering safe person:", e);
     }
 }
 
@@ -676,7 +423,7 @@ function navigateToLocation(lat, lng, name, phone = "112", distKm = 3.2, etaMins
                 <div class="route-step-item">1. Head toward main elevated arterial highway bypass.</div>
                 <div class="route-step-item">2. Avoid submerged bridge causeway at Vishwamitri River crossing (hazard marked in red).</div>
                 <div class="route-step-item">3. Take high-ground bypass toward ${escapeHtml(name)}.</div>
-                <div class="route-step-item">4. Arrive at 24x7 Safe Reception Entrance.</div>
+                <div class="route-step-item">4. Arrive at 24x7 Emergency Reception Entrance.</div>
             `;
         }
 
@@ -804,7 +551,6 @@ DISPATCH ACTION:
 ------------------------------------------------------------
 Status: DISPATCHED
 State Emergency Control Room Helpline: DIAL 112 / 1077
-Relief Camps Open: Akota Indoor Stadium, Sama Sports Complex
 
 ============================================================
 KEEP THIS DOCUMENT ACCESSIBLE. RESCUE TEAMS ARE ON ROUTE.
@@ -877,7 +623,7 @@ function updateCitizenMapFacilities() {
 
         const icon = L.divIcon({
             className: "facility-map-pin",
-            html: `<div style="background: ${color}; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 10px ${color};">${iconSymbol}</div>`,
+            html: `<div style="background: ${color}; width: 26px; height: 26px; border-radius: 50%; display: align-items: center; justify-content: center; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 10px ${color};">${iconSymbol}</div>`,
             iconSize: [26, 26]
         });
 
@@ -1141,37 +887,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("btnToggleSirenSound")?.addEventListener("click", toggleSirenSound);
     document.getElementById("btnDownloadSosReceipt")?.addEventListener("click", downloadPersonalSosReceipt);
-
-    // Mark Safe Modal
-    document.getElementById("btnOpenMarkSafeModal")?.addEventListener("click", () => {
-        document.getElementById("markSafeModal")?.classList.add("active");
-    });
-    document.getElementById("btnOpenMarkSafeFromTab")?.addEventListener("click", () => {
-        document.getElementById("markSafeModal")?.classList.add("active");
-    });
-    document.getElementById("btnCloseMarkSafeModal")?.addEventListener("click", () => {
-        document.getElementById("markSafeModal")?.classList.remove("active");
-    });
-    document.getElementById("btnCancelMarkSafe")?.addEventListener("click", () => {
-        document.getElementById("markSafeModal")?.classList.remove("active");
-    });
-
-    // Submit Mark Safe
-    document.getElementById("markSafeForm")?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const name = document.getElementById("safePersonName").value;
-        const phone = document.getElementById("safePersonPhone").value;
-        const loc = document.getElementById("safePersonLocation").value;
-        const count = parseInt(document.getElementById("safePersonCount").value, 10);
-        const notes = document.getElementById("safePersonNotes").value;
-        markMyselfSafe({ name, phone, location: loc, count, notes });
-    });
-
-    // Search Family Safe
-    document.getElementById("btnSearchFamily")?.addEventListener("click", () => {
-        const q = document.getElementById("familySearchInput")?.value?.trim() || "";
-        loadFamilySafeRegistry(q);
-    });
 
     // Citizen Tabs
     document.querySelectorAll(".cit-tab-btn").forEach(btn => {
