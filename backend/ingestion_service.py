@@ -225,6 +225,7 @@ class IngestionService:
         incident.disaster_type = report.disaster_type or incident.disaster_type
         incident.urgency_level = "P1_CRITICAL"
         incident.urgency_score = 0.99
+        incident.location_name = report.location_name or loc_name
         incident.victim_count_estimated = report.people_count
         incident.needs_identified = report.needs if report.needs else incident.needs_identified
         incident.is_sos = True

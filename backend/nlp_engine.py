@@ -315,6 +315,8 @@ class NLPIntelligenceEngine:
             loc_name = override_loc_name or "Reported GPS Location"
         else:
             loc_name, lat, lng = self.geocode_text(raw_text, default_center)
+            if override_loc_name:
+                loc_name = override_loc_name
 
         verif_status, verif_score, verif_sources = self.calculate_credibility_and_verification(
             source=source,

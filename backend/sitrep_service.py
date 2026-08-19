@@ -58,6 +58,14 @@ class SitRepService:
             "Replenish baby milk rations, drinking water canisters, and emergency insulin supplies."
         ]
 
+        urgency_counts = Counter(inc.urgency_level for inc in incidents)
+        mobilization_stats = {
+            "total_personnel_deployed": sum(u.personnel for u in units if u.status in ["DISPATCHED", "ON_SCENE"]),
+            "boats_deployed": sum(u.boats for u in units if u.status in ["DISPATCHED", "ON_SCENE"]),
+            "ambulances_deployed": sum(u.ambulances for u in units if u.status in ["DISPATCHED", "ON_SCENE"]),
+            "drones_airborne": sum(u.drones for u in units if u.status in ["DISPATCHED", "ON_SCENE"])
+        }
+
         return SitRepSummary(
             generated_at=datetime.now(timezone.utc).isoformat(),
             total_incidents=total_incidents,
@@ -68,6 +76,8 @@ class SitRepService:
             top_affected_zones=top_zones,
             resource_deployment_ratio=dep_ratio,
             disaster_breakdown=dict(dtype_counts),
+            urgency_breakdown=dict(urgency_counts),
+            resource_mobilization=mobilization_stats,
             executive_summary=exec_summary,
             recommended_actions=recommended_actions
         )

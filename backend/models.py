@@ -99,9 +99,11 @@ class SitRepSummary(BaseModel):
     estimated_affected_population: int
     top_affected_zones: List[Dict[str, Any]]
     disaster_breakdown: Dict[str, int]
-    urgency_breakdown: Dict[str, int]
-    resource_mobilization: Dict[str, Any]
+    urgency_breakdown: Dict[str, int] = Field(default_factory=dict)
+    resource_mobilization: Dict[str, Any] = Field(default_factory=dict)
+    resource_deployment_ratio: float = 0.0
     executive_summary: str
+    recommended_actions: List[str] = Field(default_factory=list)
 
 
 class SimulationControlRequest(BaseModel):
