@@ -1,45 +1,43 @@
 """
-Helper script to push local disaster management repository to GitHub.
+Helper script to push all backend and frontend code to GitHub.
 Usage:
-    python push_to_github.py <GITHUB_PERSONAL_ACCESS_TOKEN>
-Or:
-    python push_to_github.py
-    (and it will prompt for the token securely)
+    python push_to_github.py <GITHUB_TOKEN>
+Or set GITHUB_TOKEN environment variable.
 """
+import os
 import sys
-import getpass
+import dulwich.repo as dr
 import dulwich.porcelain as dp
 
-REPO_DIR = r"c:\Users\online\SIH"
-TARGET_URL = "https://github.com/vanguard26s/sahay-.git"
-USERNAME = "vanguard26s"
+REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def main():
-    if len(sys.argv) > 1:
-        token = sys.argv[1].strip()
-    else:
-        token = getpass.getpass("Enter your GitHub Personal Access Token (ghp_...): ").strip()
-
+def push_all(token=None):
     if not token:
-        print("Error: No token provided.")
-        sys.exit(1)
+        token = os.getenv("GITHUB_TOKEN")
+    if not token and len(sys.argv) > 1:
+        token = sys.argv[1].strip()
+    if not token:
+        import getpass
+        token = getpass.getpass("Enter GitHub Personal Access Token: ").strip()
 
-    auth_url = f"https://{USERNAME}:{token}@github.com/vanguard26s/sahay-.git"
-    print(f"Staging latest changes in {REPO_DIR}...")
+    repo = dr.Repo(REPO_DIR)
     dp.add(REPO_DIR)
-    
-    status = dp.status(REPO_DIR)
-    if status.staged.get('add') or status.staged.get('modify') or status.staged.get('delete'):
-        commit_id = dp.commit(REPO_DIR, message=b"Update disaster platform code", author=b"vanguard26s <vanguard26s@users.noreply.github.com>")
-        print(f"Committed changes: {commit_id}")
+    head_sha = repo.head()
+    print("Local HEAD commit:", head_sha.decode("ascii"))
 
-    print("Pushing to https://github.com/vanguard26s/sahay-.git (branch: main)...")
-    try:
-        dp.push(REPO_DIR, auth_url, "refs/heads/main:refs/heads/main")
-        print("\nSUCCESS: All files successfully pushed to https://github.com/vanguard26s/sahay-.git!")
-    except Exception as e:
-        print(f"\nPush failed: {e}")
-        print("Please verify that your GitHub token has 'repo' or 'contents:write' permissions.")
+    for repo_name in ["Sahay", "sahay-"]:
+        url = f"https://vanguard26s:{token}@github.com/vanguard26s/{repo_name}.git"
+        print(f"Pushing all files to {repo_name}...")
+        client, host_path = dp.get_transport_and_path(url)
+
+        def generate_pack_data(have, want, progress=None, ofs_delta=None):
+            return repo.object_store.generate_pack_data(have, want)
+
+        def determine_wants(refs):
+            return {b"refs/heads/main": head_sha}
+
+        client.send_pack(host_path, determine_wants, generate_pack_data)
+        print(f"Successfully pushed all files to {repo_name} main branch!")
 
 if __name__ == "__main__":
-    main()
+    push_all()
