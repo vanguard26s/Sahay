@@ -99,16 +99,16 @@ function setTheme(theme) {
         document.body.classList.remove("theme-light");
     }
 
-    // Update buttons label
+    // Update all theme toggle buttons across all screens
     document.querySelectorAll(".btnToggleTheme").forEach(btn => {
         const icon = btn.querySelector(".theme-icon");
         const label = btn.querySelector(".theme-label");
         if (theme === "light") {
             if (icon) icon.innerText = "☀️";
-            if (label) label.innerText = "Mode: Light";
+            if (label) label.innerText = "Theme: Light";
         } else {
             if (icon) icon.innerText = "🌙";
-            if (label) label.innerText = "Mode: Dark";
+            if (label) label.innerText = "Theme: Dark";
         }
     });
 
@@ -136,6 +136,7 @@ function updateMapTiles() {
         state.citizenMapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.citizenMap);
     }
 }
+
 
 // ==========================================================================
 // USER IDENTITY & GUJARAT CITY CONFIGURATION
@@ -349,14 +350,35 @@ async function sendDirectSmsAlert(phone, alertType, zone, message) {
         showToast(`📲 SMS Alert Dispatched to ${phone}!`);
         loadDirectSmsHistory();
 
-        // Trigger Native Cellular SMS App on mobile device
-        const cleanDigits = phone.replace(/\D/g, '');
-        const fullSmsText = `[SAHAY EMERGENCY ALERT - ${alertType}] ${message} (Helpline: 112 / 1077)`;
+        // Format clean phone number and message for native SMS protocol
+        const cleanDigits = phone.replace(/[^0-9+]/g, '');
+        const fullSmsText = `[SAHAY EMERGENCY ALERT - ${alertType}] ${message} (State Helpline: 112 / 1077)`;
         const smsUri = `sms:${cleanDigits}?body=${encodeURIComponent(fullSmsText)}`;
-        
-        try {
-            window.location.href = smsUri;
-        } catch (e) {}
+
+        // Open Direct SMS Action Modal
+        const phoneDisp = document.getElementById("modalSmsPhoneDisplay");
+        const zoneDisp = document.getElementById("modalSmsZoneDisplay");
+        const textDisp = document.getElementById("modalSmsTextDisplay");
+        const btnNative = document.getElementById("btnModalTriggerNativeSms");
+
+        if (phoneDisp) phoneDisp.innerText = phone;
+        if (zoneDisp) zoneDisp.innerText = zone;
+        if (textDisp) textDisp.innerText = fullSmsText;
+        if (btnNative) {
+            btnNative.href = smsUri;
+            btnNative.onclick = () => {
+                showToast(`📲 Opening Phone SMS Messages app for ${phone}...`);
+            };
+        }
+
+        document.getElementById("smsSentSuccessModal")?.classList.add("active");
+
+        // If on mobile device, trigger native SMS intent directly
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            try {
+                window.location.href = smsUri;
+            } catch (e) {}
+        }
 
         return record;
     } catch (e) {
@@ -364,6 +386,7 @@ async function sendDirectSmsAlert(phone, alertType, zone, message) {
         showToast("❌ Failed to send SMS alert");
     }
 }
+
 
 async function loadTelecomStatus() {
     try {
@@ -1205,6 +1228,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // SMS Modal Close Handlers
+    document.getElementById("btnCloseSmsModal")?.addEventListener("click", () => {
+        document.getElementById("smsSentSuccessModal")?.classList.remove("active");
+    });
+    document.getElementById("btnCloseSmsModalBtn")?.addEventListener("click", () => {
+        document.getElementById("smsSentSuccessModal")?.classList.remove("active");
+    });
+
+    // Global fail-safe click listener for theme buttons
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".btnToggleTheme")) {
+            e.preventDefault();
+            toggleTheme();
+        }
+    });
+
     // Start on Gateway
     showPortal("gateway");
 });
+
