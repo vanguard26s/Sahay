@@ -2,17 +2,55 @@
 // SAHAY: Gujarat Disaster Intelligence & Dual-Portal Command Center Engine
 // ==========================================================================
 
+const GUJARAT_CITIES = {
+    "Vadodara": { lat: 22.3072, lng: 73.1812 },
+    "Ahmedabad": { lat: 23.0225, lng: 72.5714 },
+    "Surat": { lat: 21.1702, lng: 72.8311 },
+    "Rajkot": { lat: 22.3039, lng: 70.8022 },
+    "Bhavnagar": { lat: 21.7645, lng: 72.1519 },
+    "Jamnagar": { lat: 22.4707, lng: 70.0577 },
+    "Junagadh": { lat: 21.5222, lng: 70.4579 },
+    "Gandhinagar": { lat: 23.2156, lng: 72.6369 },
+    "Anand": { lat: 22.5645, lng: 72.9289 },
+    "Navsari": { lat: 20.9467, lng: 72.9520 },
+    "Morbi": { lat: 22.8120, lng: 70.8378 },
+    "Bharuch": { lat: 21.7051, lng: 72.9959 },
+    "Porbandar": { lat: 21.6417, lng: 69.6293 },
+    "Kutch / Bhuj": { lat: 23.2420, lng: 69.6669 },
+    "Mehsana": { lat: 23.5880, lng: 72.3693 },
+    "Valsad": { lat: 20.5992, lng: 72.9342 },
+    "Vapi": { lat: 20.3707, lng: 72.9106 },
+    "Patan": { lat: 23.8504, lng: 72.1266 },
+    "Palanpur (Banaskantha)": { lat: 24.1724, lng: 72.4346 },
+    "Himatnagar (Sabarkantha)": { lat: 23.5977, lng: 72.9698 },
+    "Godhra (Panchmahal)": { lat: 22.7758, lng: 73.6149 },
+    "Dahod": { lat: 22.8398, lng: 74.2536 },
+    "Nadiad (Kheda)": { lat: 22.6916, lng: 72.8634 },
+    "Amreli": { lat: 21.6032, lng: 71.2221 },
+    "Surendranagar": { lat: 22.7277, lng: 71.6370 },
+    "Botad": { lat: 22.1704, lng: 71.6665 },
+    "Veraval / Somnath (Gir Somnath)": { lat: 20.9000, lng: 70.3667 },
+    "Dwarka (Devbhumi Dwarka)": { lat: 22.2442, lng: 68.9685 },
+    "Vyara (Tapi)": { lat: 21.1122, lng: 73.3917 },
+    "Ahwa (Dang)": { lat: 20.7583, lng: 73.6844 },
+    "Rajpipla (Narmada)": { lat: 21.7877, lng: 73.5042 },
+    "Chhota Udaipur": { lat: 22.3082, lng: 74.0094 },
+    "Lunawada (Mahisagar)": { lat: 23.1325, lng: 73.6163 },
+    "Modasa (Aravalli)": { lat: 23.4632, lng: 73.2988 }
+};
+
 const state = {
     activePortal: "gateway", // "gateway", "citizen", "authority"
     activeAuthView: "gisView",
     activeCitTab: "tabFacilities",
+    currentTheme: "dark", // "dark" or "light"
     currentUser: {
         user_id: "USR-CIT-001",
-        name: "Jignesh Shah",
-        email: "jignesh.vadodara@gmail.com",
+        name: localStorage.getItem("sahay_user_name") || "Jignesh Shah",
+        email: "citizen.gujarat@gsdma.gov.in",
         role: "CITIZEN",
-        agency_name: "Citizen Resident (Vadodara)",
-        city: "Vadodara"
+        agency_name: "Gujarat Resident",
+        city: localStorage.getItem("sahay_user_city") || "Vadodara"
     },
     userLocation: { lat: 22.3072, lng: 73.1812 },
     token: null,
@@ -32,12 +70,117 @@ const state = {
     facilityLayer: null,
     routeLayer: null,
     citizenRouteLayer: null,
-    heatLayer: null,
+    mapTileLayer: null,
+    citizenMapTileLayer: null,
     charts: {
         disasterChart: null,
         urgencyChart: null
     }
 };
+
+// ==========================================================================
+// THEME SWITCHER (DARK MODE / LIGHT MODE)
+// ==========================================================================
+
+function initTheme() {
+    const savedTheme = localStorage.getItem("sahay_theme") || "dark";
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    state.currentTheme = theme;
+    localStorage.setItem("sahay_theme", theme);
+
+    if (theme === "light") {
+        document.body.classList.add("theme-light");
+        document.body.classList.remove("theme-dark");
+    } else {
+        document.body.classList.add("theme-dark");
+        document.body.classList.remove("theme-light");
+    }
+
+    // Update buttons label
+    document.querySelectorAll(".btnToggleTheme").forEach(btn => {
+        const icon = btn.querySelector(".theme-icon");
+        const label = btn.querySelector(".theme-label");
+        if (theme === "light") {
+            if (icon) icon.innerText = "☀️";
+            if (label) label.innerText = "Mode: Light";
+        } else {
+            if (icon) icon.innerText = "🌙";
+            if (label) label.innerText = "Mode: Dark";
+        }
+    });
+
+    updateMapTiles();
+}
+
+function toggleTheme() {
+    const nextTheme = state.currentTheme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    showToast(`🌓 Switched to ${nextTheme.toUpperCase()} Mode`);
+}
+
+function updateMapTiles() {
+    const tileUrl = state.currentTheme === "light" 
+        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+
+    if (state.map && state.mapTileLayer) {
+        state.map.removeLayer(state.mapTileLayer);
+        state.mapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.map);
+    }
+
+    if (state.citizenMap && state.citizenMapTileLayer) {
+        state.citizenMap.removeLayer(state.citizenMapTileLayer);
+        state.citizenMapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.citizenMap);
+    }
+}
+
+// ==========================================================================
+// USER IDENTITY & GUJARAT CITY CONFIGURATION
+// ==========================================================================
+
+function updateUserProfile(name, city) {
+    if (!name || !name.trim()) name = "Jignesh Shah";
+    if (!city || !GUJARAT_CITIES[city]) city = "Vadodara";
+
+    state.currentUser.name = name.trim();
+    state.currentUser.city = city;
+    state.userLocation = GUJARAT_CITIES[city];
+
+    localStorage.setItem("sahay_user_name", state.currentUser.name);
+    localStorage.setItem("sahay_user_city", city);
+
+    // Update labels in UI
+    const citNameEl = document.getElementById("citizenNameLabel");
+    const citCityEl = document.getElementById("citizenCityLabel");
+    const authNameEl = document.getElementById("authOfficerName");
+    const sosNameInput = document.getElementById("sosName");
+    const gatewayCustomInput = document.getElementById("gatewayCustomName");
+    const gatewayCitySel = document.getElementById("gatewayCitySelect");
+    const citCityDropdown = document.getElementById("citizenCityDropdown");
+    const liveAlertBanner = document.getElementById("citizenLiveAlertBanner");
+
+    if (citNameEl) citNameEl.innerText = state.currentUser.name;
+    if (citCityEl) citCityEl.innerText = `CITIZEN (${city.toUpperCase()})`;
+    if (authNameEl) authNameEl.innerText = state.currentUser.name.includes("Major") ? state.currentUser.name : `Major ${state.currentUser.name}`;
+    if (sosNameInput) sosNameInput.value = state.currentUser.name;
+    if (gatewayCustomInput) gatewayCustomInput.value = state.currentUser.name;
+    if (gatewayCitySel) gatewayCitySel.value = city;
+    if (citCityDropdown) citCityDropdown.value = city;
+
+    if (liveAlertBanner) {
+        liveAlertBanner.innerText = `⚠️ LIVE ALERT (${city.toUpperCase()} SECTOR): Continuous precipitation monitoring active. Helplines ready: 112 / 1077.`;
+    }
+
+    // Move citizen map center to new city coordinates
+    if (state.citizenMap) {
+        state.citizenMap.setView([state.userLocation.lat, state.userLocation.lng], 13);
+    }
+
+    loadNearbyFacilities("ALL", city);
+}
 
 // ==========================================================================
 // PORTAL NAVIGATION & ROUTING
@@ -54,7 +197,7 @@ function showPortal(portalId) {
         state.activePortal = "citizen";
         setTimeout(() => {
             initCitizenMap();
-            loadNearbyFacilities();
+            loadNearbyFacilities("ALL", state.currentUser.city);
             loadDisasterRemedies();
             loadCitizenAlerts();
         }, 100);
@@ -321,19 +464,21 @@ async function loadDirectSmsHistory() {
 // NEARBY EMERGENCY FACILITIES DIRECTORY & SAFE NAVIGATION
 // ==========================================================================
 
-async function loadNearbyFacilities(typeFilter = "ALL") {
+async function loadNearbyFacilities(typeFilter = "ALL", cityFilter = "ALL") {
     const container = document.getElementById("emergencyFacilitiesContainer");
     if (!container) return;
 
     container.innerHTML = '<div class="spinner"></div>';
 
+    const cityParam = cityFilter && cityFilter !== "ALL" ? `&city=${encodeURIComponent(cityFilter)}` : "";
+
     try {
-        const resp = await fetch(`/api/facilities/nearby?lat=${state.userLocation.lat}&lng=${state.userLocation.lng}&type=${typeFilter}`);
+        const resp = await fetch(`/api/facilities/nearby?lat=${state.userLocation.lat}&lng=${state.userLocation.lng}&type=${typeFilter}${cityParam}`);
         const data = await resp.json();
         state.facilities = data;
 
         if (!data || data.length === 0) {
-            container.innerHTML = '<div class="empty-state">No emergency facilities found matching filter.</div>';
+            container.innerHTML = `<div class="empty-state">No emergency facilities found matching filter in ${cityFilter}.</div>`;
             return;
         }
 
@@ -352,7 +497,7 @@ async function loadNearbyFacilities(typeFilter = "ALL") {
                         <div class="facility-name">${icon} ${escapeHtml(fac.name)}</div>
                         <span class="facility-type-badge ${badgeClass}">${typeName}</span>
                     </div>
-                    <div class="facility-address">📍 ${escapeHtml(fac.address)}</div>
+                    <div class="facility-address">📍 ${escapeHtml(fac.address)} (${escapeHtml(fac.city)})</div>
                     
                     <div class="facility-stats-row">
                         <span>📏 <strong>${item.distance_km.toFixed(1)} km</strong> away</span>
@@ -420,10 +565,10 @@ function navigateToLocation(lat, lng, name, phone = "112", distKm = 3.2, etaMins
                     <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">Distance: <strong>${typeof distKm === 'number' ? distKm.toFixed(1) : distKm} km</strong> | Estimated Travel: <strong>${etaMins} mins</strong></div>
                     <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">📞 Emergency Contact: <strong>${escapeHtml(phone)}</strong></div>
                 </div>
-                <div class="route-step-item">1. Head toward main elevated arterial highway bypass.</div>
-                <div class="route-step-item">2. Avoid submerged bridge causeway at Vishwamitri River crossing (hazard marked in red).</div>
-                <div class="route-step-item">3. Take high-ground bypass toward ${escapeHtml(name)}.</div>
-                <div class="route-step-item">4. Arrive at 24x7 Emergency Reception Entrance.</div>
+                <div class="route-step-item">1. Head toward main arterial bypass highway.</div>
+                <div class="route-step-item">2. Avoid submerged causeways and low-lying underpasses.</div>
+                <div class="route-step-item">3. Proceed directly toward ${escapeHtml(name)}.</div>
+                <div class="route-step-item">4. Arrive at 24x7 Emergency Reception Gate.</div>
             `;
         }
 
@@ -500,14 +645,14 @@ function loadCitizenAlerts() {
 
     container.innerHTML = `
         <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 14px; border-radius: 6px; margin-bottom: 12px;">
-            <div style="font-weight: 800; color: #ef4444;">🚨 GSDMA SEVERE FLOOD EVACUATION BULLETIN (VADODARA)</div>
-            <div style="font-size: 12px; color: #f8fafc; margin-top: 4px;">Vishwamitri River gauge at 35.4 Ft. Inflatable Rescue Boats deployed in Karelibaug, Sayajigunj & Fatehgunj. Relief kitchen operational at Akota Stadium.</div>
+            <div style="font-weight: 800; color: #ef4444;">🚨 GSDMA SEVERE WEATHER & EVACUATION BULLETIN (GUJARAT)</div>
+            <div style="font-size: 12px; color: #f8fafc; margin-top: 4px;">State Emergency Operations Center on Red Alert across all 33 districts. Inflatable Rescue Boats and SDRF units deployed in low-lying zones.</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Published: Just Now | Gujarat State Disaster Management Authority</div>
         </div>
 
         <div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 14px; border-radius: 6px; margin-bottom: 12px;">
-            <div style="font-weight: 800; color: #f59e0b;">⚠️ IMD METEOROLOGICAL RAINFALL WARNING</div>
-            <div style="font-size: 12px; color: #f8fafc; margin-top: 4px;">Heavy to very heavy precipitation forecast across Central Gujarat (Vadodara, Anand, Kheda) for next 24 hours. Keep emergency battery torches and boiling water ready.</div>
+            <div style="font-weight: 800; color: #f59e0b;">⚠️ IMD METEOROLOGICAL RAINFALL & GALE WARNING</div>
+            <div style="font-size: 12px; color: #f8fafc; margin-top: 4px;">Heavy precipitation forecast across Saurashtra, Central and South Gujarat. Keep emergency battery torches, potable water, and first aid kits ready.</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Published: 15 mins ago | India Meteorological Department (IMD)</div>
         </div>
     `;
@@ -537,14 +682,13 @@ CITIZEN DETAILS:
 ------------------------------------------------------------
 Reporter Name: ${state.currentUser.name}
 Contact Number: +91-9825123456
-Jurisdiction City: ${state.currentUser.city}
-Reported Coordinates: 22.3072 N, 73.1812 E
+Jurisdiction District / City: ${state.currentUser.city}
+Reported GPS Coordinates: ${state.userLocation.lat} N, ${state.userLocation.lng} E
 
 DISTRESS TELEMETRY:
 ------------------------------------------------------------
 Priority Level: P1 - LIFE-THREATENING CRITICAL EMERGENCY
-Disaster Category: Flood Inundation (Vishwamitri Basin Overflow)
-Victims Estimated: 5 Persons Trapped on Terrace
+Disaster Category: Flood / Gale Inundation
 Emergency Needs: Inflatable Rescue Boat (IRB), Medical Support
 
 DISPATCH ACTION:
@@ -561,7 +705,7 @@ KEEP THIS DOCUMENT ACCESSIBLE. RESCUE TEAMS ARE ON ROUTE.
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `SAHAY_Citizen_SOS_Receipt_${Date.now()}.txt`;
+    a.download = `SAHAY_SOS_Receipt_${state.currentUser.name.replace(/\s+/g, '_')}_${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     showToast("📥 SOS Distress Receipt Downloaded!");
@@ -576,14 +720,14 @@ function initAuthorityMap() {
     const mapEl = document.getElementById("gisMap");
     if (!mapEl) return;
 
-    state.map = L.map("gisMap", { zoomControl: false }).setView([22.3072, 73.1812], 12);
+    state.map = L.map("gisMap", { zoomControl: false }).setView([state.userLocation.lat, state.userLocation.lng], 12);
     L.control.zoom({ position: "bottomright" }).addTo(state.map);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "© OpenStreetMap, © CARTO",
-        maxZoom: 19
-    }).addTo(state.map);
+    const tileUrl = state.currentTheme === "light" 
+        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
+    state.mapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.map);
     state.incidentLayer = L.layerGroup().addTo(state.map);
 }
 
@@ -594,11 +738,11 @@ function initCitizenMap() {
 
     state.citizenMap = L.map("citizenGisMap", { zoomControl: true }).setView([state.userLocation.lat, state.userLocation.lng], 13);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        attribution: "© OpenStreetMap, © CARTO",
-        maxZoom: 19
-    }).addTo(state.citizenMap);
+    const tileUrl = state.currentTheme === "light" 
+        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
+    state.citizenMapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.citizenMap);
     state.facilityLayer = L.layerGroup().addTo(state.citizenMap);
 
     const userIcon = L.divIcon({
@@ -608,7 +752,7 @@ function initCitizenMap() {
     });
 
     L.marker([state.userLocation.lat, state.userLocation.lng], { icon: userIcon })
-        .bindPopup("<strong>📍 Your Location (Vadodara)</strong>")
+        .bindPopup(`<strong>📍 Your Location (${state.currentUser.city})</strong>`)
         .addTo(state.citizenMap);
 }
 
@@ -623,7 +767,7 @@ function updateCitizenMapFacilities() {
 
         const icon = L.divIcon({
             className: "facility-map-pin",
-            html: `<div style="background: ${color}; width: 26px; height: 26px; border-radius: 50%; display: align-items: center; justify-content: center; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 10px ${color};">${iconSymbol}</div>`,
+            html: `<div style="background: ${color}; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 10px ${color};">${iconSymbol}</div>`,
             iconSize: [26, 26]
         });
 
@@ -860,24 +1004,85 @@ function escapeHtml(str) {
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Initialize Theme
+    initTheme();
+
+    // 2. Initialize User Name & City
+    const savedName = localStorage.getItem("sahay_user_name") || "Jignesh Shah";
+    const savedCity = localStorage.getItem("sahay_user_city") || "Vadodara";
+    updateUserProfile(savedName, savedCity);
+
+    // Theme Toggle buttons
+    document.querySelectorAll(".btnToggleTheme").forEach(btn => {
+        btn.addEventListener("click", toggleTheme);
+    });
+
+    // Gateway City & Name inputs
+    document.getElementById("gatewayCustomName")?.addEventListener("input", (e) => {
+        const val = e.target.value.trim() || "Jignesh Shah";
+        updateUserProfile(val, state.currentUser.city);
+    });
+
+    document.getElementById("gatewayCitySelect")?.addEventListener("change", (e) => {
+        updateUserProfile(state.currentUser.name, e.target.value);
+    });
+
+    // Citizen City Dropdown
+    document.getElementById("citizenCityDropdown")?.addEventListener("change", (e) => {
+        const city = e.target.value;
+        if (city === "ALL") {
+            loadNearbyFacilities("ALL", "ALL");
+        } else {
+            updateUserProfile(state.currentUser.name, city);
+        }
+    });
+
+    // Name Edit Modal triggers
+    document.querySelectorAll(".btnOpenNameModal").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const modalInput = document.getElementById("modalInputCustomName");
+            const modalCity = document.getElementById("modalInputCustomCity");
+            if (modalInput) modalInput.value = state.currentUser.name;
+            if (modalCity) modalCity.value = state.currentUser.city;
+            document.getElementById("nameEditModal")?.classList.add("active");
+        });
+    });
+
+    document.getElementById("btnCloseNameEditModal")?.addEventListener("click", () => {
+        document.getElementById("nameEditModal")?.classList.remove("active");
+    });
+    document.getElementById("btnCancelNameEdit")?.addEventListener("click", () => {
+        document.getElementById("nameEditModal")?.classList.remove("active");
+    });
+
+    document.getElementById("nameEditForm")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const customName = document.getElementById("modalInputCustomName").value.trim();
+        const customCity = document.getElementById("modalInputCustomCity").value;
+        updateUserProfile(customName, customCity);
+        document.getElementById("nameEditModal")?.classList.remove("active");
+        showToast(`👤 Profile updated to ${customName} (${customCity})`);
+    });
+
     // Portal Switcher buttons
-    document.getElementById("btnEnterCitizenPortal")?.addEventListener("click", () => showPortal("citizen"));
-    document.getElementById("btnEnterAuthorityPortal")?.addEventListener("click", () => showPortal("authority"));
+    document.getElementById("btnEnterCitizenPortal")?.addEventListener("click", () => {
+        const gwName = document.getElementById("gatewayCustomName")?.value?.trim() || state.currentUser.name;
+        const gwCity = document.getElementById("gatewayCitySelect")?.value || state.currentUser.city;
+        updateUserProfile(gwName, gwCity);
+        showPortal("citizen");
+    });
+
+    document.getElementById("btnEnterAuthorityPortal")?.addEventListener("click", () => {
+        const gwName = document.getElementById("gatewayCustomName")?.value?.trim() || state.currentUser.name;
+        const gwCity = document.getElementById("gatewayCitySelect")?.value || state.currentUser.city;
+        updateUserProfile(gwName, gwCity);
+        showPortal("authority");
+    });
+
     document.getElementById("btnReturnToGateway")?.addEventListener("click", () => showPortal("gateway"));
     document.getElementById("btnAuthReturnGateway")?.addEventListener("click", () => showPortal("gateway"));
     document.getElementById("btnCitizenSignOut")?.addEventListener("click", () => showPortal("gateway"));
     document.getElementById("btnAuthSignOut")?.addEventListener("click", () => showPortal("gateway"));
-
-    // 1-Click Demos
-    document.getElementById("btnQuickCitizenDemo")?.addEventListener("click", () => {
-        showPortal("citizen");
-        showToast("👤 Welcome Jignesh Shah (Vadodara Citizen)");
-    });
-
-    document.getElementById("btnQuickAuthorityDemo")?.addEventListener("click", () => {
-        showPortal("authority");
-        showToast("🛡️ Commander Access Granted: Major R. K. Patel (GSDMA / NDRF)");
-    });
 
     // Citizen SOS Button & Siren
     document.getElementById("btnTriggerCitizenSos")?.addEventListener("click", () => {
@@ -895,7 +1100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Facility Filter
     document.getElementById("facilityTypeFilter")?.addEventListener("change", (e) => {
-        loadNearbyFacilities(e.target.value);
+        loadNearbyFacilities(e.target.value, state.currentUser.city);
     });
 
     // Authority View Switcher

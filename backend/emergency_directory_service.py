@@ -191,7 +191,7 @@ VERIFIED_GUJARAT_FACILITIES: List[Dict[str, Any]] = [
         "is_24x7": True
     },
 
-    # --- POLICE STATIONS & CONTROL ROOMS ---
+    # --- POLICE STATIONS & CONTROL ROOMS (VADODARA) ---
     {
         "facility_id": "POL-VAD-001",
         "name": "Sayajigunj Police Station & Disaster Aid Post",
@@ -249,8 +249,308 @@ VERIFIED_GUJARAT_FACILITIES: List[Dict[str, Any]] = [
         ],
         "total_capacity": "Central District Command",
         "is_24x7": True
+    },
+
+    # --- ALL GUJARAT DISTRICT FACILITIES ---
+    # AHMEDABAD
+    {
+        "facility_id": "FIRE-AHM-001",
+        "name": "Danapith Central Fire Headquarters, Ahmedabad",
+        "type": "FIRE_STATION",
+        "phone": "079-22148465",
+        "alternate_phone": "101",
+        "address": "Danapith, Old City, Ahmedabad, Gujarat 380001",
+        "city": "Ahmedabad",
+        "lat": 23.0238,
+        "lng": 72.5855,
+        "available_facilities": ["81-Meter Hydraulic Snorkel Ladder", "12 Rubber Boats", "Chemical Hazmat Unit", "High-Volume Pumps"],
+        "total_capacity": "25 Rescue Units",
+        "is_24x7": True
+    },
+    {
+        "facility_id": "POL-AHM-001",
+        "name": "Ahmedabad Police Commissionerate Control Room",
+        "type": "POLICE_STATION",
+        "phone": "079-25630100",
+        "alternate_phone": "112",
+        "address": "Shahibaug, Ahmedabad, Gujarat 380004",
+        "city": "Ahmedabad",
+        "lat": 23.0580,
+        "lng": 72.5930,
+        "available_facilities": ["24x7 Emergency Dial-112 Grid", "City-Wide Drone Surveillance", "Rapid Action Force Relay"],
+        "total_capacity": "State Central Police Command",
+        "is_24x7": True
+    },
+    # RAJKOT
+    {
+        "facility_id": "HOSP-RAJ-001",
+        "name": "PDU Government Civil Hospital & Medical College, Rajkot",
+        "type": "HOSPITAL",
+        "phone": "0281-2453664",
+        "alternate_phone": "108",
+        "address": "Hospital Chowk, Jamnagar Road, Rajkot, Gujarat 360001",
+        "city": "Rajkot",
+        "lat": 22.3045,
+        "lng": 70.7980,
+        "available_facilities": ["Saurashtra Apex Trauma Unit", "100 ICU Beds", "Dialysis & Blood Bank", "Emergency Ambulances"],
+        "total_capacity": "1200 Beds",
+        "is_24x7": True
+    },
+    {
+        "facility_id": "FIRE-RAJ-001",
+        "name": "Rajkot Municipal Corporation Fire HQ",
+        "type": "FIRE_STATION",
+        "phone": "0281-2227222",
+        "alternate_phone": "101",
+        "address": "Dhebar Road, Rajkot, Gujarat 360001",
+        "city": "Rajkot",
+        "lat": 22.2960,
+        "lng": 70.8030,
+        "available_facilities": ["Hydraulic Rescue Ladders", "Water Tenders", "Aji Dam Flood Rescue Boats"],
+        "total_capacity": "10 Tenders",
+        "is_24x7": True
+    },
+    # SURAT
+    {
+        "facility_id": "POL-SUR-001",
+        "name": "Surat City Police Control Room",
+        "type": "POLICE_STATION",
+        "phone": "0261-2465100",
+        "alternate_phone": "112",
+        "address": "Athwalines, Surat, Gujarat 395001",
+        "city": "Surat",
+        "lat": 21.1760,
+        "lng": 72.8080,
+        "available_facilities": ["Tapi River Flood Patrols", "PCR Mobile Units", "Coastal Border Security"],
+        "total_capacity": "District Command",
+        "is_24x7": True
+    },
+    # GANDHINAGAR
+    {
+        "facility_id": "HOSP-GAN-001",
+        "name": "GMERS Civil Hospital, Gandhinagar",
+        "type": "HOSPITAL",
+        "phone": "079-23221931",
+        "alternate_phone": "108",
+        "address": "Sector 12, Gandhinagar, Gujarat 382016",
+        "city": "Gandhinagar",
+        "lat": 23.2230,
+        "lng": 72.6480,
+        "available_facilities": ["State Capital Trauma Center", "ICU Beds", "Emergency Response Fleet"],
+        "total_capacity": "650 Beds",
+        "is_24x7": True
+    },
+    # KUTCH / BHUJ
+    {
+        "facility_id": "HOSP-BHUJ-001",
+        "name": "GK General Hospital, Bhuj (Adani Institute)",
+        "type": "HOSPITAL",
+        "phone": "02832-246417",
+        "alternate_phone": "108",
+        "address": "Lotus Colony, Bhuj, Kutch, Gujarat 370001",
+        "city": "Kutch / Bhuj",
+        "lat": 23.2510,
+        "lng": 69.6710,
+        "available_facilities": ["Earthquake & Cyclone Trauma Center", "50 ICU Beds", "Disaster Resuscitation Ward"],
+        "total_capacity": "750 Beds",
+        "is_24x7": True
+    },
+    {
+        "facility_id": "FIRE-BHUJ-001",
+        "name": "Bhuj Emergency Fire & Disaster Rescue Station",
+        "type": "FIRE_STATION",
+        "phone": "02832-250101",
+        "alternate_phone": "101",
+        "address": "Station Road, Bhuj, Kutch 370001",
+        "city": "Kutch / Bhuj",
+        "lat": 23.2430,
+        "lng": 69.6640,
+        "available_facilities": ["Earthquake Collapse Debris Search Gear", "High-Wind Cyclone Rescue Vans", "IRB Boats"],
+        "total_capacity": "8 Heavy Units",
+        "is_24x7": True
+    },
+    # BHAVNAGAR
+    {
+        "facility_id": "HOSP-BHAV-001",
+        "name": "Sir Takhtasinhji General Hospital, Bhavnagar",
+        "type": "HOSPITAL",
+        "phone": "0278-2511511",
+        "alternate_phone": "108",
+        "address": "Kalanala, Bhavnagar, Gujarat 364001",
+        "city": "Bhavnagar",
+        "lat": 21.7710,
+        "lng": 72.1480,
+        "available_facilities": ["Coastal Trauma Hub", "80 ICU Beds", "Blood Bank", "Emergency Ambulances"],
+        "total_capacity": "900 Beds",
+        "is_24x7": True
+    },
+    # JAMNAGAR
+    {
+        "facility_id": "HOSP-JAM-001",
+        "name": "Guru Gobindsingh (GG) Government Hospital, Jamnagar",
+        "type": "HOSPITAL",
+        "phone": "0288-2550204",
+        "alternate_phone": "108",
+        "address": "Pandit Nehru Marg, Jamnagar, Gujarat 361008",
+        "city": "Jamnagar",
+        "lat": 22.4740,
+        "lng": 70.0620,
+        "available_facilities": ["Level-1 Coastal Emergency Center", "120 ICU Beds", "Marine Toxin Treatment Ward"],
+        "total_capacity": "1500 Beds",
+        "is_24x7": True
+    },
+    # JUNAGADH
+    {
+        "facility_id": "HOSP-JUN-001",
+        "name": "GMERS Civil Hospital, Junagadh",
+        "type": "HOSPITAL",
+        "phone": "0285-2651911",
+        "alternate_phone": "108",
+        "address": "Majevadi Gate, Junagadh, Gujarat 362001",
+        "city": "Junagadh",
+        "lat": 21.5270,
+        "lng": 70.4610,
+        "available_facilities": ["Gir Forest & Flash Flood Medical Hub", "Anti-Venom Bank", "ICU Beds"],
+        "total_capacity": "500 Beds",
+        "is_24x7": True
+    },
+    # ANAND
+    {
+        "facility_id": "HOSP-AND-001",
+        "name": "Shree Krishna Hospital, Karamsad (Anand)",
+        "type": "HOSPITAL",
+        "phone": "02692-228411",
+        "alternate_phone": "108",
+        "address": "Gokal Nagar, Karamsad, Anand, Gujarat 388325",
+        "city": "Anand",
+        "lat": 22.5480,
+        "lng": 72.8980,
+        "available_facilities": ["Cardiac & Multi-Organ Trauma Care", "100 ICU Beds", "24x7 Blood Bank"],
+        "total_capacity": "800 Beds",
+        "is_24x7": True
+    },
+    # BHARUCH
+    {
+        "facility_id": "HOSP-BHA-001",
+        "name": "Bharuch Civil Hospital & Narmada Basin Trauma Hub",
+        "type": "HOSPITAL",
+        "phone": "02642-240100",
+        "alternate_phone": "108",
+        "address": "Station Road, Bharuch, Gujarat 392001",
+        "city": "Bharuch",
+        "lat": 21.7080,
+        "lng": 72.9980,
+        "available_facilities": ["Narmada Flood Trauma Care", "Industrial Chemical Burn Care", "ICU Beds"],
+        "total_capacity": "450 Beds",
+        "is_24x7": True
+    },
+    # MORBI
+    {
+        "facility_id": "HOSP-MOR-001",
+        "name": "Morbi General Civil Hospital",
+        "type": "HOSPITAL",
+        "phone": "02822-220011",
+        "alternate_phone": "108",
+        "address": "Ayodhya Puri, Morbi, Gujarat 363641",
+        "city": "Morbi",
+        "lat": 22.8180,
+        "lng": 70.8410,
+        "available_facilities": ["Machchhu River Disaster Medical Care", "Trauma ICU", "Ambulance Hub"],
+        "total_capacity": "350 Beds",
+        "is_24x7": True
+    },
+    # PORBANDAR
+    {
+        "facility_id": "HOSP-POR-001",
+        "name": "Bhavsinhji General Hospital, Porbandar",
+        "type": "HOSPITAL",
+        "phone": "0286-2242100",
+        "alternate_phone": "108",
+        "address": "MG Road, Porbandar, Gujarat 360575",
+        "city": "Porbandar",
+        "lat": 21.6440,
+        "lng": 69.6120,
+        "available_facilities": ["Cyclone Surge Emergency Ward", "Coastal Rescue Link", "ICU Beds"],
+        "total_capacity": "400 Beds",
+        "is_24x7": True
+    },
+    # NAVSARI
+    {
+        "facility_id": "HOSP-NAV-001",
+        "name": "Navsari Civil Hospital (Purna River Zone)",
+        "type": "HOSPITAL",
+        "phone": "02637-258100",
+        "alternate_phone": "108",
+        "address": "Lunsikui, Navsari, Gujarat 396445",
+        "city": "Navsari",
+        "lat": 20.9510,
+        "lng": 72.9340,
+        "available_facilities": ["Purna Flood Evacuation Medical Hub", "ICU Beds", "24x7 Ambulance"],
+        "total_capacity": "350 Beds",
+        "is_24x7": True
+    },
+    # VALSAD & VAPI
+    {
+        "facility_id": "HOSP-VAL-001",
+        "name": "GMERS Hospital, Valsad & Vapi GIDC Hazmat Hub",
+        "type": "HOSPITAL",
+        "phone": "02632-251100",
+        "alternate_phone": "108",
+        "address": "Halar, Valsad, Gujarat 396001",
+        "city": "Valsad",
+        "lat": 20.6120,
+        "lng": 72.9280,
+        "available_facilities": ["Chemical Toxicology & Burn Center", "Auranga Flood Medical Post", "ICU Beds"],
+        "total_capacity": "550 Beds",
+        "is_24x7": True
+    },
+    # MEHSANA & PATAN
+    {
+        "facility_id": "HOSP-MEH-001",
+        "name": "Mehsana General Civil Hospital",
+        "type": "HOSPITAL",
+        "phone": "02762-252100",
+        "alternate_phone": "108",
+        "address": "TB Hospital Road, Mehsana, Gujarat 384002",
+        "city": "Mehsana",
+        "lat": 23.5950,
+        "lng": 72.3810,
+        "available_facilities": ["North Gujarat Regional Trauma Hub", "ICU Beds", "Blood Bank"],
+        "total_capacity": "450 Beds",
+        "is_24x7": True
+    },
+    # BANASKANTHA (PALANPUR)
+    {
+        "facility_id": "HOSP-PAL-001",
+        "name": "Palanpur Civil Hospital & Banaskantha Disaster Ward",
+        "type": "HOSPITAL",
+        "phone": "02742-252200",
+        "alternate_phone": "108",
+        "address": "Civil Hospital Road, Palanpur, Gujarat 385001",
+        "city": "Palanpur (Banaskantha)",
+        "lat": 24.1750,
+        "lng": 72.4380,
+        "available_facilities": ["Desert Border Medical Hub", "Trauma Unit", "Flash Flood Aid Center"],
+        "total_capacity": "400 Beds",
+        "is_24x7": True
+    },
+    # PANCHMAHAL & DAHOD
+    {
+        "facility_id": "HOSP-GOD-001",
+        "name": "Godhra Civil Hospital & Eastern Tribal Trauma Hub",
+        "type": "HOSPITAL",
+        "phone": "02672-242100",
+        "alternate_phone": "108",
+        "address": "Station Road, Godhra, Gujarat 389001",
+        "city": "Godhra (Panchmahal)",
+        "lat": 22.7810,
+        "lng": 73.6180,
+        "available_facilities": ["Panchmahal Emergency Care", "Anti-Venom & Trauma Units", "ICU Beds"],
+        "total_capacity": "350 Beds",
+        "is_24x7": True
     }
 ]
+
 
 
 DISASTER_REMEDY_GUIDES: List[Dict[str, Any]] = [

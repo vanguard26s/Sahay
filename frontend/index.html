@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAHAY | Gujarat Disaster Intelligence & Emergency Command System</title>
-    <meta name="description" content="Autonomous disaster response, citizen emergency SOS, nearby facilities navigation, real-time mobile SMS alerts, and situation reports for Gujarat SEOC.">
+    <meta name="description" content="Autonomous disaster response, citizen emergency SOS, nearby facilities navigation, real-time mobile SMS alerts, and situation reports for all 33 Gujarat districts.">
 
     <!-- Leaflet GIS Stylesheet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -21,7 +21,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
-    <!-- Custom Futuristic Dark Stylesheet -->
+    <!-- Custom Futuristic Stylesheet -->
     <link rel="stylesheet" href="/style.css">
 </head>
 <body class="theme-dark">
@@ -32,12 +32,21 @@
     <div class="portal-screen active" id="portalGateway">
         <div class="gateway-container">
             <div class="gateway-header">
-                <div class="brand-badge-large">
-                    <span class="radar-dot pulse-large"></span>
-                    <span class="brand-icon">🛡️</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px;">
+                    <div class="brand-badge-large">
+                        <span class="radar-dot pulse-large"></span>
+                        <span class="brand-icon">🛡️</span>
+                    </div>
+                    <!-- Theme Toggle on Gateway -->
+                    <button class="theme-toggle-btn btnToggleTheme">
+                        <span class="theme-icon">🌓</span>
+                        <span class="theme-label">Theme: Dark Mode</span>
+                    </button>
                 </div>
+
                 <h1 class="gateway-title">SAHAY <span class="badge-version">GUJARAT SEOC v3.5</span></h1>
-                <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time Mobile SMS Alerts, and Safe Facilities Navigation</p>
+                <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time Mobile SMS Alerts, and Safe Facilities Navigation for All 33 Gujarat Districts</p>
+                
                 <div class="emergency-hotlines-banner">
                     <span>🚨 STATE EMERGENCY HELPLINES:</span>
                     <strong>DIAL 112</strong> <em>(All Emergency)</em> | 
@@ -45,20 +54,75 @@
                     <strong>108</strong> <em>(Ambulance)</em> | 
                     <strong>101</strong> <em>(Fire & Rescue)</em>
                 </div>
+
+                <!-- Custom User & City Setup Card -->
+                <div class="user-setup-card" style="margin-top: 18px; background: var(--bg-surface); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: var(--radius-md); width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <strong style="font-size: 13.5px; color: var(--accent-cyan);">👤 Customize Your Identity & Gujarat District / City</strong>
+                        <span style="font-size: 11px; color: var(--accent-emerald);">✓ Auto-Sync Across All Portals</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div class="form-group">
+                            <label style="font-size: 11.5px;">Your Full Name (Type Any Name):</label>
+                            <input type="text" id="gatewayCustomName" class="search-input" placeholder="Type your name (e.g. Jignesh Shah, Amit Patel)..." value="Jignesh Shah">
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-size: 11.5px;">Select Your Gujarat City / District:</label>
+                            <select id="gatewayCitySelect" class="styled-select">
+                                <option value="Vadodara" selected>📍 Vadodara (Central Gujarat)</option>
+                                <option value="Ahmedabad">📍 Ahmedabad (Mega Metro / Sabarmati)</option>
+                                <option value="Surat">📍 Surat (South Gujarat / Tapi Basin)</option>
+                                <option value="Rajkot">📍 Rajkot (Saurashtra Hub)</option>
+                                <option value="Bhavnagar">📍 Bhavnagar (Gulf of Khambhat)</option>
+                                <option value="Jamnagar">📍 Jamnagar (Coastal Oil & Ports)</option>
+                                <option value="Junagadh">📍 Junagadh (Gir Foothills)</option>
+                                <option value="Gandhinagar">📍 Gandhinagar (State Capital)</option>
+                                <option value="Anand">📍 Anand (Charotar Dairy Belt)</option>
+                                <option value="Navsari">📍 Navsari (South Coastal)</option>
+                                <option value="Morbi">📍 Morbi (Ceramic & Machchhu Basin)</option>
+                                <option value="Bharuch">📍 Bharuch (Narmada River Zone)</option>
+                                <option value="Porbandar">📍 Porbandar (Arabian Sea Coast)</option>
+                                <option value="Kutch / Bhuj">📍 Kutch / Bhuj (Intraplate Seismic Zone)</option>
+                                <option value="Mehsana">📍 Mehsana (North Gujarat)</option>
+                                <option value="Valsad">📍 Valsad (Auranga River)</option>
+                                <option value="Vapi">📍 Vapi (Industrial GIDC Hub)</option>
+                                <option value="Patan">📍 Patan (Saraswati Basin)</option>
+                                <option value="Palanpur (Banaskantha)">📍 Palanpur (Banaskantha Border)</option>
+                                <option value="Himatnagar (Sabarkantha)">📍 Himatnagar (Sabarkantha)</option>
+                                <option value="Godhra (Panchmahal)">📍 Godhra (Panchmahal)</option>
+                                <option value="Dahod">📍 Dahod (Eastern Tribal Border)</option>
+                                <option value="Nadiad (Kheda)">📍 Nadiad (Kheda District)</option>
+                                <option value="Amreli">📍 Amreli (Shetrunji Basin)</option>
+                                <option value="Surendranagar">📍 Surendranagar (Zalawad)</option>
+                                <option value="Botad">📍 Botad (Bhimnath Zone)</option>
+                                <option value="Veraval / Somnath (Gir Somnath)">📍 Veraval / Somnath (Gir Somnath)</option>
+                                <option value="Dwarka (Devbhumi Dwarka)">📍 Dwarka (Devbhumi Dwarka)</option>
+                                <option value="Vyara (Tapi)">📍 Vyara (Tapi District)</option>
+                                <option value="Ahwa (Dang)">📍 Ahwa (Dang Hill Forest)</option>
+                                <option value="Rajpipla (Narmada)">📍 Rajpipla (Narmada Dam)</option>
+                                <option value="Chhota Udaipur">📍 Chhota Udaipur</option>
+                                <option value="Lunawada (Mahisagar)">📍 Lunawada (Mahisagar)</option>
+                                <option value="Modasa (Aravalli)">📍 Modasa (Aravalli)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Portal Selection Cards -->
-            <div class="gateway-cards-grid">
+            <div class="gateway-cards-grid" style="margin-top: 18px;">
                 <!-- Portal 1: Citizen -->
                 <div class="portal-choice-card citizen-card">
                     <div class="card-glow-bg"></div>
                     <div class="card-icon">👤</div>
                     <h2>CITIZEN EMERGENCY PORTAL</h2>
-                    <p class="card-desc">For citizens, victims, and families in affected disaster zones. Fast SOS beacon, nearby hospital & police locator with live navigation, and safety remedies.</p>
+                    <p class="card-desc">For citizens, victims, and families in affected disaster zones across Gujarat. Fast SOS beacon, nearby hospital & police locator with live navigation, and safety remedies.</p>
                     
                     <ul class="portal-features-list">
                         <li>⚡ <strong>Instant Emergency SOS</strong> with Loud Alarm Siren</li>
-                        <li>🏥 <strong>Nearby Hospitals, Fire & Police Stations</strong> with Direct Phone Numbers</li>
+                        <li>🏥 <strong>Nearby Hospitals, Fire & Police Stations</strong> for all 33 Gujarat cities</li>
                         <li>🧭 <strong>Turn-by-Turn Safe Navigation Map</strong> to nearest emergency hubs</li>
                         <li>🩹 <strong>Disaster Remedies & First-Aid Guides</strong> (Floods, Cyclones, Quakes)</li>
                         <li>📥 <strong>Download Personal SOS Distress Receipt</strong></li>
@@ -67,9 +131,6 @@
                     <div class="card-actions-col">
                         <button class="btn btn-danger btn-lg btn-pulse btn-full" id="btnEnterCitizenPortal">
                             🚨 ENTER CITIZEN PORTAL
-                        </button>
-                        <button class="btn btn-secondary btn-sm btn-full" id="btnQuickCitizenDemo">
-                            ⚡ 1-Click Demo: Jignesh Shah (Vadodara Citizen)
                         </button>
                     </div>
                 </div>
@@ -93,9 +154,6 @@
                         <button class="btn btn-primary btn-lg btn-full" id="btnEnterAuthorityPortal">
                             🛡️ ENTER COMMAND CENTER
                         </button>
-                        <button class="btn btn-secondary btn-sm btn-full" id="btnQuickAuthorityDemo">
-                            ⚡ 1-Click Demo: Major R. K. Patel (GSDMA / NDRF)
-                        </button>
                     </div>
                 </div>
             </div>
@@ -104,7 +162,7 @@
             <div class="gateway-footer">
                 <span>Gujarat State Disaster Management Authority (GSDMA) | Government of Gujarat</span>
                 <div class="auth-trigger-link">
-                    <button class="btn-link" id="btnOpenAuthFromGateway">🔐 Custom Account Sign In / Register</button>
+                    <button class="btn-link" id="btnOpenAuthFromGateway">🔐 Custom Officer Login / Register</button>
                 </div>
             </div>
         </div>
@@ -128,13 +186,22 @@
             </div>
 
             <div class="user-auth-box">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle-btn btnToggleTheme">
+                    <span class="theme-icon">🌓</span>
+                    <span class="theme-label">Theme</span>
+                </button>
+
+                <!-- User Chip with Edit Name Button -->
                 <div class="user-chip" id="citizenUserChip">
                     <span class="user-role-icon">👤</span>
                     <div class="user-chip-text">
                         <span class="user-chip-name" id="citizenNameLabel">Jignesh Shah</span>
-                        <span class="user-chip-role">CITIZEN (VADODARA)</span>
+                        <span class="user-chip-role" id="citizenCityLabel">CITIZEN (VADODARA)</span>
                     </div>
+                    <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit your name or change city" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;">✏️ Edit</button>
                 </div>
+
                 <button class="btn btn-secondary btn-sm" id="btnReturnToGateway">🏠 Switch Portal</button>
                 <button class="btn btn-secondary btn-sm" id="btnCitizenSignOut">🚪 Sign Out</button>
             </div>
@@ -159,8 +226,8 @@
                 <div class="sos-banner-right">
                     <div class="live-weather-card">
                         <div class="weather-title">🌧️ LIVE GUJARAT WEATHER & RAINFALL ALERT</div>
-                        <div class="weather-status text-amber">⚠️ RED ALERT: Vishwamitri River Level 35.4 Ft (Ajwa Dam Outflow 45,000 Cusecs)</div>
-                        <p class="weather-desc">Low-lying areas in Karelibaug, Sayajigunj & Fatehgunj on evacuation notice. NDRF boat teams deployed.</p>
+                        <div class="weather-status text-amber" id="citizenLiveAlertBanner">⚠️ RED ALERT: Vishwamitri River Level 35.4 Ft (Ajwa Dam Outflow 45,000 Cusecs)</div>
+                        <p class="weather-desc">Low-lying areas in Vadodara, Surat & Kutch on evacuation notice. NDRF boat teams deployed.</p>
                     </div>
                 </div>
             </div>
@@ -177,16 +244,54 @@
             <div class="cit-tab-pane active" id="tabFacilities">
                 <div class="facilities-filter-bar">
                     <div class="filter-group">
-                        <label>Filter Emergency Service:</label>
+                        <label>Select Gujarat City / District:</label>
+                        <select id="citizenCityDropdown" class="styled-select">
+                            <option value="ALL">🌟 All Gujarat Cities</option>
+                            <option value="Vadodara" selected>📍 Vadodara</option>
+                            <option value="Ahmedabad">📍 Ahmedabad</option>
+                            <option value="Surat">📍 Surat</option>
+                            <option value="Rajkot">📍 Rajkot</option>
+                            <option value="Bhavnagar">📍 Bhavnagar</option>
+                            <option value="Jamnagar">📍 Jamnagar</option>
+                            <option value="Junagadh">📍 Junagadh</option>
+                            <option value="Gandhinagar">📍 Gandhinagar</option>
+                            <option value="Anand">📍 Anand</option>
+                            <option value="Navsari">📍 Navsari</option>
+                            <option value="Morbi">📍 Morbi</option>
+                            <option value="Bharuch">📍 Bharuch</option>
+                            <option value="Porbandar">📍 Porbandar</option>
+                            <option value="Kutch / Bhuj">📍 Kutch / Bhuj</option>
+                            <option value="Mehsana">📍 Mehsana</option>
+                            <option value="Valsad">📍 Valsad</option>
+                            <option value="Vapi">📍 Vapi</option>
+                            <option value="Patan">📍 Patan</option>
+                            <option value="Palanpur (Banaskantha)">📍 Palanpur (Banaskantha)</option>
+                            <option value="Himatnagar (Sabarkantha)">📍 Himatnagar (Sabarkantha)</option>
+                            <option value="Godhra (Panchmahal)">📍 Godhra (Panchmahal)</option>
+                            <option value="Dahod">📍 Dahod</option>
+                            <option value="Nadiad (Kheda)">📍 Nadiad (Kheda)</option>
+                            <option value="Amreli">📍 Amreli</option>
+                            <option value="Surendranagar">📍 Surendranagar</option>
+                            <option value="Botad">📍 Botad</option>
+                            <option value="Veraval / Somnath (Gir Somnath)">📍 Veraval / Somnath</option>
+                            <option value="Dwarka (Devbhumi Dwarka)">📍 Dwarka</option>
+                            <option value="Vyara (Tapi)">📍 Vyara (Tapi)</option>
+                            <option value="Ahwa (Dang)">📍 Ahwa (Dang)</option>
+                            <option value="Rajpipla (Narmada)">📍 Rajpipla (Narmada)</option>
+                            <option value="Chhota Udaipur">📍 Chhota Udaipur</option>
+                            <option value="Lunawada (Mahisagar)">📍 Lunawada (Mahisagar)</option>
+                            <option value="Modasa (Aravalli)">📍 Modasa (Aravalli)</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Filter Facility Type:</label>
                         <select id="facilityTypeFilter" class="styled-select">
                             <option value="ALL" selected>🏥 All Emergency Facilities</option>
                             <option value="HOSPITAL">🏥 Hospitals & Level-1 Trauma Care</option>
                             <option value="FIRE_STATION">🚒 Fire & Rescue Stations</option>
                             <option value="POLICE_STATION">👮 Police Stations & Control Rooms</option>
                         </select>
-                    </div>
-                    <div class="facility-search-note">
-                        <span>📍 Sorted by proximity in Vadodara / Gujarat</span>
                     </div>
                 </div>
 
@@ -260,13 +365,22 @@
             </nav>
 
             <div class="user-auth-box">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle-btn btnToggleTheme">
+                    <span class="theme-icon">🌓</span>
+                    <span class="theme-label">Theme</span>
+                </button>
+
+                <!-- Officer Chip with Edit Name Button -->
                 <div class="user-chip" id="authOfficerChip">
                     <span class="user-role-icon">🛡️</span>
                     <div class="user-chip-text">
                         <span class="user-chip-name" id="authOfficerName">Major R. K. Patel</span>
                         <span class="user-chip-role">GSDMA COMMANDER</span>
                     </div>
+                    <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit officer name" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;">✏️ Edit</button>
                 </div>
+
                 <button class="btn btn-secondary btn-sm" id="btnAuthReturnGateway">🏠 Switch Portal</button>
                 <button class="btn btn-secondary btn-sm" id="btnAuthSignOut">🚪 Sign Out</button>
             </div>
@@ -421,7 +535,7 @@
                     <div class="page-header">
                         <div>
                             <h2>📱 Real-Time Mobile SMS & Emergency Alert Dispatcher</h2>
-                            <p class="sub-text">Transmit live SMS warnings directly to recipient mobile phone numbers via Cellular SMS Gateways and Native Device SMS.</p>
+                            <p class="sub-text">Transmit live SMS warnings directly to recipient mobile phone numbers across all Gujarat districts.</p>
                         </div>
                     </div>
 
@@ -449,13 +563,13 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Target Locality / Zone (Gujarat) *</label>
+                                    <label>Target Locality / District (Gujarat) *</label>
                                     <input type="text" id="directSmsZone" required value="Karelibaug / Vishwamitri Basin, Vadodara">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Alert SMS Text Message *</label>
-                                    <textarea id="directSmsMessage" rows="3" required>[SAHAY EMERGENCY ALERT] Heavy rainfall in Vadodara catchment. Vishwamitri river rising fast. Move to high ground immediately. Helpline: 1077.</textarea>
+                                    <textarea id="directSmsMessage" rows="3" required>[SAHAY EMERGENCY ALERT] Heavy rainfall reported in Gujarat district catchment. Move to high ground immediately. State Helpline: 1077.</textarea>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary btn-full" id="btnSubmitDirectSms">
@@ -502,7 +616,7 @@
                     <div class="page-header">
                         <div>
                             <h2>📊 Predictive Disaster Analytics & Situation Report (SitRep)</h2>
-                            <p class="sub-text">Automated real-time synthesis of ground telemetry, casualty projections, and relief mobilization.</p>
+                            <p class="sub-text">Automated real-time synthesis of ground telemetry, casualty projections, and relief mobilization for Gujarat.</p>
                         </div>
                         <div class="header-actions">
                             <button class="btn btn-secondary" id="btnDownloadCsvFromAnalytics">📥 Download Incidents (CSV)</button>
@@ -523,9 +637,9 @@
                             <span class="stat-note">Gujarat Danger Zones</span>
                         </div>
                         <div class="stat-card">
-                            <span class="stat-title">ACTIVE DISASTER ZONES</span>
-                            <div class="stat-number text-cyan" id="analyticsZonesCount">4 Districts</div>
-                            <span class="stat-note">Vadodara, Kutch, Surat, Bhuj</span>
+                            <span class="stat-title">ACTIVE GUJARAT DISTRICTS</span>
+                            <div class="stat-number text-cyan" id="analyticsZonesCount">33 Districts</div>
+                            <span class="stat-note">State-Wide Monitoring</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-title">INCIDENT STABILIZATION RATE</span>
@@ -582,7 +696,70 @@
          ACTION MODALS
          =================================================================== -->
 
-    <!-- MODAL 1: CITIZEN SOS MODAL -->
+    <!-- MODAL: EDIT NAME & CITY MODAL -->
+    <div class="modal-overlay" id="nameEditModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">👤 EDIT YOUR NAME & GUJARAT CITY</div>
+                <button class="modal-close" id="btnCloseNameEditModal">&times;</button>
+            </div>
+            <form id="nameEditForm" class="modal-body">
+                <p class="modal-desc">Type your custom name and choose your Gujarat district. This will update your profile across the portal, SOS forms, and distress receipts.</p>
+
+                <div class="form-group">
+                    <label>Your Full Name *</label>
+                    <input type="text" id="modalInputCustomName" required placeholder="Type any name (e.g. Rahul Mehta)...">
+                </div>
+
+                <div class="form-group">
+                    <label>Select Your Gujarat City / District *</label>
+                    <select id="modalInputCustomCity" class="styled-select">
+                        <option value="Vadodara">📍 Vadodara</option>
+                        <option value="Ahmedabad">📍 Ahmedabad</option>
+                        <option value="Surat">📍 Surat</option>
+                        <option value="Rajkot">📍 Rajkot</option>
+                        <option value="Bhavnagar">📍 Bhavnagar</option>
+                        <option value="Jamnagar">📍 Jamnagar</option>
+                        <option value="Junagadh">📍 Junagadh</option>
+                        <option value="Gandhinagar">📍 Gandhinagar</option>
+                        <option value="Anand">📍 Anand</option>
+                        <option value="Navsari">📍 Navsari</option>
+                        <option value="Morbi">📍 Morbi</option>
+                        <option value="Bharuch">📍 Bharuch</option>
+                        <option value="Porbandar">📍 Porbandar</option>
+                        <option value="Kutch / Bhuj">📍 Kutch / Bhuj</option>
+                        <option value="Mehsana">📍 Mehsana</option>
+                        <option value="Valsad">📍 Valsad</option>
+                        <option value="Vapi">📍 Vapi</option>
+                        <option value="Patan">📍 Patan</option>
+                        <option value="Palanpur (Banaskantha)">📍 Palanpur (Banaskantha)</option>
+                        <option value="Himatnagar (Sabarkantha)">📍 Himatnagar (Sabarkantha)</option>
+                        <option value="Godhra (Panchmahal)">📍 Godhra (Panchmahal)</option>
+                        <option value="Dahod">📍 Dahod</option>
+                        <option value="Nadiad (Kheda)">📍 Nadiad (Kheda)</option>
+                        <option value="Amreli">📍 Amreli</option>
+                        <option value="Surendranagar">📍 Surendranagar</option>
+                        <option value="Botad">📍 Botad</option>
+                        <option value="Veraval / Somnath (Gir Somnath)">📍 Veraval / Somnath</option>
+                        <option value="Dwarka (Devbhumi Dwarka)">📍 Dwarka</option>
+                        <option value="Vyara (Tapi)">📍 Vyara (Tapi)</option>
+                        <option value="Ahwa (Dang)">📍 Ahwa (Dang)</option>
+                        <option value="Rajpipla (Narmada)">📍 Rajpipla (Narmada)</option>
+                        <option value="Chhota Udaipur">📍 Chhota Udaipur</option>
+                        <option value="Lunawada (Mahisagar)">📍 Lunawada (Mahisagar)</option>
+                        <option value="Modasa (Aravalli)">📍 Modasa (Aravalli)</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelNameEdit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CITIZEN SOS MODAL -->
     <div class="modal-overlay" id="sosModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -607,9 +784,9 @@
                     <div class="form-group">
                         <label>Disaster Category *</label>
                         <select id="sosDisasterType" class="styled-select" required>
-                            <option value="flood" selected>Flood / Vishwamitri Inundation</option>
+                            <option value="flood" selected>Flood / River Basin Inundation</option>
                             <option value="cyclone">Cyclone / Coastal Surge (Biparjoy)</option>
-                            <option value="earthquake">Earthquake (Kutch/Bhuj)</option>
+                            <option value="earthquake">Earthquake (Kutch/Bhuj/Morbi)</option>
                             <option value="building_collapse">Building / Slab Collapse</option>
                             <option value="industrial_hazard">Chemical / Gas Hazard (GIDC)</option>
                         </select>
@@ -622,7 +799,7 @@
 
                 <div class="form-group">
                     <label>Landmark & Location Details (Gujarat) *</label>
-                    <input type="text" id="sosLocationName" required placeholder="e.g. Karelibaug / Fatehgunj / Adajan Surat" value="Karelibaug Near Vishwamitri Bridge, Vadodara">
+                    <input type="text" id="sosLocationName" required placeholder="e.g. Karelibaug Vadodara / Adajan Surat / Maninagar Ahmedabad" value="Karelibaug Near Vishwamitri Bridge, Vadodara">
                 </div>
 
                 <div class="form-group">
@@ -648,7 +825,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: SITREP MODAL -->
+    <!-- MODAL: SITREP MODAL -->
     <div class="modal-overlay" id="sitrepModal">
         <div class="modal-card modal-large">
             <div class="modal-header">
@@ -665,7 +842,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: AUTH MODAL -->
+    <!-- MODAL: AUTH MODAL -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -677,10 +854,10 @@
                     <div style="font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px;">⚡ INSTANT DEMO LOGIN:</div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-primary btn-sm" style="flex: 1;" id="btnDemoAuthModalAuthority">
-                            🛡️ Authority (Major Patel)
+                            🛡️ Authority Commander
                         </button>
                         <button class="btn btn-secondary btn-sm" style="flex: 1;" id="btnDemoAuthModalCitizen">
-                            👤 Citizen (Jignesh Shah)
+                            👤 Citizen User
                         </button>
                     </div>
                 </div>
