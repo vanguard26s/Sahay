@@ -180,14 +180,16 @@
             </div>
 
             <div class="user-auth-box">
-                <!-- User Chip with Edit Name Button -->
+                <!-- User Chip with Direct Editable Name -->
                 <div class="user-chip" id="citizenUserChip">
                     <span class="user-role-icon">👤</span>
                     <div class="user-chip-text">
-                        <span class="user-chip-name" id="citizenNameLabel">Jignesh Shah</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="text" id="citizenNameInput" class="inline-name-edit" value="Jignesh Shah" title="Click to edit your name" placeholder="Your Name">
+                            <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit your name or change city" style="padding: 2px 6px; font-size: 11px;">✏️</button>
+                        </div>
                         <span class="user-chip-role" id="citizenCityLabel">CITIZEN (VADODARA)</span>
                     </div>
-                    <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit your name or change city" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;">✏️ Edit</button>
                 </div>
 
                 <button class="btn btn-secondary btn-sm" id="btnReturnToGateway">🏠 Switch Portal</button>
@@ -354,19 +356,22 @@
             </nav>
 
             <div class="user-auth-box">
-                <!-- Officer Chip with Edit Name Button -->
+                <!-- Officer Chip with Direct Editable Name -->
                 <div class="user-chip" id="authOfficerChip">
                     <span class="user-role-icon">🛡️</span>
                     <div class="user-chip-text">
-                        <span class="user-chip-name" id="authOfficerName">Major R. K. Patel</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="text" id="authOfficerNameInput" class="inline-name-edit" value="Commander R. K. Patel" title="Click to edit officer name" placeholder="Officer Name">
+                            <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit officer name" style="padding: 2px 6px; font-size: 11px;">✏️</button>
+                        </div>
                         <span class="user-chip-role">GSDMA COMMANDER</span>
                     </div>
-                    <button class="btn btn-secondary btn-xs btnOpenNameModal" title="Edit officer name" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;">✏️ Edit</button>
                 </div>
 
                 <button class="btn btn-secondary btn-sm" id="btnAuthReturnGateway">🏠 Switch Portal</button>
                 <button class="btn btn-secondary btn-sm" id="btnAuthSignOut">🚪 Sign Out</button>
             </div>
+
 
         </header>
 

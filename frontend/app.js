@@ -83,8 +83,8 @@ const state = {
 // ==========================================================================
 
 function updateUserProfile(name, city) {
-    if (!name || !name.trim()) name = "Jignesh Shah";
-    if (!city || !GUJARAT_CITIES[city]) city = "Vadodara";
+    if (!name || !name.trim()) name = state.currentUser?.name || "Jignesh Shah";
+    if (!city || !GUJARAT_CITIES[city]) city = state.currentUser?.city || "Vadodara";
 
     state.currentUser.name = name.trim();
     state.currentUser.city = city;
@@ -93,21 +93,21 @@ function updateUserProfile(name, city) {
     localStorage.setItem("sahay_user_name", state.currentUser.name);
     localStorage.setItem("sahay_user_city", city);
 
-    // Update labels in UI
-    const citNameEl = document.getElementById("citizenNameLabel");
+    // Update labels and inputs in UI
+    const citNameInput = document.getElementById("citizenNameInput");
+    const authNameInput = document.getElementById("authOfficerNameInput");
     const citCityEl = document.getElementById("citizenCityLabel");
-    const authNameEl = document.getElementById("authOfficerName");
     const sosNameInput = document.getElementById("sosName");
     const gatewayCustomInput = document.getElementById("gatewayCustomName");
     const gatewayCitySel = document.getElementById("gatewayCitySelect");
     const citCityDropdown = document.getElementById("citizenCityDropdown");
     const liveAlertBanner = document.getElementById("citizenLiveAlertBanner");
 
-    if (citNameEl) citNameEl.innerText = state.currentUser.name;
+    if (citNameInput && document.activeElement !== citNameInput) citNameInput.value = state.currentUser.name;
+    if (authNameInput && document.activeElement !== authNameInput) authNameInput.value = state.currentUser.name;
     if (citCityEl) citCityEl.innerText = `CITIZEN (${city.toUpperCase()})`;
-    if (authNameEl) authNameEl.innerText = state.currentUser.name.includes("Major") ? state.currentUser.name : `Major ${state.currentUser.name}`;
     if (sosNameInput) sosNameInput.value = state.currentUser.name;
-    if (gatewayCustomInput) gatewayCustomInput.value = state.currentUser.name;
+    if (gatewayCustomInput && document.activeElement !== gatewayCustomInput) gatewayCustomInput.value = state.currentUser.name;
     if (gatewayCitySel) gatewayCitySel.value = city;
     if (citCityDropdown) citCityDropdown.value = city;
 
@@ -122,6 +122,7 @@ function updateUserProfile(name, city) {
 
     loadNearbyFacilities("ALL", city);
 }
+
 
 // ==========================================================================
 // PORTAL NAVIGATION & ROUTING
@@ -973,6 +974,32 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("gatewayCustomName")?.addEventListener("input", (e) => {
         const val = e.target.value.trim() || "Jignesh Shah";
         updateUserProfile(val, state.currentUser.city);
+    });
+
+    // Citizen inline name edit
+    document.getElementById("citizenNameInput")?.addEventListener("input", (e) => {
+        const val = e.target.value.trim() || "Citizen";
+        state.currentUser.name = val;
+        localStorage.setItem("sahay_user_name", val);
+        const sosInput = document.getElementById("sosName");
+        if (sosInput) sosInput.value = val;
+        const authInput = document.getElementById("authOfficerNameInput");
+        if (authInput && authInput !== e.target) authInput.value = val;
+        const gwInput = document.getElementById("gatewayCustomName");
+        if (gwInput && gwInput !== e.target) gwInput.value = val;
+    });
+
+    // Authority inline officer name edit
+    document.getElementById("authOfficerNameInput")?.addEventListener("input", (e) => {
+        const val = e.target.value.trim() || "Commander";
+        state.currentUser.name = val;
+        localStorage.setItem("sahay_user_name", val);
+        const citInput = document.getElementById("citizenNameInput");
+        if (citInput && citInput !== e.target) citInput.value = val;
+        const sosInput = document.getElementById("sosName");
+        if (sosInput) sosInput.value = val;
+        const gwInput = document.getElementById("gatewayCustomName");
+        if (gwInput && gwInput !== e.target) gwInput.value = val;
     });
 
     document.getElementById("gatewayCitySelect")?.addEventListener("change", (e) => {
