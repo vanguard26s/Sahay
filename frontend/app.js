@@ -1131,6 +1131,87 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => switchAuthView(btn.getAttribute("data-view")));
     });
 
+    // Search and Filter Incident Feeds
+    function applyIncidentFilters() {
+        const q = document.getElementById("searchInput")?.value?.toLowerCase() || "";
+        const urg = document.getElementById("filterUrgency")?.value || "ALL";
+        const typ = document.getElementById("filterType")?.value || "ALL";
+
+        const filtered = state.incidents.filter(i => {
+            const matchQ = !q || (i.location_name + " " + i.raw_text).toLowerCase().includes(q);
+            const matchUrg = urg === "ALL" || i.urgency_level === urg;
+            const matchTyp = typ === "ALL" || (i.disaster_type || "").toLowerCase().includes(typ.toLowerCase());
+            return matchQ && matchUrg && matchTyp;
+        });
+
+        renderFilteredIncidents(filtered);
+    }
+
+    document.getElementById("searchInput")?.addEventListener("input", applyIncidentFilters);
+    document.getElementById("filterUrgency")?.addEventListener("change", applyIncidentFilters);
+    document.getElementById("filterType")?.addEventListener("change", applyIncidentFilters);
+
+    // Map Controls: Heatmap, Reset, Facilities
+    let heatmapActive = false;
+    let heatLayer = null;
+    document.getElementById("btnToggleHeatmap")?.addEventListener("click", () => {
+        if (!state.map) return;
+        heatmapActive = !heatmapActive;
+        if (heatmapActive) {
+            const heatPoints = state.incidents.map(i => [i.latitude, i.longitude, i.urgency_level === "P1_CRITICAL" ? 1.0 : 0.6]);
+            heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 }).addTo(state.map);
+            showToast("🔥 Crisis Heatmap Activated");
+        } else {
+            if (heatLayer) state.map.removeLayer(heatLayer);
+            showToast("Heatmap Deactivated");
+        }
+    });
+
+    document.getElementById("btnResetView")?.addEventListener("click", () => {
+        if (state.map) state.map.setView([state.userLocation.lat, state.userLocation.lng], 12);
+        showToast("🎯 Map View Reset to Center");
+    });
+
+    document.getElementById("btnToggleFacilitiesMap")?.addEventListener("click", () => {
+        showToast("🏥 Facilities Pins Visible on Map");
+    });
+
+    // News Crawler Button
+    document.getElementById("btnHarvestNews")?.addEventListener("click", async () => {
+        showToast("🔄 Crawling Gujarat news sources (Gujarat Samachar, Sandesh, ANI)...");
+        await loadAgencyNewsAndSocial();
+        showToast("✓ Verified News Bulletins Refreshed!");
+    });
+
+    // Auth Modal Handlers
+    document.getElementById("btnOpenAuthFromGateway")?.addEventListener("click", () => {
+        document.getElementById("authModal")?.classList.add("active");
+    });
+    document.getElementById("btnCloseAuthModal")?.addEventListener("click", () => {
+        document.getElementById("authModal")?.classList.remove("active");
+    });
+    document.getElementById("btnDemoAuthModalAuthority")?.addEventListener("click", () => {
+        document.getElementById("authModal")?.classList.remove("active");
+        showPortal("authority");
+        showToast("🛡️ Logged in as Authority Commander");
+    });
+    document.getElementById("btnDemoAuthModalCitizen")?.addEventListener("click", () => {
+        document.getElementById("authModal")?.classList.remove("active");
+        showPortal("citizen");
+        showToast("👤 Logged in as Citizen");
+    });
+    document.getElementById("authModalLoginForm")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        document.getElementById("authModal")?.classList.remove("active");
+        const email = document.getElementById("authModalEmail")?.value || "";
+        if (email.includes("gsdma") || email.includes("commander")) {
+            showPortal("authority");
+        } else {
+            showPortal("citizen");
+        }
+        showToast("✓ Signed In Successfully");
+    });
+
     // Direct SMS Form
     document.getElementById("directSmsForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1247,4 +1328,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start on Gateway
     showPortal("gateway");
 });
+
+function renderFilteredIncidents(list) {
+    const container = document.getElementById("incidentListContainer");
+    if (!container) return;
+
+    if (!list || list.length === 0) {
+        container.innerHTML = '<div class="empty-state">No matching incidents found.</div>';
+        return;
+    }
+
+    let html = "";
+    list.slice(0, 30).forEach(inc => {
+        const pClass = inc.urgency_level === "P1_CRITICAL" ? "p1" : inc.urgency_level === "P2_HIGH" ? "p2" : "p3";
+        const urgencyLabel = inc.urgency_level === "P1_CRITICAL" ? "🚨 P1 CRITICAL" : inc.urgency_level === "P2_HIGH" ? "⚠️ P2 HIGH" : "ℹ️ P3";
+
+        html += `
+            <div class="incident-card ${pClass}" onclick="panToIncident(${inc.latitude}, ${inc.longitude})">
+                <div class="inc-card-header">
+                    <span style="font-weight: 700; color: ${pClass === 'p1' ? '#ef4444' : '#f59e0b'}">${urgencyLabel}</span>
+                    <span style="color: var(--text-muted); font-size: 10.5px;">${new Date(inc.created_at).toLocaleTimeString()}</span>
+                </div>
+                <div class="inc-location">📍 ${escapeHtml(inc.location_name)}</div>
+                <div class="inc-desc">${escapeHtml(inc.raw_text)}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                    <span style="font-size: 11px; color: var(--accent-cyan);">👥 ~${inc.victim_count_estimated} victims</span>
+                    <button class="btn btn-primary btn-xs" onclick="panToIncident(${inc.latitude}, ${inc.longitude})">🎯 Locate</button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
 

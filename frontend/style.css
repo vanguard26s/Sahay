@@ -129,11 +129,20 @@ h1, h2, h3, h4, strong {
    PORTAL SCREENS ROUTING
    ========================================================================= */
 
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
 .portal-screen {
     display: none;
-    height: 100vh;
-    width: 100vw;
-    overflow-y: auto;
+    min-height: 100vh;
+    width: 100%;
     position: relative;
     background: var(--bg-primary);
 }
@@ -149,9 +158,14 @@ h1, h2, h3, h4, strong {
 
 #portalGateway {
     background: var(--bg-gateway);
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 30px 20px;
+    justify-content: flex-start;
+    padding: 40px 20px 80px 20px;
+    overflow-y: auto;
 }
 
 .gateway-container {
@@ -160,7 +174,7 @@ h1, h2, h3, h4, strong {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 25px;
+    gap: 22px;
 }
 
 .gateway-header {
