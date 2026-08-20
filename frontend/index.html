@@ -24,7 +24,7 @@
     <!-- Custom Futuristic Stylesheet -->
     <link rel="stylesheet" href="/style.css">
 </head>
-<body class="theme-dark">
+<body>
 
     <!-- ===================================================================
          PORTAL 0: FUTURISTIC LANDING & GATEWAY SELECTOR (CITIZEN vs AUTHORITY)
@@ -32,20 +32,14 @@
     <div class="portal-screen active" id="portalGateway">
         <div class="gateway-container">
             <div class="gateway-header">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px;">
-                    <div class="brand-badge-large">
-                        <span class="radar-dot pulse-large"></span>
-                        <span class="brand-icon">🛡️</span>
-                    </div>
-                    <!-- Theme Toggle on Gateway -->
-                    <button class="theme-toggle-btn btnToggleTheme">
-                        <span class="theme-icon">🌓</span>
-                        <span class="theme-label">Theme: Dark Mode</span>
-                    </button>
+                <div class="brand-badge-large">
+                    <span class="radar-dot pulse-large"></span>
+                    <span class="brand-icon">🛡️</span>
                 </div>
 
                 <h1 class="gateway-title">SAHAY <span class="badge-version">GUJARAT SEOC v3.5</span></h1>
                 <p class="gateway-subtitle">Autonomous Multi-Source Disaster Intelligence, Citizen Emergency SOS, Real-Time Mobile SMS Alerts, and Safe Facilities Navigation for All 33 Gujarat Districts</p>
+
                 
                 <div class="emergency-hotlines-banner">
                     <span>🚨 STATE EMERGENCY HELPLINES:</span>
@@ -186,12 +180,6 @@
             </div>
 
             <div class="user-auth-box">
-                <!-- Theme Toggle -->
-                <button class="theme-toggle-btn btnToggleTheme">
-                    <span class="theme-icon">🌓</span>
-                    <span class="theme-label">Theme</span>
-                </button>
-
                 <!-- User Chip with Edit Name Button -->
                 <div class="user-chip" id="citizenUserChip">
                     <span class="user-role-icon">👤</span>
@@ -206,6 +194,7 @@
                 <button class="btn btn-secondary btn-sm" id="btnCitizenSignOut">🚪 Sign Out</button>
             </div>
         </header>
+
 
         <div class="portal-main-content">
             <!-- Alert Banner & SOS Sound Trigger -->
@@ -365,12 +354,6 @@
             </nav>
 
             <div class="user-auth-box">
-                <!-- Theme Toggle -->
-                <button class="theme-toggle-btn btnToggleTheme">
-                    <span class="theme-icon">🌓</span>
-                    <span class="theme-label">Theme</span>
-                </button>
-
                 <!-- Officer Chip with Edit Name Button -->
                 <div class="user-chip" id="authOfficerChip">
                     <span class="user-role-icon">🛡️</span>
@@ -384,6 +367,7 @@
                 <button class="btn btn-secondary btn-sm" id="btnAuthReturnGateway">🏠 Switch Portal</button>
                 <button class="btn btn-secondary btn-sm" id="btnAuthSignOut">🚪 Sign Out</button>
             </div>
+
         </header>
 
         <!-- KPI Ticker -->

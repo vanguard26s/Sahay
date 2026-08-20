@@ -79,66 +79,6 @@ const state = {
 };
 
 // ==========================================================================
-// THEME SWITCHER (DARK MODE / LIGHT MODE)
-// ==========================================================================
-
-function initTheme() {
-    const savedTheme = localStorage.getItem("sahay_theme") || "dark";
-    setTheme(savedTheme);
-}
-
-function setTheme(theme) {
-    state.currentTheme = theme;
-    localStorage.setItem("sahay_theme", theme);
-
-    if (theme === "light") {
-        document.body.classList.add("theme-light");
-        document.body.classList.remove("theme-dark");
-    } else {
-        document.body.classList.add("theme-dark");
-        document.body.classList.remove("theme-light");
-    }
-
-    // Update all theme toggle buttons across all screens
-    document.querySelectorAll(".btnToggleTheme").forEach(btn => {
-        const icon = btn.querySelector(".theme-icon");
-        const label = btn.querySelector(".theme-label");
-        if (theme === "light") {
-            if (icon) icon.innerText = "☀️";
-            if (label) label.innerText = "Theme: Light";
-        } else {
-            if (icon) icon.innerText = "🌙";
-            if (label) label.innerText = "Theme: Dark";
-        }
-    });
-
-    updateMapTiles();
-}
-
-function toggleTheme() {
-    const nextTheme = state.currentTheme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    showToast(`🌓 Switched to ${nextTheme.toUpperCase()} Mode`);
-}
-
-function updateMapTiles() {
-    const tileUrl = state.currentTheme === "light" 
-        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-
-    if (state.map && state.mapTileLayer) {
-        state.map.removeLayer(state.mapTileLayer);
-        state.mapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.map);
-    }
-
-    if (state.citizenMap && state.citizenMapTileLayer) {
-        state.citizenMap.removeLayer(state.citizenMapTileLayer);
-        state.citizenMapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.citizenMap);
-    }
-}
-
-
-// ==========================================================================
 // USER IDENTITY & GUJARAT CITY CONFIGURATION
 // ==========================================================================
 
@@ -746,9 +686,7 @@ function initAuthorityMap() {
     state.map = L.map("gisMap", { zoomControl: false }).setView([state.userLocation.lat, state.userLocation.lng], 12);
     L.control.zoom({ position: "bottomright" }).addTo(state.map);
 
-    const tileUrl = state.currentTheme === "light" 
-        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    const tileUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
     state.mapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.map);
     state.incidentLayer = L.layerGroup().addTo(state.map);
@@ -761,12 +699,11 @@ function initCitizenMap() {
 
     state.citizenMap = L.map("citizenGisMap", { zoomControl: true }).setView([state.userLocation.lat, state.userLocation.lng], 13);
 
-    const tileUrl = state.currentTheme === "light" 
-        ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    const tileUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 
     state.citizenMapTileLayer = L.tileLayer(tileUrl, { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(state.citizenMap);
     state.facilityLayer = L.layerGroup().addTo(state.citizenMap);
+
 
     const userIcon = L.divIcon({
         className: "user-loc-beacon",
@@ -1027,18 +964,10 @@ function escapeHtml(str) {
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Initialize Theme
-    initTheme();
-
-    // 2. Initialize User Name & City
+    // 1. Initialize User Name & City
     const savedName = localStorage.getItem("sahay_user_name") || "Jignesh Shah";
     const savedCity = localStorage.getItem("sahay_user_city") || "Vadodara";
     updateUserProfile(savedName, savedCity);
-
-    // Theme Toggle buttons
-    document.querySelectorAll(".btnToggleTheme").forEach(btn => {
-        btn.addEventListener("click", toggleTheme);
-    });
 
     // Gateway City & Name inputs
     document.getElementById("gatewayCustomName")?.addEventListener("input", (e) => {
@@ -1317,17 +1246,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("smsSentSuccessModal")?.classList.remove("active");
     });
 
-    // Global fail-safe click listener for theme buttons
-    document.addEventListener("click", (e) => {
-        if (e.target.closest(".btnToggleTheme")) {
-            e.preventDefault();
-            toggleTheme();
-        }
-    });
-
     // Start on Gateway
     showPortal("gateway");
 });
+
 
 function renderFilteredIncidents(list) {
     const container = document.getElementById("incidentListContainer");

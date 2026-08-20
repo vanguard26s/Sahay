@@ -3,7 +3,7 @@
    Futuristic Dark UI, Neon Glassmorphism, Pulse Radars, and Clean Light Mode
    ========================================================================== */
 
-:root, body.theme-dark {
+:root {
     --bg-primary: #050811;
     --bg-gateway: radial-gradient(circle at top center, #101c3d 0%, #050811 75%);
     --bg-surface: #0b1120;
@@ -44,68 +44,14 @@
     --radius-lg: 16px;
 }
 
-body.theme-light {
-    --bg-primary: #f1f5f9;
-    --bg-gateway: radial-gradient(circle at top center, #e0f2fe 0%, #f1f5f9 75%);
-    --bg-surface: #ffffff;
-    --bg-surface-elevated: #f8fafc;
-    --bg-surface-hover: #e2e8f0;
-    --border-color: #cbd5e1;
-    --border-glow-cyan: rgba(6, 182, 212, 0.4);
-    --border-glow-red: rgba(239, 68, 68, 0.4);
-
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
-    --text-heading: #0f172a;
-    --card-bg: #ffffff;
-    --input-bg: #f8fafc;
-    --input-border: #cbd5e1;
-    --input-color: #0f172a;
-    --nav-bg: #ffffff;
-    --kpi-bg: #f8fafc;
-
-    --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: var(--font-main);
-    overflow: hidden;
-    height: 100vh;
-    transition: background-color 0.25s ease, color 0.25s ease;
-}
-
 h1, h2, h3, h4, strong {
     color: var(--text-heading);
-}
-
-/* Theme Toggle Button */
-.theme-toggle-btn {
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 7px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-}
-
-.theme-toggle-btn:hover {
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
 }
 
 /* Custom Scrollbars */
