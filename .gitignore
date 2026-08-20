@@ -6,3 +6,5 @@ __pycache__/
 *.db
 .env
 .DS_Store
+push_to_github.py
+scratch/

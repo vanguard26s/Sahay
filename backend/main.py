@@ -901,3 +901,11 @@ if os.path.exists(FRONTEND_DIR):
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
 
 
+if __name__ == "__main__":
+    import uvicorn
+    server_port = int(os.environ.get("PORT", 8000))
+    logger.info(f"Starting Sahay server on port {server_port}...")
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=server_port, reload=False)
+
+
+
